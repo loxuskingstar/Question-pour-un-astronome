@@ -315,26 +315,25 @@
 
         .answer-box.visible {
             opacity: 1;
-            max-height: 600px;
+            max-height: 400px;
             margin-top: 30px;
-            padding: 30px 20px;
+            padding-top: 30px;
             border-top: 1px solid rgba(255,255,255,0.15);
         }
 
         .answer-main {
             font-weight: 700;
-            font-size: clamp(2.5rem, 5vw, 4.5rem); /* Réponse massive */
-            text-shadow: 0 0 20px rgba(0, 184, 148, 0.4);
+            font-size: 2.4rem;
         }
-        
         .answer-desc {
-            font-size: clamp(1.4rem, 3vw, 1.8rem); /* Anecdote plus lisible */
+            font-size: 1.3rem;
             font-weight: 300;
             font-family: 'Josefin Sans', sans-serif;
-            color: #e0e0e0;
-            margin-top: 20px;
-            line-height: 1.5;
+            color: #dcdcdc;
+            margin-top: 15px;
+            line-height: 1.4;
             font-style: italic;
+            opacity: 0.9;
         }
 
         .btn-reveal-container {
@@ -1337,7 +1336,7 @@
         function handleMasterCommand(data) {
             if (data.action === 'resolve') resolveBuzz(data.isCorrect);
             else if (data.action === 'p2_resolve') handleActiveTeamAnswer(data.isCorrect);
-            else if (data.action === 'skip') {              const canSkip = ['p1', 'p2_q', 'p3_q'].includes(currentPhase) && !isQuestionActive && !currentBuzzedTeam;                if (canSkip) skipQuestion();            }
+            else if (data.action === 'skip') skipQuestion();
             else if (data.action === 'reveal') {
                 if (currentPhase === 'p3_q') revealAnswerPhase3();
                 else revealAnswer();
@@ -1397,8 +1396,7 @@
                     answer: aText,
                     buzzedTeam: currentBuzzedTeam,
                     activeTeamName: (currentPhase === 'p2_q' && activeTeamIndex !== -1) ? teams[activeTeamIndex].name : null,
-                    isQuestionActive: isQuestionActive,
-                    canSkip: ['p1', 'p2_q', 'p3_q'].includes(currentPhase) && !isQuestionActive && !currentBuzzedTeam
+                    isQuestionActive: isQuestionActive
                 });
             }
         }
