@@ -594,6 +594,8 @@
         };
 
         let currentPhase = ''; 
+        let isAnswerRevealed = false;
+        let pendingTransition = null; 
         let currentQuestionIndex = 0;
         let activeCategory = '';
         let activeTeamIndex = -1;
@@ -691,11 +693,11 @@
 
         function showHome() {
             header.classList.add('header-hidden');
+            pendingTransition = { action: 'startGame', title: 'Accueil', label: 'DÉMARRER LE JEU' }; // Signal télécommande
             renderView(`
                 <div class="home-container">
                     <img src="logo.png" alt="Questions pour un Astronome" class="home-logo">
                     <button class="btn-accent glass-panel" style="font-size: 1.8rem; padding: 20px 60px; border-radius: 50px;" onclick="startGame()">Démarrer</button>
-
                 </div>
             `);
         }
@@ -761,6 +763,7 @@
         }
 
         function showRules() {
+            pendingTransition = { action: 'showTeamSetup', title: 'Règles du jeu', label: 'CRÉER LES ÉQUIPES' };
             renderView(`
                 <h1>Règles du jeu</h1>
                 <div class="rules-grid">
@@ -806,7 +809,8 @@
         }
 
         function showTeamSetup() {
-            initNetwork(); // Lance PeerJS et génère le code du salon
+            initNetwork(); 
+            pendingTransition = { action: 'startPhase1', title: 'Équipes', label: 'LANCER LA PARTIE' };
             
             renderView(`
                 <h1>Inscrire les équipes</h1>
@@ -843,19 +847,13 @@
         }
 
         function revealAnswer() {
-            // Affiche le texte de la réponse
+            isAnswerRevealed = true; // Débloque le bouton "Passer" sur la télécommande
             document.getElementById('answer').classList.add('visible');
-            
-            // Masque le bouton "Révéler la réponse" s'il est encore là
             const btnReveal = document.getElementById('btn-reveal');
             if (btnReveal) btnReveal.style.display = 'none';
-            
-            // Affiche le gros bouton "Passer à la question suivante"
-            document.getElementById('btn-skip-question').style.display = 'block';
-
-            // NOUVEAU : On verrouille tous les téléphones et on coupe la réception des buzzs
-            isQuestionActive = false;
-            lockAllBuzzers();
+            const btnSkip = document.getElementById('btn-skip-question');
+            if (btnSkip) btnSkip.style.display = 'block';
+            syncMaster(); // Met à jour la télécommande
         }
 
         function startPhase1() {
@@ -865,7 +863,10 @@
         }
 
         function renderGeneralPhase(phaseTitle, questionArray, nextPhaseName) {
+            isAnswerRevealed = false;
+            pendingTransition = null;
             if (currentQuestionIndex >= questionArray.length) {
+                pendingTransition = { action: nextPhaseName, title: 'Manche terminée', label: 'PASSER À LA SUITE' };
                 renderView(`
                     <h1>Manche suivante<br><span style="color:var(--accent-color); font-size:4.5rem;">${phaseTitle}</span></h1>
                     <button class="btn-accent" style="margin-top:40px; font-size:1.5rem; padding: 20px 50px;" onclick="${nextPhaseName}()">Passer à la suite ➔</button>
@@ -967,6 +968,8 @@
         }
 
         function renderPhase2Question() {
+            isAnswerRevealed = false;
+            pendingTransition = null;
             currentPhase = 'p2_q';
             const questionArray = QUESTIONS.phase2[activeCategory];
             
@@ -1078,6 +1081,8 @@
         }
 
         function renderPhase3Question() {
+            isAnswerRevealed = false;
+            pendingTransition = null;
             currentPhase = 'p3_q';
             if (currentQuestionIndex >= QUESTIONS.phase3.length) {
                 showPodium();
@@ -1324,11 +1329,6 @@
             }
         }
 
-        // ==========================================
-        //  LOGIQUE DE LA TÉLÉCOMMANDE (MASTER.HTML)
-        // ==========================================
-
-        // 1. Exécution des ordres reçus
         function handleMasterCommand(data) {
             if (data.action === 'resolve') resolveBuzz(data.isCorrect);
             else if (data.action === 'p2_resolve') handleActiveTeamAnswer(data.isCorrect);
@@ -1340,49 +1340,40 @@
             else if (data.action === 'p3_down') simulateSpace(true);
             else if (data.action === 'p3_up') simulateSpace(false);
             
-            syncMaster(); // Met à jour la télécommande après une action
+            // NOUVEAU : Réception des clics de transition
+            else if (data.action === 'startGame') startGame();
+            else if (data.action === 'showTeamSetup') showTeamSetup();
+            else if (data.action === 'startPhase1') startPhase1();
+            else if (data.action === 'startPhase2Categories') startPhase2Categories();
+            else if (data.action === 'startPhase3') startPhase3();
+            else if (data.action === 'exportResults') exportResults();
+            
+            syncMaster(); 
         }
 
-        // 2. Simulation de la barre Espace (Phase 3) depuis le téléphone
-        function simulateSpace(isDown) {
-            if (isDown) {
-                if (currentPhase === 'p3_q' && !currentBuzzedTeam) {
-                    if (!p3RevealInterval && p3CurrentIndex < p3FullText.length) {
-                        p3RevealInterval = setInterval(() => {
-                            if (p3CurrentIndex < p3FullText.length) {
-                                const spanLetter = document.getElementById(`p3-l-${p3CurrentIndex}`);
-                                if(spanLetter) spanLetter.classList.add('revealed');
-                                p3CurrentIndex++;
-                            } else {
-                                clearInterval(p3RevealInterval);
-                                p3RevealInterval = null;
-                            }
-                        }, 60);
-                    }
-                }
-            } else {
-                if (p3RevealInterval) {
-                    clearInterval(p3RevealInterval);
-                    p3RevealInterval = null;
-                }
-            }
-        }
-
-        // 3. Envoi des textes (Question/Réponse) vers la télécommande
         function syncMaster() {
             if (typeof masterConn !== 'undefined' && masterConn && masterConn.open) {
                 let qText = "En attente...";
                 let aText = "...";
-                
-                if (currentPhase === 'p1' && QUESTIONS.phase1[currentQuestionIndex]) {
+                let descText = "";
+                let p2Awaiting = false;
+
+                if (pendingTransition) {
+                    qText = "Prêt pour la suite ?";
+                    aText = "Action requise";
+                } else if (currentPhase === 'p1' && QUESTIONS.phase1[currentQuestionIndex]) {
                     qText = QUESTIONS.phase1[currentQuestionIndex].q;
                     aText = QUESTIONS.phase1[currentQuestionIndex].a;
+                    descText = QUESTIONS.phase1[currentQuestionIndex].d || "";
                 } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory][currentQuestionIndex]) {
                     qText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].q;
                     aText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].a;
+                    descText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].d || "";
+                    if (!isQuestionActive && !currentBuzzedTeam) p2Awaiting = true;
                 } else if (currentPhase === 'p3_q' && QUESTIONS.phase3[currentQuestionIndex]) {
                     qText = QUESTIONS.phase3[currentQuestionIndex].q;
                     aText = QUESTIONS.phase3[currentQuestionIndex].a;
+                    descText = QUESTIONS.phase3[currentQuestionIndex].d || "";
                 }
 
                 masterConn.send({
@@ -1390,9 +1381,16 @@
                     phase: currentPhase,
                     question: qText,
                     answer: aText,
+                    answerDescription: descText,
+                    answerRevealed: isAnswerRevealed,
+                    canSkip: isAnswerRevealed,
                     buzzedTeam: currentBuzzedTeam,
                     activeTeamName: (currentPhase === 'p2_q' && activeTeamIndex !== -1) ? teams[activeTeamIndex].name : null,
-                    isQuestionActive: isQuestionActive
+                    isQuestionActive: isQuestionActive,
+                    p2AwaitingAnswer: p2Awaiting,
+                    transitionAction: pendingTransition ? pendingTransition.action : null,
+                    transitionTitle: pendingTransition ? pendingTransition.title : null,
+                    transitionLabel: pendingTransition ? pendingTransition.label : null
                 });
             }
         }

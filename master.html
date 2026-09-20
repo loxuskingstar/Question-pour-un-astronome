@@ -35,198 +35,172 @@
         .glass-panel {
             background:var(--panel); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
             border:1px solid var(--border);
-            box-shadow:0 12px 38px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04);
-            border-radius:24px;
+            box-shadow:0 8px 24px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04);
+            border-radius:16px;
         }
 
         #login-screen {
             min-height:100dvh; width:100%; display:flex; flex-direction:column;
             align-items:center; justify-content:center;
-            padding:max(24px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom));
+            padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
             text-align:center;
         }
 
-        .login-card { width:min(100%,500px); padding:clamp(30px,7vw,48px); }
+        .login-card { width:min(100%,400px); padding:24px; }
         .login-title {
-            margin:0 0 12px; color:var(--accent); font-family:'Chau Philomene One',sans-serif;
-            font-size:clamp(2.8rem,12vw,4.2rem); line-height:1;
+            margin:0 0 8px; color:var(--accent); font-family:'Chau Philomene One',sans-serif;
+            font-size:2.2rem; line-height:1;
         }
         .login-subtitle {
-            margin:0 0 30px; color:var(--muted); font-size:clamp(1.05rem,4.5vw,1.35rem); line-height:1.4;
+            margin:0 0 24px; color:var(--muted); font-size:1rem; line-height:1.4;
         }
         input {
-            width:100%; min-height:70px; padding:16px 20px; margin-bottom:16px; border-radius:18px;
+            width:100%; min-height:50px; padding:12px 16px; margin-bottom:12px; border-radius:12px;
             border:2px solid rgba(247,183,49,.85); background:rgba(0,0,0,.40); color:#fff;
-            text-align:center; font-size:clamp(1.35rem,5vw,1.7rem); outline:none;
+            text-align:center; font-size:1.2rem; outline:none;
         }
-        input:focus { box-shadow:0 0 0 5px rgba(247,183,49,.14); border-color:var(--accent); }
+        input:focus { box-shadow:0 0 0 4px rgba(247,183,49,.14); border-color:var(--accent); }
 
         .btn-accent {
-            width:100%; min-height:70px; padding:16px 22px; border:0; border-radius:18px;
+            width:100%; min-height:50px; padding:12px 16px; border:0; border-radius:12px;
             background:var(--accent); color:#191631; font-weight:800;
-            font-size:clamp(1.25rem,5vw,1.55rem); cursor:pointer; box-shadow:0 0 28px var(--accent-glow);
+            font-size:1.2rem; cursor:pointer; box-shadow:0 0 20px var(--accent-glow);
         }
         .btn-accent:active { transform:scale(.985); }
 
         #master-screen {
             display:none; flex-direction:column; width:100%; height:100dvh; min-height:0;
-            padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
-                     max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
-            gap:12px;
+            padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right))
+                     max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+            gap:8px;
         }
 
         .status-bar {
-            flex:0 0 auto; min-height:48px; display:flex; align-items:center; justify-content:space-between;
-            gap:12px; padding:0 4px; color:var(--accent);
-            font-size:clamp(1.05rem,4.5vw,1.35rem); font-weight:800;
+            flex:0 0 auto; min-height:36px; display:flex; align-items:center; justify-content:space-between;
+            gap:8px; padding:0 4px; color:var(--accent);
+            font-size:1rem; font-weight:800;
         }
         .phase-badge { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .connection-status { color:var(--success); white-space:nowrap; }
 
         .text-box {
-            flex:0 1 44dvh; min-height:240px; max-height:48dvh; overflow-y:auto; overflow-x:hidden;
-            padding:clamp(24px,5.5vw,40px); margin:0; -webkit-overflow-scrolling:touch;
+            flex:1 1 auto; overflow-y:auto; overflow-x:hidden;
+            padding:16px; margin:0; -webkit-overflow-scrolling:touch;
         }
 
-        .question-section { padding-bottom:20px; }
+        .question-section { padding-bottom:12px; }
         .q-title,.a-title {
-            margin:0 0 10px; font-size:clamp(.95rem,3.7vw,1.15rem);
-            font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+            margin:0 0 6px; font-size:.9rem;
+            font-weight:800; letter-spacing:.1em; text-transform:uppercase;
         }
         .q-title { color:var(--muted); }
-        .a-title { color:var(--success); margin-top:24px; }
+        .a-title { color:var(--success); margin-top:16px; }
         .q-text,.a-text { margin:0; overflow-wrap:anywhere; }
-        .q-text {
-            font-size:clamp(1.65rem,6.8vw,2.35rem); line-height:1.36; font-weight:700;
-        }
-        .a-text {
-            font-size:clamp(1.55rem,6.2vw,2.15rem); line-height:1.36; font-weight:800;
-        }
+        .q-text { font-size:1.4rem; line-height:1.3; font-weight:700; }
+        .a-text { font-size:1.3rem; line-height:1.3; font-weight:800; }
 
         .answer-status {
-            display:inline-flex; align-items:center; gap:8px; margin-top:20px; padding:11px 15px;
+            display:inline-flex; align-items:center; gap:6px; margin-top:12px; padding:8px 12px;
             border-radius:999px; background:rgba(0,184,148,.14); border:1px solid rgba(0,184,148,.42);
-            color:#5ff2d1; font-size:clamp(.95rem,3.8vw,1.15rem); font-weight:800;
+            color:#5ff2d1; font-size:.9rem; font-weight:800;
+        }
+
+        .answer-description {
+            display:none; margin-top:12px; padding:12px; border-radius:12px;
+            background:rgba(255,255,255,.055); border-left:4px solid var(--accent);
+            color:#f1eff7; font-size:1rem; line-height:1.4; font-weight:600;
+        }
+        .desc-label {
+            display:block; margin-bottom:4px; color:var(--accent); font-size:.8em;
+            font-weight:900; letter-spacing:.05em; text-transform:uppercase;
         }
 
         .controls-container {
-            flex:0 0 auto; width:100%; display:flex; flex-direction:column; gap:10px;
+            flex:0 0 auto; width:100%; display:flex; flex-direction:column; gap:8px;
         }
-        .control-group { display:flex; flex-direction:column; gap:10px; }
+        .control-group { display:flex; flex-direction:column; gap:8px; }
         .turn-label {
-            text-align:center; color:var(--accent); font-size:clamp(1.1rem,4.5vw,1.35rem); padding:3px 0; font-weight:700;
+            text-align:center; color:var(--accent); font-size:1rem; padding:2px 0; font-weight:700;
         }
-        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; }
+        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
 
         .btn-action {
-            width:100%; min-height:100px; padding:18px 12px; border-radius:18px;
+            width:100%; min-height:60px; padding:12px 8px; border-radius:12px;
             border:2px solid transparent; cursor:pointer; text-align:center;
-            font-size:clamp(1.35rem,5.5vw,1.8rem); font-weight:900; line-height:1.08;
+            font-size:1.1rem; font-weight:900; line-height:1.1;
             transition:transform .1s ease,opacity .15s ease,filter .15s ease;
-            box-shadow:0 5px 18px rgba(0,0,0,.18);
+            box-shadow:0 4px 12px rgba(0,0,0,.18);
         }
         .btn-action:active { transform:scale(.975); }
-        .btn-action:disabled { opacity:.30; cursor:not-allowed; filter:grayscale(.3); box-shadow:none; }
+        .btn-action:disabled { opacity:.40; cursor:not-allowed; filter:grayscale(.4); box-shadow:none; }
 
         .btn-reveal {
             background:var(--panel-strong); color:#fff; border-color:rgba(255,255,255,.30);
         }
         .btn-skip {
             background:var(--info); color:#fff; border-color:rgba(255,255,255,.08);
-            box-shadow:0 8px 24px rgba(52,152,219,.28);
+            box-shadow:0 6px 16px rgba(52,152,219,.28);
         }
         .btn-true {
             background:rgba(0,184,148,.18); border-color:var(--success); color:#70f4d4;
-            box-shadow:0 7px 22px rgba(0,184,148,.20);
+            box-shadow:0 5px 16px rgba(0,184,148,.20);
         }
         .btn-false {
             background:rgba(255,118,117,.16); border-color:var(--danger); color:#ffaaa8;
-            box-shadow:0 7px 22px rgba(255,118,117,.18);
+            box-shadow:0 5px 16px rgba(255,118,117,.18);
         }
         .btn-hold {
-            background:var(--purple); color:#fff; min-height:110px;
-            box-shadow:0 8px 26px rgba(155,89,182,.34);
+            background:var(--purple); color:#fff; min-height:70px; font-size: 1rem;
+            box-shadow:0 6px 18px rgba(155,89,182,.34);
         }
         .skip-lock-note {
             margin:0; text-align:center; color:var(--muted);
-            font-size:clamp(1rem,4vw,1.2rem); line-height:1.25;
+            font-size:.85rem; line-height:1.2;
         }
 
-        .answer-description {
-            display:block; margin-top:18px; padding:16px 18px; border-radius:16px;
-            background:rgba(255,255,255,.055); border-left:5px solid var(--accent);
-            color:#f1eff7; font-size:clamp(1.15rem,4.8vw,1.5rem); line-height:1.45; font-weight:600;
-        }
-        .answer-description .desc-label {
-            display:block; margin-bottom:7px; color:var(--accent); font-size:.9em;
-            font-weight:900; letter-spacing:.08em; text-transform:uppercase;
-        }
         .phase-transition {
-            display:none; width:100%; padding:16px; border-radius:20px;
+            display:none; width:100%; padding:12px; border-radius:16px;
             background:rgba(247,183,49,.10); border:2px solid rgba(247,183,49,.55);
-            box-shadow:0 8px 26px rgba(247,183,49,.13); text-align:center;
+            box-shadow:0 6px 18px rgba(247,183,49,.13); text-align:center;
         }
         .phase-transition-title {
-            margin:0 0 12px; color:var(--accent); font-size:clamp(1.15rem,4.8vw,1.45rem); font-weight:900;
+            margin:0 0 8px; color:var(--accent); font-size:1rem; font-weight:900;
         }
         .btn-transition {
-            width:100%; min-height:108px; border:0; border-radius:18px; padding:18px 14px;
-            background:var(--accent); color:#171321; font-size:clamp(1.25rem,5.2vw,1.75rem);
-            font-weight:900; box-shadow:0 8px 24px var(--accent-glow); cursor:pointer;
+            width:100%; min-height:60px; border:0; border-radius:12px; padding:12px 10px;
+            background:var(--accent); color:#171321; font-size:1.1rem;
+            font-weight:900; box-shadow:0 6px 16px var(--accent-glow); cursor:pointer;
         }
         .btn-transition:active { transform:scale(.975); }
 
         #buzz-overlay {
             display:none; position:fixed; inset:0; z-index:200;
-            padding:max(24px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right))
-            max(24px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
-            background:rgba(11,9,20,.97); align-items:center; justify-content:center; text-align:center;
+            padding:max(16px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
+            max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+            background:rgba(11,9,20,.95); align-items:center; justify-content:center; text-align:center;
         }
-        .buzz-card { width:min(100%,650px); padding:clamp(28px,7vw,48px); }
+        .buzz-card { width:min(100%,500px); padding:24px; }
         #buzz-overlay h2 {
-            margin:0 0 30px; color:var(--accent); font-family:'Chau Philomene One',sans-serif;
-            font-size:clamp(2.5rem,11vw,4.2rem); line-height:1.03; overflow-wrap:anywhere;
+            margin:0 0 20px; color:var(--accent); font-family:'Chau Philomene One',sans-serif;
+            font-size:2.2rem; line-height:1.05; overflow-wrap:anywhere;
         }
-        #buzz-overlay .btn-action { min-height:100px; font-size:clamp(1.35rem,5.5vw,1.8rem); }
+        #buzz-overlay .btn-action { min-height:80px; font-size:1.3rem; }
 
-        /* Tablettes : grands contrôles côte à côte */
         @media (min-width:700px) {
-            #master-screen { max-width:1100px; margin:0 auto; padding-left:20px; padding-right:20px; gap:14px; }
-            .status-bar { min-height:54px; }
-            .text-box { padding:32px 38px; }
-            .controls-container {
-                display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:stretch;
-            }
-            #ctrl-standard,.full-width { grid-column:1/-1; }
-            .btn-action { min-height:100px; font-size:1.6rem; }
-            .btn-hold { min-height:110px; }
+            #master-screen { max-width:800px; margin:0 auto; padding-left:16px; padding-right:16px; gap:12px; }
+            .text-box { padding:24px; }
+            .btn-action { min-height:80px; font-size:1.3rem; }
+            .btn-hold { min-height:90px; font-size: 1.2rem; }
+            .login-card { width:min(100%,500px); }
         }
-
-        /* Écran bas : on garde les boutons grands mais compacts */
-        @media (max-height:700px) {
-            #master-screen { gap:8px; }
-            .status-bar { min-height:40px; }
-            .text-box { padding:18px 20px; }
-            .text-box { min-height:180px; max-height:38dvh; flex-basis:36dvh; }
-            .q-text { font-size:clamp(1.35rem,5.5vw,1.8rem); }
-            .a-title { margin-top:16px; }
-            .btn-action { min-height:82px; padding:14px 10px; }
-            .btn-hold { min-height:90px; }
-            .skip-lock-note { font-size:.88rem; }
-        }
-
-        /* Paysage téléphone : question à gauche, télécommande à droite */
-        @media (orientation:landscape) and (max-height:650px) {
+        @media (orientation:landscape) and (max-height:500px) {
             #master-screen {
-                display:grid; grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);
-                grid-template-rows:auto 1fr; column-gap:14px; row-gap:8px;
+                display:grid; grid-template-columns:1fr 250px;
+                grid-template-rows:auto 1fr; column-gap:12px; row-gap:6px;
             }
             .status-bar { grid-column:1/-1; }
             .text-box { grid-column:1; grid-row:2; }
-            .controls-container {
-                grid-column:2; grid-row:2; display:flex; justify-content:center; overflow-y:auto;
-            }
-            .btn-action { min-height:86px; }
+            .controls-container { grid-column:2; grid-row:2; justify-content:center; }
         }
     </style>
 </head>
@@ -234,10 +208,10 @@
     <div id="login-screen">
         <div class="glass-panel login-card">
             <h1 class="login-title">Console Master</h1>
-            <p class="login-subtitle">Contrôlez la partie depuis votre téléphone ou votre tablette.</p>
+            <p class="login-subtitle">Contrôlez la partie depuis votre téléphone.</p>
             <input type="number" id="code-input" placeholder="Code du salon" inputmode="numeric" pattern="\d*" autocomplete="off">
             <button class="btn-accent" onclick="joinMaster()">Connecter</button>
-            <p id="status-msg" style="margin:16px 0 0;color:#dcdcdc;"></p>
+            <p id="status-msg" style="margin:12px 0 0;color:#dcdcdc;"></p>
         </div>
     </div>
 
@@ -256,7 +230,7 @@
                 <p class="a-title">Réponse secrète</p>
                 <p class="a-text" id="ui-answer">••••••••</p>
 
-                <div id="ui-answer-description" class="answer-description" style="display:none;">
+                <div id="ui-answer-description" class="answer-description">
                     <span class="desc-label">Description / explication</span>
                     <span id="ui-answer-description-text"></span>
                 </div>
@@ -270,7 +244,7 @@
                 <div class="turn-label">Tour de : <b id="p2-team-name"></b></div>
                 <div class="grid-2">
                     <button class="btn-action btn-true" onclick="sendCmd('p2_resolve',true)">✅ VRAI</button>
-                    <button class="btn-action btn-false" onclick="sendCmd('p2_resolve',false)">❌ FAUX / VOL</button>
+                    <button class="btn-action btn-false" onclick="sendCmd('p2_resolve',false)">❌ FAUX</button>
                 </div>
             </div>
 
@@ -286,9 +260,9 @@
             <div id="ctrl-standard" class="control-group full-width">
                 <div class="grid-2">
                     <button id="btn-reveal" class="btn-action btn-reveal" onclick="sendCmd('reveal')">👁️ Révéler</button>
-                    <button id="btn-skip" class="btn-action btn-skip" onclick="requestSkip()" disabled>Passer à la suite ➔</button>
+                    <button id="btn-skip" class="btn-action btn-skip" onclick="requestSkip()" disabled>Passer ➔</button>
                 </div>
-                <p id="skip-note" class="skip-lock-note">Révélez d'abord la réponse pour continuer.</p>
+                <p id="skip-note" class="skip-lock-note">Révélez d'abord la réponse.</p>
             </div>
         </div>
     </div>
@@ -311,7 +285,7 @@
             const status=document.getElementById('status-msg');
             status.innerText="Connexion...";
             peer=new Peer();
-            peer.on('error',()=>status.innerText="Impossible de se connecter à ce salon.");
+            peer.on('error',()=>status.innerText="Impossible de se connecter.");
             peer.on('open',()=>{
                 conn=peer.connect('astro-'+code);
                 conn.on('open',()=>conn.send({type:'join_master'}));
@@ -325,7 +299,7 @@
                     const el=document.querySelector('.connection-status');
                     el.innerText='● Déconnecté'; el.style.color='#ff7675';
                 });
-                conn.on('error',()=>status.innerText="Erreur de connexion. Vérifiez le code du salon.");
+                conn.on('error',()=>status.innerText="Erreur de connexion.");
             });
         }
 
@@ -344,9 +318,7 @@
             const btn=document.getElementById('btn-skip'), note=document.getElementById('skip-note');
             if(!btn||!note) return;
             btn.disabled=!canSkip;
-            note.innerText=canSkip
-                ?"Réponse validée : vous pouvez passer à la suite."
-                :"Le bouton se débloque après la validation ou la révélation de la réponse.";
+            note.innerText=canSkip?"Réponse validée.":"Révélez d'abord la réponse.";
         }
 
         function requestTransition(){
@@ -358,9 +330,9 @@
         }
 
         function updateMasterUI(data){
-            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'À la carte — choix du thème'};
+            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'Choix du thème'};
             document.getElementById('ui-phase').innerText=names[data.phase]||'Accueil';
-            document.getElementById('ui-question').innerHTML=data.question||'En attente du lancement du jeu...';
+            document.getElementById('ui-question').innerHTML=data.question||'En attente...';
             document.getElementById('ui-answer').innerHTML=data.answer||'••••••••';
 
             const desc=document.getElementById('ui-answer-description');
@@ -381,16 +353,14 @@
 
             const p2=document.getElementById('ctrl-p2'), p3=document.getElementById('ctrl-p3');
             const standard=document.getElementById('ctrl-standard'), overlay=document.getElementById('buzz-overlay');
-            const reveal=document.getElementById('btn-reveal');
-            const transition=document.getElementById('phase-transition');
+            const reveal=document.getElementById('btn-reveal'), transition=document.getElementById('phase-transition');
 
             p2.style.display='none'; p3.style.display='none'; standard.style.display='flex'; overlay.style.display='none';
             reveal.style.display=answerRevealed?'none':'block';
 
             transitionAction=data.transitionAction||null;
             if(transitionAction){
-                transition.style.display='block';
-                standard.style.display='none';
+                transition.style.display='block'; standard.style.display='none';
                 document.getElementById('phase-transition-title').innerText=data.transitionTitle||'Transition';
                 const tb=document.getElementById('btn-phase-transition');
                 tb.innerText=data.transitionLabel||'CONTINUER ➜';
@@ -400,11 +370,8 @@
             }
 
             if(data.buzzedTeam){
-                overlay.style.display='flex';
-                standard.style.display='none';
-                p2.style.display='none';
-                p3.style.display='none';
-                transition.style.display='none';
+                overlay.style.display='flex'; standard.style.display='none';
+                p2.style.display='none'; p3.style.display='none'; transition.style.display='none';
                 document.getElementById('buzz-team-title').innerText='🚨 '+data.buzzedTeam+' A BUZZÉ !';
             }else if(data.phase==='p2_q' && data.p2AwaitingAnswer){
                 standard.style.display='none'; p2.style.display='flex';
