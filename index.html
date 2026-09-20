@@ -628,7 +628,7 @@
                 }
             }
         });
-        
+
         document.addEventListener('keyup', (e) => {
             if (currentPhase === 'p3_q' && e.code === 'Space') {
                 e.preventDefault();
@@ -1323,6 +1323,86 @@
                 }
             }
         }
+
+        // ==========================================
+        //  LOGIQUE DE LA TÉLÉCOMMANDE (MASTER.HTML)
+        // ==========================================
+
+        // 1. Exécution des ordres reçus
+        function handleMasterCommand(data) {
+            if (data.action === 'resolve') resolveBuzz(data.isCorrect);
+            else if (data.action === 'p2_resolve') handleActiveTeamAnswer(data.isCorrect);
+            else if (data.action === 'skip') skipQuestion();
+            else if (data.action === 'reveal') {
+                if (currentPhase === 'p3_q') revealAnswerPhase3();
+                else revealAnswer();
+            }
+            else if (data.action === 'p3_down') simulateSpace(true);
+            else if (data.action === 'p3_up') simulateSpace(false);
+            
+            syncMaster(); // Met à jour la télécommande après une action
+        }
+
+        // 2. Simulation de la barre Espace (Phase 3) depuis le téléphone
+        function simulateSpace(isDown) {
+            if (isDown) {
+                if (currentPhase === 'p3_q' && !currentBuzzedTeam) {
+                    if (!p3RevealInterval && p3CurrentIndex < p3FullText.length) {
+                        p3RevealInterval = setInterval(() => {
+                            if (p3CurrentIndex < p3FullText.length) {
+                                const spanLetter = document.getElementById(`p3-l-${p3CurrentIndex}`);
+                                if(spanLetter) spanLetter.classList.add('revealed');
+                                p3CurrentIndex++;
+                            } else {
+                                clearInterval(p3RevealInterval);
+                                p3RevealInterval = null;
+                            }
+                        }, 60);
+                    }
+                }
+            } else {
+                if (p3RevealInterval) {
+                    clearInterval(p3RevealInterval);
+                    p3RevealInterval = null;
+                }
+            }
+        }
+
+        // 3. Envoi des textes (Question/Réponse) vers la télécommande
+        function syncMaster() {
+            if (typeof masterConn !== 'undefined' && masterConn && masterConn.open) {
+                let qText = "En attente...";
+                let aText = "...";
+                
+                if (currentPhase === 'p1' && QUESTIONS.phase1[currentQuestionIndex]) {
+                    qText = QUESTIONS.phase1[currentQuestionIndex].q;
+                    aText = QUESTIONS.phase1[currentQuestionIndex].a;
+                } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory][currentQuestionIndex]) {
+                    qText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].q;
+                    aText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].a;
+                } else if (currentPhase === 'p3_q' && QUESTIONS.phase3[currentQuestionIndex]) {
+                    qText = QUESTIONS.phase3[currentQuestionIndex].q;
+                    aText = QUESTIONS.phase3[currentQuestionIndex].a;
+                }
+
+                masterConn.send({
+                    type: 'sync',
+                    phase: currentPhase,
+                    question: qText,
+                    answer: aText,
+                    buzzedTeam: currentBuzzedTeam,
+                    activeTeamName: (currentPhase === 'p2_q' && activeTeamIndex !== -1) ? teams[activeTeamIndex].name : null,
+                    isQuestionActive: isQuestionActive
+                });
+            }
+        }
+
+        // 4. On force la synchronisation à chaque changement d'écran
+        const originalRenderView = renderView;
+        renderView = function(html) {
+            originalRenderView(html);
+            setTimeout(syncMaster, 150); // Léger délai pour s'assurer que les variables sont à jour
+        };
 
         function skipQuestion() {
             document.getElementById('btn-skip-question').style.display = 'none'; // Cache le bouton

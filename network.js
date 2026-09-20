@@ -25,6 +25,8 @@ function initNetwork() {
     });
 }
 
+let masterConn = null; // Stocke la connexion de la télécommande
+
 function handleNetworkData(conn, data) {
     if (data.type === 'join') {
         const teamName = data.teamName.trim();
@@ -32,11 +34,27 @@ function handleNetworkData(conn, data) {
         addTeam(teamName); 
         conn.send({ type: 'joined', success: true });
     } 
+    else if (data.type === 'join_master') {
+        // NOUVEAU : Connexion de la télécommande
+        masterConn = conn;
+        conn.send({ type: 'master_joined' });
+        if (typeof syncMaster === 'function') syncMaster();
+    }
+    else if (data.type === 'master_cmd') {
+        // NOUVEAU : Réception des clics de la télécommande
+        if (typeof handleMasterCommand === 'function') handleMasterCommand(data);
+    }
     else if (data.type === 'buzz') {
-        // Envoie le buzz dans la nouvelle fonction de gestion de file d'attente
         handleIncomingBuzz(data.teamName);
     }
 }
+
+// Intercepte l'affichage de la pop-up pour mettre à jour la télécommande
+const originalTriggerBuzzPopup = triggerBuzzPopup;
+triggerBuzzPopup = function(teamName) {
+    originalTriggerBuzzPopup(teamName);
+    if (typeof syncMaster === 'function') syncMaster();
+};
 
 function openBuzzers() {
     isQuestionActive = true;
