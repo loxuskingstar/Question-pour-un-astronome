@@ -255,6 +255,12 @@
             <section>
                 <p class="a-title">Réponse secrète</p>
                 <p class="a-text" id="ui-answer">••••••••</p>
+
+                <div id="ui-answer-description" class="answer-description" style="display:none;">
+                    <span class="desc-label">Description / explication</span>
+                    <span id="ui-answer-description-text"></span>
+                </div>
+
                 <div id="answer-status" class="answer-status" style="display:none;">✓ Réponse révélée</div>
             </section>
         </div>
@@ -358,12 +364,15 @@
             document.getElementById('ui-answer').innerHTML=data.answer||'••••••••';
 
             const desc=document.getElementById('ui-answer-description');
-            if(data.answerDescription){
-                desc.innerHTML='<span class="desc-label">Description / explication</span>'+data.answerDescription;
-                desc.style.display='block';
-            }else{
-                desc.style.display='none';
-                desc.innerHTML='';
+            const descText=document.getElementById('ui-answer-description-text');
+            if(desc && descText){
+                if(data.answerDescription){
+                    descText.innerHTML=data.answerDescription;
+                    desc.style.display='block';
+                }else{
+                    desc.style.display='none';
+                    descText.innerHTML='';
+                }
             }
 
             const answerRevealed=data.answerRevealed===true || data.canSkip===true;
@@ -391,8 +400,12 @@
             }
 
             if(data.buzzedTeam){
-                overlay.style.display='flex'; standard.style.display='none'; p3.style.display='none'; transition.style.display='none';
-                document.getElementById('buzz-team-title').innerText=data.buzzedTeam+" a buzzé !";
+                overlay.style.display='flex';
+                standard.style.display='none';
+                p2.style.display='none';
+                p3.style.display='none';
+                transition.style.display='none';
+                document.getElementById('buzz-team-title').innerText='🚨 '+data.buzzedTeam+' A BUZZÉ !';
             }else if(data.phase==='p2_q' && data.p2AwaitingAnswer){
                 standard.style.display='none'; p2.style.display='flex';
             }else if(data.phase==='p3_q' && !data.transitionAction){
