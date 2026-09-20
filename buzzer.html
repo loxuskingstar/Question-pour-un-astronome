@@ -2,94 +2,89 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <!-- Empêche le zoom sur mobile pour un confort total -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Buzzer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Buzzer Spatial</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         body {
             margin: 0; padding: 0; font-family: 'Josefin Sans', sans-serif;
             background-color: #191631; color: white; display: flex;
             flex-direction: column; align-items: center; justify-content: center; 
-            height: 100vh; height: 100dvh; /* S'adapte à la barre d'adresse mobile */
-            overflow: hidden;
-            user-select: none; -webkit-user-select: none; /* Empêche la sélection de texte accidentelle */
+            min-height: 100vh; min-height: 100dvh;
+            overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
         }
         
+        /* Conteneur de connexion occupant presque tout l'écran */
         #login-screen { 
-            width: 90%; max-width: 350px; text-align: center; 
-            background: rgba(255,255,255,0.05); padding: 30px; 
+            width: 90vw; max-width: 400px; text-align: center; 
+            background: rgba(255,255,255,0.05); padding: 40px 20px; 
             border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
             box-sizing: border-box;
         }
+
+        h1 { font-size: 2.5rem; margin-top: 0; margin-bottom: 30px; color: #f7b731; }
         
         #buzzer-screen { 
             display: none; height: 100%; width: 100%; 
             flex-direction: column; align-items: center; justify-content: center; 
-            padding: 20px; box-sizing: border-box;
+            box-sizing: border-box;
         }
         
+        /* Champs de texte massifs pour éviter le zoom iOS/Android */
         input {
-            width: 100%; padding: 15px; margin-bottom: 20px; font-size: 1.2rem;
-            border-radius: 15px; border: 1px solid #f7b731; background: rgba(0,0,0,0.5);
-            color: white; box-sizing: border-box; text-align: center;
+            width: 100%; padding: 20px; margin-bottom: 20px; 
+            font-size: 1.5rem; border-radius: 15px; border: 2px solid #f7b731; 
+            background: rgba(0,0,0,0.5); color: white; 
+            box-sizing: border-box; text-align: center;
         }
         
         .btn-join {
-            width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold;
+            width: 100%; padding: 20px; font-size: 1.5rem; font-weight: bold;
             border-radius: 15px; background: #f7b731; color: #191631; border: none;
-            cursor: pointer; touch-action: manipulation;
+            cursor: pointer; text-transform: uppercase;
         }
 
-        /* --- BUZZER RESPONSIVE --- */
+        /* Buzzer géant */
         #big-buzzer {
-            width: 80vw; /* 80% de la largeur de l'écran */
-            max-width: 350px; /* Pas trop gros sur tablette/PC */
-            aspect-ratio: 1 / 1; /* Assure un cercle parfait */
-            height: auto;
+            width: 85vw; max-width: 400px; aspect-ratio: 1 / 1; 
             border-radius: 50%; border: none;
-            font-size: clamp(2rem, 8vw, 3.5rem); /* Taille du texte dynamique */
-            font-weight: bold; text-transform: uppercase;
-            transition: all 0.1s ease; cursor: pointer;
+            font-size: 3rem; font-weight: bold; text-transform: uppercase;
+            transition: transform 0.1s ease; cursor: pointer;
             -webkit-tap-highlight-color: transparent; 
-            margin: 20px 0; line-height: 1.2;
-            touch-action: manipulation; /* Supprime le délai de 300ms sur mobile */
+            margin: 20px 0; line-height: 1.2; box-sizing: border-box;
         }
         
         .buzzer-ready { 
             background: radial-gradient(circle at 30% 30%, #00e676, #00b894); color: white; 
             box-shadow: 0 15px 0 #008f73, 0 10px 30px rgba(0, 184, 148, 0.4); 
         }
-        .buzzer-ready:active { 
-            transform: translateY(15px); box-shadow: 0 0 0 #008f73; 
-        }
+        .buzzer-ready:active { transform: translateY(15px); box-shadow: 0 0 0 #008f73; }
         
         .buzzer-locked { 
             background: radial-gradient(circle at 30% 30%, #ff7675, #d63031); 
             color: rgba(255,255,255,0.9); box-shadow: 0 10px 0 #b22828;
-            transform: translateY(5px); pointer-events: none;
+            pointer-events: none;
         }
 
         .buzzer-winner {
             background: radial-gradient(circle at 30% 30%, #f1c40f, #f39c12); 
             color: #191631; box-shadow: 0 10px 0 #d35400;
-            transform: translateY(5px); pointer-events: none;
+            pointer-events: none;
         }
         
         #status-text { 
-            font-size: clamp(1.4rem, 5vw, 2rem); 
-            min-height: 50px; margin-bottom: 10px; 
-            font-weight: bold; text-align: center; 
+            font-size: 2rem; min-height: 60px; margin-bottom: 20px; 
+            font-weight: bold; text-align: center; width: 90%; word-break: break-word;
         }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h1 style="color: #f7b731; margin-top: 0;">Buzzer Spatial</h1>
-        <input type="text" id="code-input" placeholder="Code (5 chiffres)">
-        <input type="text" id="team-input" placeholder="Nom de l'équipe">
+        <h1>Buzzer Spatial</h1>
+        <input type="number" id="code-input" placeholder="Code salon" pattern="\d*">
+        <input type="text" id="team-input" placeholder="Nom d'équipe">
         <button class="btn-join" onclick="joinGame()">Rejoindre</button>
     </div>
 
@@ -108,9 +103,13 @@
             myTeamName = document.getElementById('team-input').value.trim();
             if(!code || !myTeamName) return;
 
+            // Affichage de chargement
+            document.querySelector('.btn-join').innerText = "Connexion...";
+
             peer = new Peer(); 
             peer.on('open', () => {
                 conn = peer.connect('astro-' + code);
+                
                 conn.on('open', () => {
                     conn.send({ type: 'join', teamName: myTeamName });
                 });
@@ -133,18 +132,21 @@
                             btn.className = 'buzzer-winner';
                             btn.innerHTML = '🎤<br>PARLEZ';
                         } else {
-                            document.getElementById('status-text').innerText = data.winner ? 'Trop tard : ' + data.winner : 'Bloqué';
+                            document.getElementById('status-text').innerText = data.winner ? data.winner : 'Bloqué';
                             btn.className = 'buzzer-locked';
                             btn.innerHTML = '🔒<br>BLOQUÉ';
                         }
                     }
                 });
+                
+                conn.on('error', () => {
+                    document.querySelector('.btn-join').innerText = "Erreur, réessayer";
+                });
             });
         }
 
-        // Utilisation de touchstart pour une réactivité instantanée sur mobile
         function triggerBuzz(e) {
-            if (e) e.preventDefault(); // Évite le double événement (touch puis click)
+            if (e) e.preventDefault(); 
             if (conn && conn.open && document.getElementById('big-buzzer').classList.contains('buzzer-ready')) {
                 conn.send({ type: 'buzz', teamName: myTeamName });
             }
@@ -152,7 +154,7 @@
 
         const btnBuzz = document.getElementById('big-buzzer');
         btnBuzz.addEventListener('touchstart', triggerBuzz, { passive: false });
-        btnBuzz.addEventListener('mousedown', triggerBuzz); // Gardé pour les tests sur PC
+        btnBuzz.addEventListener('mousedown', triggerBuzz);
     </script>
 </body>
 </html>

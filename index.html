@@ -1217,46 +1217,54 @@
             }
         }
 
+        function lockAllBuzzers() {
+            if (typeof connections !== 'undefined') {
+                Object.values(connections).forEach(c => {
+                    c.send({ type: 'lock', winner: 'Regardez l\'écran' });
+                });
+            }
+        }
+
         function resolveBuzz(isCorrect) {
             document.getElementById('buzz-popup').style.display = 'none';
             
             if (isCorrect) {
                 // BONNE RÉPONSE
-                addPoints(currentBuzzedTeam, getCurrentQuestionPoints()); // Ajoute les points
+                addPoints(currentBuzzedTeam, getCurrentQuestionPoints()); 
                 isQuestionActive = false;
-                buzzQueue = []; // On vide la file d'attente
+                buzzQueue = []; 
                 revealAnswer(); 
                 document.getElementById('btn-skip-question').style.display = 'block'; 
                 
+                lockAllBuzzers(); // ➔ AJOUT : Verrouille tous les téléphones !
+                
             } else {
                 // MAUVAISE RÉPONSE
-                let failedTeam = currentBuzzedTeam; // On mémorise qui s'est trompé
-                getTeam(failedTeam).blocked = true; // On bloque l'équipe
-                sendLockToPhone(failedTeam); // Écran rouge pour eux
+                let failedTeam = currentBuzzedTeam; 
+                getTeam(failedTeam).blocked = true; 
+                sendLockToPhone(failedTeam); 
                 
-                currentBuzzedTeam = null; // On libère la place
+                currentBuzzedTeam = null; 
 
                 if (currentPhase === 'p2_q') {
-                    // LOGIQUE PHASE 2 : LE VOL
                     let activeTeamName = teams[activeTeamIndex].name;
                     
                     if (failedTeam === activeTeamName) {
-                        // L'équipe qui a choisi le thème s'est trompée : ON OUVRE LE VOL !
                         openBuzzers();
                     } else {
-                        // Une équipe a tenté de voler et s'est trompée : Fin de la question
                         isQuestionActive = false;
                         revealAnswer();
                         document.getElementById('btn-skip-question').style.display = 'block';
+                        
+                        lockAllBuzzers(); // ➔ AJOUT : Verrouille tous les téléphones !
                     }
                 } else {
-                    // LOGIQUE PHASES 1 & 3 : FILE D'ATTENTE
                     if (buzzQueue.length > 0) {
-                        processNextInQueue(); // Au suivant dans la file !
+                        processNextInQueue(); 
                     } else {
-                        openBuzzers(); // Personne en attente, on rouvre tout
+                        openBuzzers(); 
                         if (currentPhase === 'p3_q') {
-                            pausePhase3Animation = false; // Reprise des lettres
+                            pausePhase3Animation = false; 
                         }
                     }
                 }
