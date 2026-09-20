@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questions pour un Astronome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/x-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Chau+Philomene+One&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #191631; /* Fond uni */
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+            --accent-color: #f7b731;
+            --accent-glow: rgba(247, 183, 49, 0.4);
+            --success-color: #00b894;
+            --danger-color: #ff7675;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Josefin Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- CLASSE GLOBALE GLASSMORPHISME --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255,255,255,0.02);
+        }
+
+        h1, h2, h3, .podium-step span {
+            font-family: 'Chau Philomene One', sans-serif;
+            font-weight: 400;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            margin: 20px 40px 10px 40px;
+            background: rgba(25, 22, 49, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            position: sticky;
+            top: 20px;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        .header-hidden {
+            opacity: 0;
+            transform: translateY(-100px);
+            pointer-events: none;
+        }
+
+        .logo {
+            max-height: 65px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
+            transition: transform 0.4s ease;
+        }
+        .logo:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        /* --- SCOREBOARD FLIP ANIMATION --- */
+        .scoreboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            max-width: 70vw;
+        }
+        .team-score {
+            border-radius: 30px;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1; 
+        }
+        .team-header-name {
+            max-width: 120px; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+        }
+        .team-header-pts {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.4rem;
+            white-space: nowrap;
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70vh;
+        }
+        .home-logo {
+            max-width: 80vw;
+            max-height: 350px;
+            margin-bottom: 60px;
+            animation: floatLogo 4s ease-in-out infinite;
+        }
+        @keyframes floatLogo {
+            0% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(247, 183, 49, 0.1)); }
+            50% { transform: translateY(-15px); filter: drop-shadow(0 0 20px rgba(247, 183, 49, 0.25)); }
+            100% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(247, 183, 49, 0.1)); }
+        }
+
+        .animate-enter {
+            animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.8rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            text-shadow: 0 0 25px rgba(255,255,255,0.2);
+            word-break: break-word;
+            max-width: 95vw;
+        }
+
+        h2 { font-size: 2.5rem; text-align: center; margin-bottom: 30px; word-break: break-word; }
+        h3 { font-size: 2rem; color: var(--accent-color); margin-top: 0; margin-bottom: 15px; }
+
+        button {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Josefin Sans', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            max-width: 100%;
+        }
+        button:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.4);
+        }
+        button:active { transform: translateY(1px); }
+        
+        button.btn-accent {
+            background: var(--accent-color);
+            color: #0b0914;
+            border: none;
+            box-shadow: 0 0 20px var(--accent-glow);
+            font-weight: 700;
+        }
+        button.btn-accent:hover {
+            background: #ffc954;
+            box-shadow: 0 0 35px var(--accent-glow);
+            border: none;
+        }
+        
+        input {
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            font-family: 'Josefin Sans', sans-serif;
+            border-radius: 50px;
+            border: 1px solid var(--card-border);
+            background: rgba(0,0,0,0.4);
+            color: white;
+            margin-right: 15px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(5px);
+            max-width: 100%;
+        }
+        input:focus { 
+            border-color: var(--accent-color); 
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1500px;
+            width: 92%;
+        }
+        @media (max-width: 1100px) {
+            .rules-grid { grid-template-columns: 1fr; max-width: 600px; }
+        }
+        .rule-card {
+            padding: 35px;
+            border-radius: 25px;
+        }
+        .rule-card ul {
+            padding-left: 20px;
+            line-height: 1.8;
+            font-size: 1.2rem;
+            color: #e0e0e0;
+        }
+
+        .team-announcement {
+            font-size: 4.5rem;
+            font-family: 'Chau Philomene One', sans-serif;
+            color: var(--accent-color);
+            text-align: center;
+            word-break: break-word;
+            max-width: 90vw;
+            animation: popInAndGlowTeam 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes popInAndGlowTeam {
+            0% { opacity: 0; transform: scale(0.8); text-shadow: 0 0 0 rgba(247, 183, 49, 0); filter: blur(5px); }
+            20% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 40px rgba(247, 183, 49, 0.8); filter: blur(0); }
+            80% { opacity: 1; transform: scale(1); text-shadow: 0 0 30px rgba(247, 183, 49, 0.6); filter: blur(0); }
+            100% { opacity: 0; transform: scale(0.9); filter: blur(2px); }
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Retour aux 4 colonnes */
+            gap: 25px;
+            max-width: 1600px;
+            width: 95%;
+        }
+        .category-btn {
+            height: 140px;
+            font-size: 1.3rem;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+            line-height: 1.3;
+        }
+        .category-btn.disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+
+        .question-box {
+            padding: 50px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            margin-bottom: 35px;
+            font-size: 1.8rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        
+        .answer-box {
+            color: var(--accent-color);
+            margin-top: 30px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .answer-box.visible {
+            opacity: 1;
+            max-height: 400px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .answer-main {
+            font-weight: 700;
+            font-size: 2.4rem;
+        }
+        .answer-desc {
+            font-size: 1.3rem;
+            font-weight: 300;
+            font-family: 'Josefin Sans', sans-serif;
+            color: #dcdcdc;
+            margin-top: 15px;
+            line-height: 1.4;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .btn-reveal-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .action-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.5s ease forwards;
+        }
+        .action-area.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .team-btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .team-btn-container button {
+            flex: 0 1 calc(20% - 12px);
+            min-width: 140px;
+            margin: 0; 
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        @media (max-width: 900px) {
+            .team-btn-container button { flex: 0 1 calc(33.33% - 12px); }
+        }
+        @media (max-width: 600px) {
+            .team-btn-container button { flex: 0 1 calc(50% - 12px); }
+        }
+
+        @keyframes flashGreen {
+            0% { transform: scale(1); }
+            50% { background: rgba(0, 184, 148, 0.5); border-color: rgba(0, 184, 148, 0.8); box-shadow: 0 0 15px rgba(0, 184, 148, 0.4); transform: scale(1.02); color: white; }
+            100% { background: rgba(0, 184, 148, 0.7); border-color: rgba(0, 184, 148, 0.9); box-shadow: 0 0 10px rgba(0, 184, 148, 0.3); transform: scale(1); color: white; }
+        }
+        .correct-flash {
+            animation: flashGreen 0.4s ease-out forwards !important;
+            pointer-events: none;
+        }
+
+        #p3-question-text {
+            min-height: 100px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        .p3-letter {
+            opacity: 0;
+            display: inline-block;
+            white-space: pre-wrap;
+            transform: translateY(10px) scale(0.9);
+            filter: blur(4px);
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out, filter 0.15s ease-out;
+        }
+        .p3-letter.revealed {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        /* --- PODIUM ET CLASSEMENT --- */
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            height: 380px; 
+            margin-top: 40px;
+            width: 100%;
+        }
+        .podium-step {
+            width: 200px;
+            text-align: center;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 30px 10px 15px 10px;
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 700;
+            color: #0b0914;
+            height: 0; 
+            transition: height 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        .podium-step span.podium-rank {
+            font-family: 'Chau Philomene One', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .podium-names {
+            font-size: 1.4rem;
+            line-height: 1.3;
+            margin: 10px 0;
+            word-break: break-word;
+            padding: 0 5px;
+        }
+
+        .podium-points {
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            font-family: 'Josefin Sans'; 
+            opacity: 0.9; 
+            margin-top: auto;
+        }
+        
+        .p-1 span.podium-rank::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 120px; height: 100px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 215, 0, 0.5) 40%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(8px);
+        }
+        .p-1 span.podium-rank { text-shadow: 0 0 12px rgba(255, 255, 255, 0.6); }
+        
+        .p-1 { background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%); z-index: 3; box-shadow: 0 -10px 50px rgba(255, 215, 0, 0.4); }
+        .p-2 { background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%); z-index: 2; box-shadow: 0 -10px 40px rgba(224, 224, 224, 0.2); }
+        .p-3 { background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%); z-index: 1; box-shadow: 0 -10px 40px rgba(205, 127, 50, 0.2); }
+
+        .leaderboard-list {
+            margin-top: 50px;
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-sizing: border-box;
+        }
+        .leaderboard-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            padding: 15px 25px;
+            border-radius: 12px;
+            transition: transform 0.2s ease, background 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .leaderboard-row:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .rank-badge {
+            font-family: 'Chau Philomene One', sans-serif;
+            color: var(--text-color);
+            opacity: 0.6;
+            font-size: 1.8rem;
+            min-width: 65px;
+            text-align: right;
+        }
+        .team-name-lb {
+            flex-grow: 1;
+            font-weight: 600;
+            font-size: 1.5rem;
+            word-break: break-word;
+            padding-right: 15px;
+        }
+        .team-score-lb {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            min-width: 60px;
+            text-align: right;
+            text-shadow: 0 0 10px rgba(247, 183, 49, 0.3);
+        }
+        
+        .export-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            margin-bottom: 60px;
+        }
+
+        .btn-success { background-color: rgba(0, 184, 148, 0.2); border-color: var(--success-color); color: var(--success-color); }
+        .btn-success:hover { background-color: var(--success-color); color: #fff; box-shadow: 0 0 20px rgba(0,184,148,0.5); border-color:transparent;}
+        .btn-danger { background-color: rgba(255, 118, 117, 0.2); border-color: var(--danger-color); color: var(--danger-color); }
+        .btn-danger:hover { background-color: var(--danger-color); color: #fff; box-shadow: 0 0 20px rgba(255,118,117,0.5); border-color:transparent;}
+    </style>
+    
+    <script src="questions.js"></script>
+</head>
+<body>
+
+    <header id="main-header" class="header-hidden">
+        <img src="logo.png" alt="Logo" class="logo">
+        <div class="scoreboard" id="scoreboard"></div>
+    </header>
+
+    <main id="main-content">
+    </main>
+
+    <script>
+        let QUESTIONS;
+
+        window.onload = function() {
+            if (!window.QUESTIONS) {
+                document.getElementById('main-content').innerHTML = `
+                    <h1 style="color: var(--danger-color); text-shadow: none; font-size: 4rem;">Erreur de chargement</h1>
+                    <div class="glass-panel" style="padding: 40px; border-radius: 20px; text-align: center; max-width: 800px;">
+                        <p style="font-size: 1.8rem; margin-bottom: 20px;">Impossible de lire le fichier <strong>questions.js</strong> !</p>
+                        <p style="opacity: 0.8; font-size: 1.2rem; line-height: 1.6;">
+                            Vérifie que :<br>
+                            1. Le fichier <strong>questions.js</strong> est bien dans le même dossier que ce fichier HTML.<br>
+                            2. Tu as bien <strong>sauvegardé</strong> les deux fichiers dans ton éditeur de code.<br>
+                            3. Il n'y a pas d'erreur de ponctuation (virgule manquante, guillemet oublié) dans ton fichier de questions.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            QUESTIONS = window.QUESTIONS;
+            showHome();
+        };
+
+        const SPACE_EMOJIS = ['🚀', '🛸', '🪐', '☄️', '🛰️', '🔭', '👽', '🌠', '🌕', '🌌', '⭐', '✨', '☀️'];
+        let availableEmojis = [...SPACE_EMOJIS];
+
+        let teams = [];
+        let currentPhase = ''; 
+        let currentQuestionIndex = 0;
+        let activeCategory = '';
+        let activeTeamIndex = -1;
+        let categoriesDone = [];
+        
+        let phase2Order = []; 
+        let phase2Turn = 0;   
+
+        let p3RevealInterval = null;
+        let p3FullText = "";
+        let p3CurrentIndex = 0;
+
+        const mainContent = document.getElementById('main-content');
+        const scoreboard = document.getElementById('scoreboard');
+        const header = document.getElementById('main-header');
+
+        document.addEventListener('keydown', (e) => {
+            if (currentPhase === 'p3_q' && e.code === 'Space') {
+                e.preventDefault(); 
+                if (!p3RevealInterval && p3CurrentIndex < p3FullText.length) {
+                    p3RevealInterval = setInterval(() => {
+                        if (p3CurrentIndex < p3FullText.length) {
+                            const spanLetter = document.getElementById(`p3-l-${p3CurrentIndex}`);
+                            if(spanLetter) spanLetter.classList.add('revealed');
+                            p3CurrentIndex++;
+                        } else {
+                            clearInterval(p3RevealInterval);
+                            p3RevealInterval = null;
+                        }
+                    }, 60); // Vitesse apparition - Phase 3
+                }
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (currentPhase === 'p3_q' && e.code === 'Space') {
+                e.preventDefault();
+                if (p3RevealInterval) {
+                    clearInterval(p3RevealInterval);
+                    p3RevealInterval = null;
+                }
+            }
+        });
+
+        function updateScoreboard() {
+            const oldPositions = {};
+            Array.from(scoreboard.children).forEach(el => {
+                const name = el.getAttribute('data-team');
+                oldPositions[name] = el.getBoundingClientRect();
+            });
+
+            const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+
+            scoreboard.innerHTML = '';
+            sortedTeams.forEach(team => {
+                const teamDiv = document.createElement('div');
+                teamDiv.className = 'team-score glass-panel';
+                teamDiv.setAttribute('data-team', team.name); 
+                teamDiv.innerHTML = `<span class="team-header-name" title="${team.name}">${team.emoji} ${team.name}</span> <span class="team-header-pts">${team.score} pts</span>`;
+                scoreboard.appendChild(teamDiv);
+            });
+
+            Array.from(scoreboard.children).forEach(el => {
+                const name = el.getAttribute('data-team');
+                const oldRect = oldPositions[name];
+                
+                if (oldRect) {
+                    const newRect = el.getBoundingClientRect();
+                    const deltaX = oldRect.left - newRect.left;
+                    const deltaY = oldRect.top - newRect.top;
+
+                    if (deltaX !== 0 || deltaY !== 0) {
+                        el.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                        el.style.transition = 'none';
+
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                el.style.transform = '';
+                                el.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                                
+                                setTimeout(() => {
+                                    el.style.transition = '';
+                                }, 800);
+                            });
+                        });
+                    }
+                }
+            });
+        }
+
+        function addPoints(teamIndex, points) {
+            teams[teamIndex].score += points;
+            updateScoreboard();
+        }
+
+        function renderView(html) {
+            mainContent.innerHTML = `<div class="animate-enter">${html}</div>`;
+        }
+
+        function showHome() {
+            header.classList.add('header-hidden');
+            renderView(`
+                <div class="home-container">
+                    <img src="logo.png" alt="Questions pour un Astronome" class="home-logo">
+                    <button class="btn-accent glass-panel" style="font-size: 1.8rem; padding: 20px 60px; border-radius: 50px;" onclick="startGame()">Démarrer</button>
+
+                </div>
+            `);
+        }
+
+        function startGame() {
+            header.classList.remove('header-hidden');
+            showRules();
+        }
+
+        function exportResults() {
+            let content = "=========================================\n";
+            content += "  RÉSULTATS : QUESTIONS POUR UN ASTRONOME\n";
+            content += "=========================================\n\n";
+
+            content += "--- CLASSEMENT FINAL ---\n";
+            
+            let allRankedTeams = [...teams].sort((a, b) => b.score - a.score);
+            let currentRank = 1;
+            for(let i=0; i<allRankedTeams.length; i++) {
+                if(i > 0 && allRankedTeams[i].score < allRankedTeams[i-1].score) {
+                    currentRank++; 
+                }
+                content += `${currentRank}. ${allRankedTeams[i].emoji} ${allRankedTeams[i].name} - ${allRankedTeams[i].score} pts\n`;
+            }
+
+            content += "\n=========================================\n";
+            content += "  QUESTIONS & RÉPONSES DU JEU\n";
+            content += "=========================================\n\n";
+
+            content += "--- QUALIFICATIONS (Phase 1) ---\n";
+            QUESTIONS.phase1.forEach((q, i) => {
+                content += `Q${i+1} (${q.pts} pts): ${q.q}\nR: ${q.a}\n`;
+                if(q.d) content += `> ${q.d}\n`;
+                content += `\n`;
+            });
+
+            content += "--- A LA CARTE (Phase 2) ---\n";
+            Object.keys(QUESTIONS.phase2).forEach(cat => {
+                content += `\n[ Thème : ${cat} ]\n`;
+                QUESTIONS.phase2[cat].forEach((q, i) => {
+                    content += `Q${i+1} (${q.pts} pts): ${q.q}\nR: ${q.a}\n`;
+                    if(q.d) content += `> ${q.d}\n`;
+                    content += `\n`;
+                });
+            });
+
+            content += "--- LE JEU DECISIF (Phase 3) ---\n";
+            QUESTIONS.phase3.forEach((q, i) => {
+                content += `Q${i+1} (${q.pts} pts): ${q.q}\nR: ${q.a}\n`;
+                if(q.d) content += `> ${q.d}\n`;
+                content += `\n`;
+            });
+
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Resultats_Astronomie.txt";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showRules() {
+            renderView(`
+                <h1>Règles du jeu</h1>
+                <div class="rules-grid">
+                    <div class="rule-card glass-panel">
+                        <h3>Qualifications</h3>
+                        <ul>
+                            <li>Une quinzaine de questions diverses</li>
+                            <li>Le classement déterminera l'ordre de passage pour la prochaine épreuve</li>
+                        </ul>
+                    </div>
+                    <div class="rule-card glass-panel">
+                        <h3>A la carte</h3>
+                        <ul>
+                            <li>8 thèmes au choix</li>
+                            <li>5 questions par thème</li>
+                            <li>Le choix des thèmes se fait selon le classement (du 1er au dernier)</li>
+                        </ul>
+                    </div>
+                    <div class="rule-card glass-panel">
+                        <h3>Le jeu décisif</h3>
+                        <ul>
+                            <li>5 Questions sous la forme "Que/qui suis-je"</li>
+                            <li>Vous pouvez répondre avant la fin de la question</li>
+                            <li>Une seule tentative par équipe avant la fin de la question</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- <button class="btn-accent" style="margin-top: 50px;" onclick="showBuzzer()">Suite ➔</button> -->
+                <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes ➔</button>
+            `);
+        }
+
+        function showBuzzer() {
+            renderView(`
+                <h1>Comment jouer ?</h1>
+                <div class="rule-card glass-panel" style="text-align: center; max-width: 600px; padding: 50px;">
+                    <h2 style="margin-bottom: 20px;">Préparez vos smartphones !</h2>
+                    <p style="font-size: 1.8rem; margin: 10px 0;">Allez sur <strong>buzzin.live</strong></p>
+                    <p style="font-size: 1.8rem; margin: 10px 0;">Code : <strong style="color: var(--accent-color); font-size: 3.5rem; display:block; margin-top:20px; font-family: 'Chau Philomene One', sans-serif;">557316</strong></p>
+                </div>
+                <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes ➔</button>
+            `);
+        }
+
+        function showTeamSetup() {
+            renderView(`
+                <h1>Inscrire les équipes</h1>
+                <div style="margin-bottom: 30px; display:flex; align-items:center;">
+                    <input type="text" id="teamName" placeholder="Nom de l'équipe" onkeypress="if(event.key==='Enter') addTeam()">
+                    <button class="btn-accent" onclick="addTeam()">Ajouter</button>
+                </div>
+                <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
+                <button class="btn-accent" onclick="startPhase1()">Lancer la partie</button>
+                <button class="btn-accent glass-panel" style="font-size: 1.8rem; padding: 20px 60px; border-radius: 50px;" onclick="startPhase2Categories()">DEV A RETIRER</button>
+
+            `);
+            renderTeamList();
+        }
+
+        function addTeam() {
+            const input = document.getElementById('teamName');
+            if (input.value.trim() !== '') {
+                if (availableEmojis.length === 0) {
+                    availableEmojis = [...SPACE_EMOJIS];
+                }
+                
+                const randomIndex = Math.floor(Math.random() * availableEmojis.length);
+                const assignedEmoji = availableEmojis.splice(randomIndex, 1)[0];
+                
+                teams.push({ name: input.value.trim(), score: 0, emoji: assignedEmoji });
+                input.value = '';
+                renderTeamList();
+                updateScoreboard();
+            }
+        }
+
+        function renderTeamList() {
+            const list = document.getElementById('team-list');
+            if(list) list.innerHTML = teams.map(t => `<div class="team-score glass-panel" style="white-space: normal; word-break: break-word;">${t.emoji} ${t.name}</div>`).join('');
+        }
+
+        function revealAnswer() {
+            document.getElementById('answer').classList.add('visible');
+            document.getElementById('btn-reveal').style.display = 'none';
+            document.getElementById('btn-attrib').style.display = 'flex';
+            setTimeout(() => document.getElementById('btn-attrib').classList.add('visible'), 50);
+        }
+
+        function startPhase1() {
+            currentPhase = 'p1';
+            currentQuestionIndex = 0;
+            renderGeneralPhase("Qualifications", QUESTIONS.phase1, 'startPhase2Categories');
+        }
+
+        function renderGeneralPhase(phaseTitle, questionArray, nextPhaseName) {
+            if (currentQuestionIndex >= questionArray.length) {
+                renderView(`
+                    <h1>Manche suivante<br><span style="color:var(--accent-color); font-size:4.5rem;">${phaseTitle}</span></h1>
+                    <button class="btn-accent" style="margin-top:40px; font-size:1.5rem; padding: 20px 50px;" onclick="${nextPhaseName}()">Passer à la suite ➔</button>
+                `);
+                return;
+            }
+
+            const q = questionArray[currentQuestionIndex];
+            const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
+            
+            let html = `
+                <h2>${phaseTitle} <span style="opacity:0.5; font-size:1.2rem; font-family:'Josefin Sans'; margin-left:15px;">Question ${currentQuestionIndex + 1}/${questionArray.length} • <span style="color: var(--accent-color)">${q.pts} pt${q.pts > 1 ? 's' : ''}</span></span></h2>
+                <div class="question-box glass-panel">
+                    <div>${q.q}</div>
+                    <div class="answer-box" id="answer">
+                        <div class="answer-main">${q.a}</div>
+                        ${descHtml}
+                    </div>
+                </div>
+                <div id="btn-reveal" class="btn-reveal-container">
+                    <button class="btn-accent" onclick="revealAnswer()">Révéler la réponse</button>
+                </div>
+                <div id="btn-attrib" class="action-area" style="display: none;">
+                    <p style="width: 100%; text-align: center; margin: 0; margin-bottom:10px; color: #a0a0a0;">À qui attribuer les points ?</p>
+                    <div class="team-btn-container">
+            `;
+            
+            teams.forEach((team, index) => {
+                html += `<button class="glass-panel" onclick="handleGeneralAnswer(${index}, true, '${phaseTitle}', event, ${q.pts})">${team.emoji} ${team.name}</button>`;
+            });
+            html += `<button class="btn-danger" onclick="handleGeneralAnswer(-1, false, '${phaseTitle}', event, ${q.pts})">Personne</button>
+                    </div>
+                </div>`;
+                
+            renderView(html);
+        }
+
+        function handleGeneralAnswer(teamIndex, isCorrect, phaseTitle, event, points = 1) {
+            if (isCorrect && event && teamIndex !== -1) {
+                const btn = event.currentTarget;
+                btn.classList.add('correct-flash');
+                setTimeout(() => {
+                    addPoints(teamIndex, points);
+                    currentQuestionIndex++;
+                    renderGeneralPhase("Qualifications", QUESTIONS.phase1, 'startPhase2Categories');
+                }, 400);
+            } else {
+                currentQuestionIndex++;
+                renderGeneralPhase("Qualifications", QUESTIONS.phase1, 'startPhase2Categories');
+            }
+        }
+
+        function startPhase2Categories() {
+            currentPhase = 'p2_cat';
+            
+            if (phase2Order.length === 0 && teams.length > 0) {
+                phase2Order = teams.map((t, i) => ({score: t.score, index: i}))
+                                   .sort((a, b) => b.score - a.score)
+                                   .map(t => t.index);
+            }
+
+            if (phase2Turn >= phase2Order.length) {
+                renderView(`
+                    <h1>À la carte <span style="color:var(--accent-color)">terminé !</span></h1>
+                    <p style="font-size:1.8rem; color:#dcdcdc;">Chaque équipe a joué son thème.</p>
+                    <button class="btn-accent" style="margin-top: 50px; font-size:1.5rem; padding: 20px 50px;" onclick="startPhase3()">Passer au Jeu Décisif ➔</button>
+                `);
+                return;
+            }
+
+            const currentTeamIndex = phase2Order[phase2Turn];
+            const currentTeam = teams[currentTeamIndex];
+
+            renderView(`
+                <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height: 70vh;">
+                    <h2 style="margin-bottom: 20px; font-size: 2.5rem; opacity: 0.8;">C'est au tour de...</h2>
+                    <div class="team-announcement">${currentTeam.name}</div>
+                </div>
+            `);
+
+            setTimeout(() => {
+                let html = `
+                    <h1>À la carte</h1>
+                    <p style="font-size:1.8rem; margin-bottom:40px; color:var(--text-color);">
+                        À <strong style="color:var(--accent-color); font-size:2.4rem; font-family:'Chau Philomene One'; text-shadow: 0 0 15px rgba(247, 183, 49, 0.5); word-break: break-word; display: inline-block; max-width: 90vw; vertical-align: bottom;">${currentTeam.name}</strong> de choisir !
+                    </p>
+                    <div class="category-grid">
+                `;
+
+                Object.keys(QUESTIONS.phase2).forEach(cat => {
+                    const safeCat = cat.replace(/'/g, "\\'");
+                    const isDisabled = categoriesDone.includes(cat) ? 'disabled' : '';
+                    html += `<button class="category-btn glass-panel ${isDisabled}" ${isDisabled ? '' : `onclick="selectCategory('${safeCat}', ${currentTeamIndex})"`}>${cat}</button>`;
+                });
+
+                html += `</div>`;
+                renderView(html);
+            }, 1200); 
+        }
+
+        function selectCategory(cat, teamIndex) {
+            activeCategory = cat;
+            activeTeamIndex = teamIndex;
+            currentQuestionIndex = 0;
+            renderPhase2Question(); 
+        }
+
+        function renderPhase2Question() {
+            currentPhase = 'p2_q';
+            const questionArray = QUESTIONS.phase2[activeCategory];
+            
+            if (currentQuestionIndex >= questionArray.length) {
+                categoriesDone.push(activeCategory);
+                phase2Turn++; 
+                const currentTeam = teams[activeTeamIndex];
+                
+                renderView(`
+                    <h1>Thème terminé !</h1>
+                    <p style="font-size:2rem; margin: 30px 0; max-width: 800px; text-align: center; line-height: 1.5;">
+                        L'équipe <strong style="color:var(--accent-color); font-family:'Chau Philomene One'; font-size: 3rem; word-break: break-word; display: inline-block; max-width: 100%;">${currentTeam.name}</strong> possède maintenant<br>
+                        <strong style="color:var(--accent-color); font-size:3.5rem; text-shadow: 0 0 20px rgba(247, 183, 49, 0.6);">${currentTeam.score} points</strong> !
+                    </p>
+                    <button class="btn-accent" style="margin-top: 40px;" onclick="startPhase2Categories()">Continuer ➔</button>
+                `); 
+                return;
+            }
+
+            const q = questionArray[currentQuestionIndex];
+            const activeTeamName = teams[activeTeamIndex].name;
+            const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
+            
+            let html = `
+                <h2>${activeCategory} <span style="opacity:0.5; font-family:'Josefin Sans'; margin:0 15px;">|</span> Équipe : <span style="color: var(--accent-color); word-break: break-word;">${activeTeamName}</span></h2>
+                <div class="question-box glass-panel">
+                    <div style="font-size:1.2rem; opacity:0.6; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px;">Question ${currentQuestionIndex + 1}/${questionArray.length} • <span style="color: var(--accent-color)">${q.pts} pt${q.pts > 1 ? 's' : ''}</span></div>
+                    <div>${q.q}</div>
+                    <div class="answer-box" id="answer">
+                        <div class="answer-main">${q.a}</div>
+                        ${descHtml}
+                    </div>
+                </div>
+                <div id="btn-reveal" class="btn-reveal-container">
+                    <button class="btn-accent" onclick="revealAnswer()">Révéler la réponse</button>
+                </div>
+                <div id="btn-attrib" class="action-area" style="display: none; flex-direction: row; justify-content: center; gap: 20px;">
+                    <button class="btn-success glass-panel" onclick="handlePhase2Answer(true, event, ${q.pts})">Bonne réponse (+${q.pts} pt${q.pts > 1 ? 's' : ''})</button>
+                    <button class="btn-danger glass-panel" onclick="handlePhase2Answer(false, event, ${q.pts})">Mauvaise réponse</button>
+                </div>
+            `;
+            renderView(html);
+        }
+
+        function handlePhase2Answer(isCorrect, event, points = 1) {
+            if (isCorrect && event) {
+                const btn = event.currentTarget;
+                btn.classList.add('correct-flash');
+                setTimeout(() => {
+                    addPoints(activeTeamIndex, points);
+                    currentQuestionIndex++;
+                    renderPhase2Question();
+                }, 400);
+            } else {
+                currentQuestionIndex++;
+                renderPhase2Question();
+            }
+        }
+
+        function startPhase3() {
+            currentPhase = 'p3_q';
+            currentQuestionIndex = 0;
+            
+            renderView(`
+                <h1 style="font-size: 5rem; text-shadow: 0 0 30px rgba(247, 183, 49, 0.7); color: var(--accent-color);">Le Jeu Décisif</h1>
+                <p style="font-size: 1.8rem; margin-bottom: 40px; opacity: 0.8;">C'est l'heure de l'ultime épreuve...</p>
+                <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 60px;" onclick="renderPhase3Question()">Commencer ➔</button>
+            `);
+        }
+
+        function renderPhase3Question() {
+            currentPhase = 'p3_q';
+            if (currentQuestionIndex >= QUESTIONS.phase3.length) {
+                showPodium();
+                return;
+            }
+
+            const q = QUESTIONS.phase3[currentQuestionIndex];
+            const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
+            
+            p3FullText = q.q;
+            p3CurrentIndex = 0;
+            if(p3RevealInterval) {
+                clearInterval(p3RevealInterval);
+                p3RevealInterval = null;
+            }
+            
+            let charSpans = '';
+            let words = p3FullText.split(' ');
+            let cIndex = 0;
+            
+            words.forEach((word, wIndex) => {
+                charSpans += `<span style="display: inline-block; white-space: nowrap;">`;
+                for (let i = 0; i < word.length; i++) {
+                    charSpans += `<span class="p3-letter" id="p3-l-${cIndex}">${word[i]}</span>`;
+                    cIndex++;
+                }
+                charSpans += `</span>`;
+                
+                if (wIndex < words.length - 1) {
+                    charSpans += `<span class="p3-letter" id="p3-l-${cIndex}"> </span>`;
+                    cIndex++;
+                }
+            });
+
+            let html = `
+                <h2>Le jeu décisif <span style="opacity:0.5; font-size:1.2rem; font-family:'Josefin Sans'; margin-left:15px;">Question ${currentQuestionIndex + 1}/${QUESTIONS.phase3.length} • <span style="color: var(--accent-color)">${q.pts} pt${q.pts > 1 ? 's' : ''}</span></span></h2>
+                <div class="question-box glass-panel" style="padding-bottom: 30px;">
+                    <!-- <p style="font-size: 1.1rem; opacity: 0.5; margin-bottom: 25px; text-transform:uppercase; letter-spacing: 2px;">(Maintenez ESPACE pour dévoiler)</p> -->
+                    <div id="p3-question-text">
+                        ${charSpans}
+                    </div>
+                    <div class="answer-box" id="answer">
+                        <div class="answer-main">${q.a}</div>
+                        ${descHtml}
+                    </div>
+                </div>
+                <div id="btn-reveal" class="btn-reveal-container">
+                    <button class="btn-accent" onclick="revealAnswerPhase3()">Révéler la réponse</button>
+                </div>
+                <div id="btn-attrib" class="action-area" style="display: none;">
+                    <p style="width: 100%; text-align: center; margin: 0; margin-bottom: 10px; color: #a0a0a0;">À qui attribuer les points ?</p>
+                    <div class="team-btn-container">
+            `;
+            
+            teams.forEach((team, index) => {
+                html += `<button class="glass-panel" onclick="handlePhase3Answer(${index}, true, event, ${q.pts})">${team.emoji} ${team.name}</button>`;
+            });
+            html += `<button class="btn-danger" onclick="handlePhase3Answer(-1, false, event, ${q.pts})">Personne</button>
+                    </div>
+                </div>`;
+                
+            renderView(html);
+        }
+
+        function revealAnswerPhase3() {
+            for(let i = p3CurrentIndex; i < p3FullText.length; i++) {
+                const span = document.getElementById(`p3-l-${i}`);
+                if(span) span.classList.add('revealed');
+            }
+            p3CurrentIndex = p3FullText.length;
+            revealAnswer();
+        }
+
+        function handlePhase3Answer(teamIndex, isCorrect, event, points = 1) {
+            if (isCorrect && event && teamIndex !== -1) {
+                const btn = event.currentTarget;
+                btn.classList.add('correct-flash');
+                setTimeout(() => {
+                    addPoints(teamIndex, points);
+                    currentQuestionIndex++;
+                    renderPhase3Question();
+                }, 400);
+            } else {
+                currentQuestionIndex++;
+                renderPhase3Question();
+            }
+        }
+
+        function showPodium() {
+            currentPhase = 'podium';
+            
+            let allRankedTeams = [...teams].sort((a, b) => b.score - a.score);
+            let rank = 1;
+            for(let i=0; i<allRankedTeams.length; i++) {
+                if(i > 0 && allRankedTeams[i].score < allRankedTeams[i-1].score) {
+                    rank++; 
+                }
+                allRankedTeams[i].rank = rank;
+            }
+
+            let uniqueScores = [...new Set(teams.map(t => t.score))].sort((a, b) => b - a);
+
+            let podium1 = allRankedTeams.filter(t => t.score === uniqueScores[0]);
+            let podium2 = uniqueScores.length > 1 ? allRankedTeams.filter(t => t.score === uniqueScores[1]) : [];
+            let podium3 = uniqueScores.length > 2 ? allRankedTeams.filter(t => t.score === uniqueScores[2]) : [];
+
+            const formatNames = (tms) => tms.map(t => `${t.emoji} ${t.name}`).join('<br>');
+
+            let html = `<h1 style="margin-bottom: 10px;">Classement Final</h1>
+                        <div class="podium-container">`;
+
+            if(podium2.length > 0) {
+                let rank2 = podium2[0].rank;
+                html += `
+                    <div class="podium-step p-2" id="pod-2">
+                        <span class="podium-rank">${rank2 === 1 ? '1er' : rank2 + 'ème'}</span>
+                        <div class="podium-names">${formatNames(podium2)}</div>
+                        <span class="podium-points">${podium2[0].score} pts</span>
+                    </div>`;
+            }
+            
+            if(podium1.length > 0) {
+                html += `
+                    <div class="podium-step p-1" id="pod-1">
+                        <span class="podium-rank">1er</span>
+                        <div class="podium-names">${formatNames(podium1)}</div>
+                        <span class="podium-points">${podium1[0].score} pts</span>
+                    </div>`;
+            }
+            
+            if(podium3.length > 0) {
+                let rank3 = podium3[0].rank;
+                html += `
+                    <div class="podium-step p-3" id="pod-3">
+                        <span class="podium-rank">${rank3 === 1 ? '1er' : rank3 + 'ème'}</span>
+                        <div class="podium-names">${formatNames(podium3)}</div>
+                        <span class="podium-points">${podium3[0].score} pts</span>
+                    </div>`;
+            }
+
+            html += `</div>`;
+
+            let podiumTeamsNames = [...podium1, ...podium2, ...podium3].map(t => t.name);
+            let listTeams = allRankedTeams.filter(t => !podiumTeamsNames.includes(t.name));
+
+            if(listTeams.length > 0) {
+                html += `<div class="leaderboard-list glass-panel">`;
+                listTeams.forEach(t => {
+                    html += `
+                        <div class="leaderboard-row glass-panel">
+                            <div class="rank-badge">${t.rank}ème</div>
+                            <div class="team-name-lb">${t.emoji} ${t.name}</div>
+                            <div class="team-score-lb">${t.score} pts</div>
+                        </div>`;
+                });
+                html += `</div>`;
+            }
+
+            html += `
+                <div class="export-container">
+                    <button class="btn-accent" onclick="exportResults()">Exporter les résultats</button>
+                </div>
+            `;
+
+            renderView(html);
+
+            setTimeout(() => {
+                const p1 = document.getElementById('pod-1');
+                const p2 = document.getElementById('pod-2');
+                const p3 = document.getElementById('pod-3');
+                if(p1) p1.style.height = '100%';
+                if(p2) p2.style.height = '75%';
+                if(p3) p3.style.height = '50%';
+            }, 100); 
+        }
+
+    </script>
+</body>
+</html>
