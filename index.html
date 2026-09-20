@@ -819,7 +819,19 @@
                     <button class="btn-accent" onclick="addTeam(document.getElementById('teamName-input').value); document.getElementById('teamName-input').value='';">Ajouter</button>
                 </div>
                 <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
+                
                 <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie ➔</button>
+
+                <!-- ========================================== -->
+                <!-- ZONE DEV (À SUPPRIMER POUR LA PROD)        -->
+                <!-- ========================================== -->
+                <div style="margin-top: 60px; padding: 20px; border: 2px dashed #ff7675; border-radius: 15px; background: rgba(255, 118, 117, 0.1); display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center;">
+                    <span style="color: #ff7675; font-weight: bold; font-size: 1.2rem; margin-right: 10px;">🔧 OUTILS DEV :</span>
+                    <button class="btn-danger" style="font-size: 1rem; padding: 10px 20px; margin: 0;" onclick="startPhase2Categories()">Sauter vers Phase 2</button>
+                    <button class="btn-danger" style="font-size: 1rem; padding: 10px 20px; margin: 0;" onclick="startPhase3()">Sauter vers Phase 3</button>
+                </div>
+                <!-- ========================================== -->
+                
             `);
             renderTeamList();
         }
@@ -982,21 +994,48 @@
                 <div id="btn-reveal" class="btn-reveal-container">
                     <button class="btn-accent" onclick="revealAnswer()">Révéler la réponse</button>
                 </div>
+
+                <!-- NOUVEAU : Contrôle direct pour l'équipe qui joue son thème -->
+                <div id="active-team-controls" style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
+                    <button class="btn-success glass-panel" style="font-size: 1.2rem; padding: 15px 30px;" onclick="handleActiveTeamAnswer(true)">✅ Bonne réponse</button>
+                    <button class="btn-danger glass-panel" style="font-size: 1.2rem; padding: 15px 30px;" onclick="handleActiveTeamAnswer(false)">❌ Mauvaise réponse (Ouvrir le vol)</button>
+                </div>
             `;
             renderView(html);
 
-            // Phase 2, on ne débloque QUE l'équipe active
-            isQuestionActive = true;
+            // On verrouille TOUT LE MONDE. L'équipe en cours répond à l'oral.
+            isQuestionActive = false; // Empêche les buzz parasites
             resetBuzzerBlocks();
             
             Object.keys(connections).forEach(teamName => {
                 if (teamName === activeTeamName) {
-                    connections[teamName].send({ type: 'unlock' }); // Seul lui a le buzzer vert
-                    document.getElementById('buzz-team-name').innerText = "C'est à vous !";
+                    connections[teamName].send({ type: 'lock', winner: 'C\'est à vous de parler !' });
                 } else {
-                    connections[teamName].send({ type: 'lock', winner: 'Écoutez bien...' }); // Les autres sont rouges
+                    connections[teamName].send({ type: 'lock', winner: 'Écoutez bien...' });
                 }
             });
+        }
+
+        function handleActiveTeamAnswer(isCorrect) {
+            // On cache les boutons de contrôle direct
+            document.getElementById('active-team-controls').style.display = 'none';
+            
+            if (isCorrect) {
+                // 1. Ils ont bon : on donne les points et on passe à la suite
+                addPoints(activeTeamIndex, getCurrentQuestionPoints());
+                revealAnswer();
+                lockAllBuzzers();
+            } else {
+                // 2. Ils ont faux : ON OUVRE LE VOL AUX AUTRES !
+                let activeTeamName = teams[activeTeamIndex].name;
+                getTeam(activeTeamName).blocked = true; // Bloque l'équipe active
+                sendLockToPhone(activeTeamName);
+                
+                isQuestionActive = true; 
+                currentBuzzedTeam = null;
+                buzzQueue = [];
+                openBuzzers(); // Débloque le bouton de toutes les autres équipes
+            }
         }
 
         function handlePhase2Answer(isCorrect, event, points = 1) {
@@ -1232,15 +1271,13 @@
             document.getElementById('buzz-popup').style.display = 'none';
             
             if (isCorrect) {
-                // BONNE RÉPONSE
+                // BONNE RÉPONSE (Vol réussi ou Phase 1/3)
                 addPoints(currentBuzzedTeam, getCurrentQuestionPoints()); 
                 isQuestionActive = false;
                 buzzQueue = []; 
                 currentBuzzedTeam = null; 
                 revealAnswer(); 
-                document.getElementById('btn-skip-question').style.display = 'block'; 
-                
-                lockAllBuzzers(); // ➔ AJOUT : Verrouille tous les téléphones !
+                lockAllBuzzers(); 
                 
             } else {
                 // MAUVAISE RÉPONSE
@@ -1251,18 +1288,13 @@
                 currentBuzzedTeam = null; 
 
                 if (currentPhase === 'p2_q') {
-                    let activeTeamName = teams[activeTeamIndex].name;
-                    
-                    if (failedTeam === activeTeamName) {
-                        openBuzzers();
-                    } else {
-                        isQuestionActive = false;
-                        revealAnswer();
-                        document.getElementById('btn-skip-question').style.display = 'block';
-                        
-                        lockAllBuzzers(); // ➔ AJOUT : Verrouille tous les téléphones !
-                    }
+                    // LOGIQUE PHASE 2 : VOL ÉCHOUÉ
+                    // Uniquement la première équipe qui buzze a eu sa chance, on annule la suite.
+                    isQuestionActive = false;
+                    revealAnswer();
+                    lockAllBuzzers(); 
                 } else {
+                    // LOGIQUE PHASES 1 & 3 : FILE D'ATTENTE
                     if (buzzQueue.length > 0) {
                         processNextInQueue(); 
                     } else {
