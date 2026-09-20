@@ -1020,14 +1020,16 @@
             // On cache les boutons de contrôle direct
             document.getElementById('active-team-controls').style.display = 'none';
             
+            // On récupère le vrai NOM de l'équipe active
+            let activeTeamName = teams[activeTeamIndex].name;
+            
             if (isCorrect) {
-                // 1. Ils ont bon : on donne les points et on passe à la suite
-                addPoints(activeTeamIndex, getCurrentQuestionPoints());
+                // 1. Ils ont bon : on donne les points (avec le NOM) et on passe à la suite
+                addPoints(activeTeamName, getCurrentQuestionPoints());
                 revealAnswer();
                 lockAllBuzzers();
             } else {
                 // 2. Ils ont faux : ON OUVRE LE VOL AUX AUTRES !
-                let activeTeamName = teams[activeTeamIndex].name;
                 getTeam(activeTeamName).blocked = true; // Bloque l'équipe active
                 sendLockToPhone(activeTeamName);
                 
