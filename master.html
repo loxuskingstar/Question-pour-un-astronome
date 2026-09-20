@@ -84,8 +84,8 @@
         .connection-status { color:var(--success); white-space:nowrap; }
 
         .text-box {
-            flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
-            padding:clamp(22px,5vw,36px); margin:0; -webkit-overflow-scrolling:touch;
+            flex:0 1 44dvh; min-height:240px; max-height:48dvh; overflow-y:auto; overflow-x:hidden;
+            padding:clamp(24px,5.5vw,40px); margin:0; -webkit-overflow-scrolling:touch;
         }
 
         .question-section { padding-bottom:20px; }
@@ -97,10 +97,10 @@
         .a-title { color:var(--success); margin-top:24px; }
         .q-text,.a-text { margin:0; overflow-wrap:anywhere; }
         .q-text {
-            font-size:clamp(1.45rem,6vw,2.1rem); line-height:1.38; font-weight:700;
+            font-size:clamp(1.65rem,6.8vw,2.35rem); line-height:1.36; font-weight:700;
         }
         .a-text {
-            font-size:clamp(1.35rem,5.5vw,1.9rem); line-height:1.38; font-weight:800;
+            font-size:clamp(1.55rem,6.2vw,2.15rem); line-height:1.36; font-weight:800;
         }
 
         .answer-status {
@@ -119,9 +119,9 @@
         .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; }
 
         .btn-action {
-            width:100%; min-height:78px; padding:15px 12px; border-radius:18px;
+            width:100%; min-height:100px; padding:18px 12px; border-radius:18px;
             border:2px solid transparent; cursor:pointer; text-align:center;
-            font-size:clamp(1.15rem,4.8vw,1.55rem); font-weight:900; line-height:1.08;
+            font-size:clamp(1.35rem,5.5vw,1.8rem); font-weight:900; line-height:1.08;
             transition:transform .1s ease,opacity .15s ease,filter .15s ease;
             box-shadow:0 5px 18px rgba(0,0,0,.18);
         }
@@ -144,13 +144,37 @@
             box-shadow:0 7px 22px rgba(255,118,117,.18);
         }
         .btn-hold {
-            background:var(--purple); color:#fff; min-height:86px;
+            background:var(--purple); color:#fff; min-height:110px;
             box-shadow:0 8px 26px rgba(155,89,182,.34);
         }
         .skip-lock-note {
             margin:0; text-align:center; color:var(--muted);
-            font-size:clamp(.9rem,3.5vw,1.05rem); line-height:1.25;
+            font-size:clamp(1rem,4vw,1.2rem); line-height:1.25;
         }
+
+        .answer-description {
+            display:block; margin-top:18px; padding:16px 18px; border-radius:16px;
+            background:rgba(255,255,255,.055); border-left:5px solid var(--accent);
+            color:#f1eff7; font-size:clamp(1.15rem,4.8vw,1.5rem); line-height:1.45; font-weight:600;
+        }
+        .answer-description .desc-label {
+            display:block; margin-bottom:7px; color:var(--accent); font-size:.9em;
+            font-weight:900; letter-spacing:.08em; text-transform:uppercase;
+        }
+        .phase-transition {
+            display:none; width:100%; padding:16px; border-radius:20px;
+            background:rgba(247,183,49,.10); border:2px solid rgba(247,183,49,.55);
+            box-shadow:0 8px 26px rgba(247,183,49,.13); text-align:center;
+        }
+        .phase-transition-title {
+            margin:0 0 12px; color:var(--accent); font-size:clamp(1.15rem,4.8vw,1.45rem); font-weight:900;
+        }
+        .btn-transition {
+            width:100%; min-height:108px; border:0; border-radius:18px; padding:18px 14px;
+            background:var(--accent); color:#171321; font-size:clamp(1.25rem,5.2vw,1.75rem);
+            font-weight:900; box-shadow:0 8px 24px var(--accent-glow); cursor:pointer;
+        }
+        .btn-transition:active { transform:scale(.975); }
 
         #buzz-overlay {
             display:none; position:fixed; inset:0; z-index:200;
@@ -174,8 +198,8 @@
                 display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:stretch;
             }
             #ctrl-standard,.full-width { grid-column:1/-1; }
-            .btn-action { min-height:86px; font-size:1.5rem; }
-            .btn-hold { min-height:94px; }
+            .btn-action { min-height:100px; font-size:1.6rem; }
+            .btn-hold { min-height:110px; }
         }
 
         /* Écran bas : on garde les boutons grands mais compacts */
@@ -183,10 +207,11 @@
             #master-screen { gap:8px; }
             .status-bar { min-height:40px; }
             .text-box { padding:18px 20px; }
-            .q-text { font-size:clamp(1.25rem,5vw,1.7rem); }
+            .text-box { min-height:180px; max-height:38dvh; flex-basis:36dvh; }
+            .q-text { font-size:clamp(1.35rem,5.5vw,1.8rem); }
             .a-title { margin-top:16px; }
-            .btn-action { min-height:68px; padding:12px 10px; }
-            .btn-hold { min-height:74px; }
+            .btn-action { min-height:82px; padding:14px 10px; }
+            .btn-hold { min-height:90px; }
             .skip-lock-note { font-size:.88rem; }
         }
 
@@ -201,7 +226,7 @@
             .controls-container {
                 grid-column:2; grid-row:2; display:flex; justify-content:center; overflow-y:auto;
             }
-            .btn-action { min-height:70px; }
+            .btn-action { min-height:86px; }
         }
     </style>
 </head>
@@ -247,6 +272,11 @@
                 <button class="btn-action btn-hold" id="btn-p3-anim">🪄 MAINTENIR POUR DÉVOILER</button>
             </div>
 
+            <div id="phase-transition" class="phase-transition full-width">
+                <div id="phase-transition-title" class="phase-transition-title">Transition</div>
+                <button id="btn-phase-transition" class="btn-transition" onclick="requestTransition()">CONTINUER ➜</button>
+            </div>
+
             <div id="ctrl-standard" class="control-group full-width">
                 <div class="grid-2">
                     <button id="btn-reveal" class="btn-action btn-reveal" onclick="sendCmd('reveal')">👁️ Révéler</button>
@@ -267,7 +297,7 @@
         </div>
     </div>
     <script>
-        let peer=null, conn=null, canSkip=false, p3PointerDown=false;
+        let peer=null, conn=null, canSkip=false, p3PointerDown=false, transitionAction=null;
 
         function joinMaster(){
             const code=document.getElementById('code-input').value.trim();
@@ -309,35 +339,63 @@
             if(!btn||!note) return;
             btn.disabled=!canSkip;
             note.innerText=canSkip
-                ?"La réponse est révélée : vous pouvez continuer."
-                :"Révélez d'abord la réponse pour continuer.";
+                ?"Réponse validée : vous pouvez passer à la suite."
+                :"Le bouton se débloque après la validation ou la révélation de la réponse.";
+        }
+
+        function requestTransition(){
+            if(!transitionAction) return;
+            const action=transitionAction;
+            transitionAction=null;
+            document.getElementById('btn-phase-transition').disabled=true;
+            sendCmd(action);
         }
 
         function updateMasterUI(data){
-            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'Choix du thème',p2_turn:'Tour suivant'};
+            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'À la carte — choix du thème'};
             document.getElementById('ui-phase').innerText=names[data.phase]||'Accueil';
             document.getElementById('ui-question').innerHTML=data.question||'En attente du lancement du jeu...';
             document.getElementById('ui-answer').innerHTML=data.answer||'••••••••';
 
-            const questionPhase=['p1','p2_q','p3_q'].includes(data.phase);
-            const answerRevealed=data.canSkip===true || (questionPhase && data.isQuestionActive===false);
-            canSkip=data.canSkip===true || answerRevealed;
+            const desc=document.getElementById('ui-answer-description');
+            if(data.answerDescription){
+                desc.innerHTML='<span class="desc-label">Description / explication</span>'+data.answerDescription;
+                desc.style.display='block';
+            }else{
+                desc.style.display='none';
+                desc.innerHTML='';
+            }
 
+            const answerRevealed=data.answerRevealed===true || data.canSkip===true;
+            canSkip=answerRevealed && ['p1','p2_q','p3_q'].includes(data.phase);
             document.getElementById('answer-status').style.display=answerRevealed?'inline-flex':'none';
 
             const p2=document.getElementById('ctrl-p2'), p3=document.getElementById('ctrl-p3');
             const standard=document.getElementById('ctrl-standard'), overlay=document.getElementById('buzz-overlay');
             const reveal=document.getElementById('btn-reveal');
+            const transition=document.getElementById('phase-transition');
 
             p2.style.display='none'; p3.style.display='none'; standard.style.display='flex'; overlay.style.display='none';
             reveal.style.display=answerRevealed?'none':'block';
 
+            transitionAction=data.transitionAction||null;
+            if(transitionAction){
+                transition.style.display='block';
+                standard.style.display='none';
+                document.getElementById('phase-transition-title').innerText=data.transitionTitle||'Transition';
+                const tb=document.getElementById('btn-phase-transition');
+                tb.innerText=data.transitionLabel||'CONTINUER ➜';
+                tb.disabled=false;
+            }else{
+                transition.style.display='none';
+            }
+
             if(data.buzzedTeam){
-                overlay.style.display='flex'; standard.style.display='none'; p3.style.display='none';
+                overlay.style.display='flex'; standard.style.display='none'; p3.style.display='none'; transition.style.display='none';
                 document.getElementById('buzz-team-title').innerText=data.buzzedTeam+" a buzzé !";
-            }else if(data.phase==='p2_q' && data.activeTeamName && !data.isQuestionActive){
+            }else if(data.phase==='p2_q' && data.p2AwaitingAnswer){
                 standard.style.display='none'; p2.style.display='flex';
-            }else if(data.phase==='p3_q'){
+            }else if(data.phase==='p3_q' && !data.transitionAction){
                 p3.style.display='flex'; standard.style.display='flex';
             }
 
