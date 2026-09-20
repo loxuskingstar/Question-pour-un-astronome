@@ -611,7 +611,8 @@
         const header = document.getElementById('main-header');
 
         document.addEventListener('keydown', (e) => {
-            if (currentPhase === 'p3_q' && e.code === 'Space') {
+            // AJOUT : on vérifie que personne n'a la main (!currentBuzzedTeam)
+            if (currentPhase === 'p3_q' && e.code === 'Space' && !currentBuzzedTeam) {
                 e.preventDefault(); 
                 if (!p3RevealInterval && p3CurrentIndex < p3FullText.length) {
                     p3RevealInterval = setInterval(() => {
@@ -627,7 +628,7 @@
                 }
             }
         });
-
+        
         document.addEventListener('keyup', (e) => {
             if (currentPhase === 'p3_q' && e.code === 'Space') {
                 e.preventDefault();

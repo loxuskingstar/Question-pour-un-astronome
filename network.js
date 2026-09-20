@@ -89,7 +89,7 @@ function triggerBuzzPopup(teamName) {
     document.getElementById('buzz-team-name').innerText = getTeam(teamName).emoji + ' ' + teamName;
     document.getElementById('buzz-popup').style.display = 'flex';
     
-    // NOUVEAU : On cache le bouton "Révéler la réponse" pendant la décision
+    // On cache le bouton "Révéler la réponse" pendant la décision
     const btnReveal = document.getElementById('btn-reveal');
     if (btnReveal) btnReveal.style.display = 'none';
     
@@ -98,8 +98,12 @@ function triggerBuzzPopup(teamName) {
         c.send({ type: 'lock', winner: teamName });
     });
     
+    // AJOUT : Si on est en Phase 3, on stoppe net l'animation de la touche Espace
     if (typeof currentPhase !== 'undefined' && currentPhase === 'p3_q') {
-        pausePhase3Animation = true; 
+        if (typeof p3RevealInterval !== 'undefined' && p3RevealInterval) {
+            clearInterval(p3RevealInterval);
+            p3RevealInterval = null;
+        }
     }
 }
 
