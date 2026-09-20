@@ -2,26 +2,33 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <!-- Empêche le zoom sur mobile pour un confort total -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Buzzer</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         body {
-            margin: 0; padding: 20px; font-family: 'Josefin Sans', sans-serif;
+            margin: 0; padding: 0; font-family: 'Josefin Sans', sans-serif;
             background-color: #191631; color: white; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; height: 100vh;
+            flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; height: 100dvh; /* S'adapte à la barre d'adresse mobile */
             overflow: hidden;
+            user-select: none; -webkit-user-select: none; /* Empêche la sélection de texte accidentelle */
         }
         
-        /* Écran de connexion plus esthétique */
         #login-screen { 
             width: 90%; max-width: 350px; text-align: center; 
             background: rgba(255,255,255,0.05); padding: 30px; 
             border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
+            box-sizing: border-box;
         }
         
-        #buzzer-screen { display: none; height: 100%; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+        #buzzer-screen { 
+            display: none; height: 100%; width: 100%; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            padding: 20px; box-sizing: border-box;
+        }
         
         input {
             width: 100%; padding: 15px; margin-bottom: 20px; font-size: 1.2rem;
@@ -32,16 +39,22 @@
         .btn-join {
             width: 100%; padding: 15px; font-size: 1.2rem; font-weight: bold;
             border-radius: 15px; background: #f7b731; color: #191631; border: none;
-            cursor: pointer;
+            cursor: pointer; touch-action: manipulation;
         }
 
-        /* Le Buzzer Rond */
+        /* --- BUZZER RESPONSIVE --- */
         #big-buzzer {
-            width: 250px; height: 250px; border-radius: 50%; border: none;
-            font-size: 2.2rem; font-weight: bold; text-transform: uppercase;
-            transition: all 0.15s ease; cursor: pointer;
-            -webkit-tap-highlight-color: transparent; margin: 20px auto;
-            line-height: 1.2;
+            width: 80vw; /* 80% de la largeur de l'écran */
+            max-width: 350px; /* Pas trop gros sur tablette/PC */
+            aspect-ratio: 1 / 1; /* Assure un cercle parfait */
+            height: auto;
+            border-radius: 50%; border: none;
+            font-size: clamp(2rem, 8vw, 3.5rem); /* Taille du texte dynamique */
+            font-weight: bold; text-transform: uppercase;
+            transition: all 0.1s ease; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; 
+            margin: 20px 0; line-height: 1.2;
+            touch-action: manipulation; /* Supprime le délai de 300ms sur mobile */
         }
         
         .buzzer-ready { 
@@ -56,7 +69,6 @@
             background: radial-gradient(circle at 30% 30%, #ff7675, #d63031); 
             color: rgba(255,255,255,0.9); box-shadow: 0 10px 0 #b22828;
             transform: translateY(5px); pointer-events: none;
-            font-size: 1.8rem !important; /* Texte plus petit pour ne pas déborder */
         }
 
         .buzzer-winner {
@@ -65,15 +77,19 @@
             transform: translateY(5px); pointer-events: none;
         }
         
-        #status-text { font-size: 1.6rem; min-height: 40px; margin-bottom: 10px; font-weight: bold; text-align: center; }
+        #status-text { 
+            font-size: clamp(1.4rem, 5vw, 2rem); 
+            min-height: 50px; margin-bottom: 10px; 
+            font-weight: bold; text-align: center; 
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h1 style="color: #f7b731; margin-top: 0;">Rejoindre le jeu</h1>
-        <input type="text" id="code-input" placeholder="Code à 5 chiffres">
-        <input type="text" id="team-input" placeholder="Nom de votre équipe">
+        <h1 style="color: #f7b731; margin-top: 0;">Buzzer Spatial</h1>
+        <input type="text" id="code-input" placeholder="Code (5 chiffres)">
+        <input type="text" id="team-input" placeholder="Nom de l'équipe">
         <button class="btn-join" onclick="joinGame()">Rejoindre</button>
     </div>
 
@@ -113,7 +129,7 @@
                     else if (data.type === 'lock') {
                         const btn = document.getElementById('big-buzzer');
                         if(data.winner === myTeamName) {
-                            document.getElementById('status-text').innerHTML = '<span style="color:#f7b731">VOUS AVEZ LA MAIN !</span>';
+                            document.getElementById('status-text').innerHTML = '<span style="color:#f7b731">À VOUS !</span>';
                             btn.className = 'buzzer-winner';
                             btn.innerHTML = '🎤<br>PARLEZ';
                         } else {
@@ -126,11 +142,17 @@
             });
         }
 
-        document.getElementById('big-buzzer').addEventListener('click', () => {
-            if(conn && conn.open && document.getElementById('big-buzzer').classList.contains('buzzer-ready')) {
+        // Utilisation de touchstart pour une réactivité instantanée sur mobile
+        function triggerBuzz(e) {
+            if (e) e.preventDefault(); // Évite le double événement (touch puis click)
+            if (conn && conn.open && document.getElementById('big-buzzer').classList.contains('buzzer-ready')) {
                 conn.send({ type: 'buzz', teamName: myTeamName });
             }
-        });
+        }
+
+        const btnBuzz = document.getElementById('big-buzzer');
+        btnBuzz.addEventListener('touchstart', triggerBuzz, { passive: false });
+        btnBuzz.addEventListener('mousedown', triggerBuzz); // Gardé pour les tests sur PC
     </script>
 </body>
 </html>
