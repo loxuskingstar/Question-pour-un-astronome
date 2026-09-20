@@ -12,7 +12,9 @@
             flex-direction: column; align-items: center; justify-content: center; height: 100vh;
         }
         #login-screen, #buzzer-screen { width: 100%; max-width: 400px; text-align: center; }
-        #buzzer-screen { display: none; height: 100%; flex-direction: column; }
+        
+        /* Centrage du contenu de l'écran buzzer */
+        #buzzer-screen { display: none; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         
         input {
             width: 100%; padding: 15px; margin-bottom: 20px; font-size: 1.2rem;
@@ -25,18 +27,47 @@
             border-radius: 15px; background: #f7b731; color: #191631; border: none;
         }
 
+        /* --- LE NOUVEAU BOUTON BUZZER ROND --- */
         #big-buzzer {
-            flex-grow: 1; margin: 20px 0; border-radius: 30px; border: none;
-            font-size: 2.5rem; font-weight: bold; text-transform: uppercase;
-            transition: background 0.2s, transform 0.1s;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            margin: 30px auto;
+            border: none;
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        .buzzer-ready { background: #00b894; color: white; box-shadow: 0 10px 0 #008f73; }
-        .buzzer-ready:active { transform: translateY(10px); box-shadow: 0 0 0 #008f73; }
+        /* État prêt (Vert éclatant) */
+        .buzzer-ready { 
+            background: radial-gradient(circle at 30% 30%, #00e676, #00b894); 
+            color: white; 
+            box-shadow: 0 15px 0 #008f73, 0 20px 40px rgba(0, 184, 148, 0.5); 
+        }
+        .buzzer-ready:active { 
+            transform: translateY(15px); 
+            box-shadow: 0 0 0 #008f73, 0 5px 10px rgba(0, 184, 148, 0.5); 
+        }
         
-        .buzzer-locked { background: #ff7675; color: white; opacity: 0.5; pointer-events: none; }
+        /* État bloqué (Rouge sombre/Grisé) */
+        .buzzer-locked { 
+            background: radial-gradient(circle at 30% 30%, #ff7675, #d63031); 
+            color: rgba(255,255,255,0.8); 
+            box-shadow: 0 10px 0 #b22828;
+            transform: translateY(5px);
+            pointer-events: none; 
+        }
         
-        #status-text { font-size: 1.5rem; min-height: 40px; margin-bottom: 10px;}
+        #status-text { 
+            font-size: 1.8rem; 
+            min-height: 40px; 
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>

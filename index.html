@@ -865,6 +865,10 @@
                 </div>`;
                 
             renderView(html);
+            // On débloque les buzzers pour la Phase 1
+            isQuestionActive = true;
+            resetBuzzerBlocks();
+            openBuzzers();
         }
 
         function handleGeneralAnswer(teamIndex, isCorrect, phaseTitle, event, points = 1) {
@@ -980,6 +984,19 @@
                 </div>
             `;
             renderView(html);
+
+            // Phase 2, on ne débloque QUE l'équipe active
+            isQuestionActive = true;
+            resetBuzzerBlocks();
+            
+            Object.keys(connections).forEach(teamName => {
+                if (teamName === activeTeamName) {
+                    connections[teamName].send({ type: 'unlock' }); // Seul lui a le buzzer vert
+                    document.getElementById('buzz-team-name').innerText = "C'est à vous !";
+                } else {
+                    connections[teamName].send({ type: 'lock', winner: 'Écoutez bien...' }); // Les autres sont rouges
+                }
+            });
         }
 
         function handlePhase2Answer(isCorrect, event, points = 1) {
@@ -1071,6 +1088,10 @@
                 </div>`;
                 
             renderView(html);
+            // On débloque les buzzers pour la Phase 3
+            isQuestionActive = true;
+            resetBuzzerBlocks();
+            openBuzzers();
         }
 
         function revealAnswerPhase3() {
