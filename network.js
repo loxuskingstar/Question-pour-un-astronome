@@ -89,6 +89,10 @@ function triggerBuzzPopup(teamName) {
     document.getElementById('buzz-team-name').innerText = getTeam(teamName).emoji + ' ' + teamName;
     document.getElementById('buzz-popup').style.display = 'flex';
     
+    // NOUVEAU : On cache le bouton "Révéler la réponse" pendant la décision
+    const btnReveal = document.getElementById('btn-reveal');
+    if (btnReveal) btnReveal.style.display = 'none';
+    
     // Verrouille immédiatement tous les téléphones pour écouter la réponse
     Object.values(connections).forEach(c => {
         c.send({ type: 'lock', winner: teamName });

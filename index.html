@@ -842,13 +842,21 @@
         }
 
         function revealAnswer() {
+            // Affiche le texte de la réponse
             document.getElementById('answer').classList.add('visible');
             
+            // Masque le bouton "Révéler la réponse" s'il est encore là
             const btnReveal = document.getElementById('btn-reveal');
             if (btnReveal) btnReveal.style.display = 'none';
             
+            // Affiche le gros bouton "Passer à la question suivante"
             document.getElementById('btn-skip-question').style.display = 'block';
+
+            // NOUVEAU : On verrouille tous les téléphones et on coupe la réception des buzzs
+            isQuestionActive = false;
+            lockAllBuzzers();
         }
+
         function startPhase1() {
             currentPhase = 'p1';
             currentQuestionIndex = 0;
@@ -1009,7 +1017,9 @@
             
             Object.keys(connections).forEach(teamName => {
                 if (teamName === activeTeamName) {
-                    connections[teamName].send({ type: 'lock', winner: 'C\'est à vous de parler !' });
+                    // CORRECTION : On envoie le NOM de l'équipe (au lieu d'une phrase) 
+                    // pour que le téléphone le reconnaisse et affiche l'écran jaune "🎤 PARLEZ"
+                    connections[teamName].send({ type: 'lock', winner: activeTeamName });
                 } else {
                     connections[teamName].send({ type: 'lock', winner: 'Écoutez bien...' });
                 }
@@ -1273,7 +1283,7 @@
             document.getElementById('buzz-popup').style.display = 'none';
             
             if (isCorrect) {
-                // BONNE RÉPONSE (Vol réussi ou Phase 1/3)
+                // BONNE RÉPONSE 
                 addPoints(currentBuzzedTeam, getCurrentQuestionPoints()); 
                 isQuestionActive = false;
                 buzzQueue = []; 
@@ -1291,7 +1301,6 @@
 
                 if (currentPhase === 'p2_q') {
                     // LOGIQUE PHASE 2 : VOL ÉCHOUÉ
-                    // Uniquement la première équipe qui buzze a eu sa chance, on annule la suite.
                     isQuestionActive = false;
                     revealAnswer();
                     lockAllBuzzers(); 
@@ -1301,6 +1310,11 @@
                         processNextInQueue(); 
                     } else {
                         openBuzzers(); 
+                        
+                        // NOUVEAU : On réaffiche le bouton "Révéler" car le jeu reprend !
+                        const btnReveal = document.getElementById('btn-reveal');
+                        if (btnReveal) btnReveal.style.display = 'flex';
+
                         if (currentPhase === 'p3_q') {
                             pausePhase3Animation = false; 
                         }
