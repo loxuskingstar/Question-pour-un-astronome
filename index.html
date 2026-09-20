@@ -922,11 +922,8 @@
             }
 
             if (phase2Turn >= phase2Order.length) {
-                renderView(`
-                    <h1>À la carte <span style="color:var(--accent-color)">terminé !</span></h1>
-                    <p style="font-size:1.8rem; color:#dcdcdc;">Chaque équipe a joué son thème.</p>
-                    <button class="btn-accent" style="margin-top: 50px; font-size:1.5rem; padding: 20px 50px;" onclick="startPhase3()">Passer au Jeu Décisif ➔</button>
-                `);
+                pendingTransition = { action: 'startPhase3', title: 'À la carte terminé', label: 'PASSER AU JEU DÉCISIF' };
+                renderView(`<h1>À la carte <span style="color:var(--accent-color)">terminé !</span></h1>...`); // (garde ton renderView actuel ici)
                 return;
             }
 
@@ -976,16 +973,8 @@
             if (currentQuestionIndex >= questionArray.length) {
                 categoriesDone.push(activeCategory);
                 phase2Turn++; 
-                const currentTeam = teams[activeTeamIndex];
-                
-                renderView(`
-                    <h1>Thème terminé !</h1>
-                    <p style="font-size:2rem; margin: 30px 0; max-width: 800px; text-align: center; line-height: 1.5;">
-                        L'équipe <strong style="color:var(--accent-color); font-family:'Chau Philomene One'; font-size: 3rem; word-break: break-word; display: inline-block; max-width: 100%;">${currentTeam.name}</strong> possède maintenant<br>
-                        <strong style="color:var(--accent-color); font-size:3.5rem; text-shadow: 0 0 20px rgba(247, 183, 49, 0.6);">${currentTeam.score} points</strong> !
-                    </p>
-                    <button class="btn-accent" style="margin-top: 40px;" onclick="startPhase2Categories()">Continuer ➔</button>
-                `); 
+                pendingTransition = { action: 'startPhase2Categories', title: 'Thème terminé', label: 'CHOIX DU THÈME SUIVANT' };
+                renderView(`<h1>Thème terminé !</h1>...`); // (garde ton renderView actuel ici)
                 return;
             }
 
@@ -1165,6 +1154,8 @@
         }
 
         function showPodium() {
+            isAnswerRevealed = false;
+            pendingTransition = { action: 'exportResults', title: 'Fin de la partie', label: 'EXPORTER LES RÉSULTATS' };
             currentPhase = 'podium';
             
             let allRankedTeams = [...teams].sort((a, b) => b.score - a.score);
@@ -1339,8 +1330,7 @@
             }
             else if (data.action === 'p3_down') simulateSpace(true);
             else if (data.action === 'p3_up') simulateSpace(false);
-            
-            // NOUVEAU : Réception des clics de transition
+            else if (data.action === 'selectCategory') selectCategory(data.category, data.teamIndex);
             else if (data.action === 'startGame') startGame();
             else if (data.action === 'showTeamSetup') showTeamSetup();
             else if (data.action === 'startPhase1') startPhase1();
@@ -1353,44 +1343,37 @@
 
         function syncMaster() {
             if (typeof masterConn !== 'undefined' && masterConn && masterConn.open) {
-                let qText = "En attente...";
-                let aText = "...";
-                let descText = "";
-                let p2Awaiting = false;
+                let qText = "En attente..."; let aText = "..."; let descText = "";
+                let p2Awaiting = false; let p2Cats = null; let currentChoosingTeam = null; let choosingTeamName = null;
 
                 if (pendingTransition) {
-                    qText = "Prêt pour la suite ?";
-                    aText = "Action requise";
+                    qText = "Prêt pour la suite ?"; aText = "Action requise";
                 } else if (currentPhase === 'p1' && QUESTIONS.phase1[currentQuestionIndex]) {
-                    qText = QUESTIONS.phase1[currentQuestionIndex].q;
-                    aText = QUESTIONS.phase1[currentQuestionIndex].a;
-                    descText = QUESTIONS.phase1[currentQuestionIndex].d || "";
+                    qText = QUESTIONS.phase1[currentQuestionIndex].q; aText = QUESTIONS.phase1[currentQuestionIndex].a; descText = QUESTIONS.phase1[currentQuestionIndex].d || "";
+                } else if (currentPhase === 'p2_cat') {
+                    // NOUVEAU : On prépare les thèmes pour la télécommande
+                    const tIndex = phase2Order[phase2Turn];
+                    if (tIndex !== undefined && teams[tIndex]) {
+                        choosingTeamName = teams[tIndex].name;
+                        qText = "Phase 2 : À la carte";
+                        aText = "Choix du thème...";
+                        currentChoosingTeam = tIndex;
+                    }
+                    p2Cats = Object.keys(QUESTIONS.phase2).map(c => ({ name: c, disabled: categoriesDone.includes(c) }));
                 } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory][currentQuestionIndex]) {
-                    qText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].q;
-                    aText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].a;
-                    descText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].d || "";
+                    qText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].q; aText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].a; descText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].d || "";
                     if (!isQuestionActive && !currentBuzzedTeam) p2Awaiting = true;
                 } else if (currentPhase === 'p3_q' && QUESTIONS.phase3[currentQuestionIndex]) {
-                    qText = QUESTIONS.phase3[currentQuestionIndex].q;
-                    aText = QUESTIONS.phase3[currentQuestionIndex].a;
-                    descText = QUESTIONS.phase3[currentQuestionIndex].d || "";
+                    qText = QUESTIONS.phase3[currentQuestionIndex].q; aText = QUESTIONS.phase3[currentQuestionIndex].a; descText = QUESTIONS.phase3[currentQuestionIndex].d || "";
                 }
 
                 masterConn.send({
-                    type: 'sync',
-                    phase: currentPhase,
-                    question: qText,
-                    answer: aText,
-                    answerDescription: descText,
-                    answerRevealed: isAnswerRevealed,
-                    canSkip: isAnswerRevealed,
-                    buzzedTeam: currentBuzzedTeam,
+                    type: 'sync', phase: currentPhase, question: qText, answer: aText, answerDescription: descText,
+                    answerRevealed: isAnswerRevealed, canSkip: isAnswerRevealed, buzzedTeam: currentBuzzedTeam,
                     activeTeamName: (currentPhase === 'p2_q' && activeTeamIndex !== -1) ? teams[activeTeamIndex].name : null,
-                    isQuestionActive: isQuestionActive,
-                    p2AwaitingAnswer: p2Awaiting,
-                    transitionAction: pendingTransition ? pendingTransition.action : null,
-                    transitionTitle: pendingTransition ? pendingTransition.title : null,
-                    transitionLabel: pendingTransition ? pendingTransition.label : null
+                    isQuestionActive: isQuestionActive, p2AwaitingAnswer: p2Awaiting,
+                    transitionAction: pendingTransition ? pendingTransition.action : null, transitionTitle: pendingTransition ? pendingTransition.title : null, transitionLabel: pendingTransition ? pendingTransition.label : null,
+                    p2Cats: p2Cats, currentChoosingTeam: currentChoosingTeam, choosingTeamName: choosingTeamName // NOUVEAUX CHAMPS
                 });
             }
         }

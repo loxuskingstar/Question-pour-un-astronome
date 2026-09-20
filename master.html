@@ -240,6 +240,11 @@
         </div>
 
         <div class="controls-container">
+            <div id="ctrl-p2-cat" class="control-group full-width" style="display:none;">
+                <div class="turn-label">Choix du thème pour : <b id="p2-cat-team-name"></b></div>
+                <div class="grid-2" id="p2-cat-grid"></div>
+            </div>
+            
             <div id="ctrl-p2" class="control-group full-width" style="display:none;">
                 <div class="turn-label">Tour de : <b id="p2-team-name"></b></div>
                 <div class="grid-2">
@@ -354,8 +359,13 @@
             const p2=document.getElementById('ctrl-p2'), p3=document.getElementById('ctrl-p3');
             const standard=document.getElementById('ctrl-standard'), overlay=document.getElementById('buzz-overlay');
             const reveal=document.getElementById('btn-reveal'), transition=document.getElementById('phase-transition');
+            
+            // NOUVEAU : On cible la zone de la grille des thèmes
+            const p2cat=document.getElementById('ctrl-p2-cat'); 
 
+            // On cache tout par défaut
             p2.style.display='none'; p3.style.display='none'; standard.style.display='flex'; overlay.style.display='none';
+            if(p2cat) p2cat.style.display='none'; 
             reveal.style.display=answerRevealed?'none':'block';
 
             transitionAction=data.transitionAction||null;
@@ -369,11 +379,47 @@
                 transition.style.display='none';
             }
 
+            // Gestion des priorités d'affichage
             if(data.buzzedTeam){
                 overlay.style.display='flex'; standard.style.display='none';
                 p2.style.display='none'; p3.style.display='none'; transition.style.display='none';
+                if(p2cat) p2cat.style.display='none';
                 document.getElementById('buzz-team-title').innerText='🚨 '+data.buzzedTeam+' A BUZZÉ !';
-            }else if(data.phase==='p2_q' && data.p2AwaitingAnswer){
+            }
+            // NOUVEAU : Affichage de la grille pour le choix du thème
+            else if(data.phase==='p2_cat' && !data.transitionAction && data.p2Cats){
+                standard.style.display='none'; 
+                if(p2cat) p2cat.style.display='flex';
+                
+                const teamNameDisplay = document.getElementById('p2-cat-team-name');
+                if(teamNameDisplay) teamNameDisplay.innerText = data.choosingTeamName || '';
+                
+                const grid = document.getElementById('p2-cat-grid');
+                if(grid) {
+                    grid.innerHTML = ''; // On vide la grille avant de la recréer
+                    data.p2Cats.forEach(cat => {
+                        const btn = document.createElement('button');
+                        // Change le style si le thème a déjà été joué
+                        btn.className = 'btn-action ' + (cat.disabled ? 'btn-reveal' : 'btn-skip'); 
+                        btn.style.fontSize = '1.1rem'; 
+                        btn.style.minHeight = '70px'; 
+                        btn.style.padding = '10px';
+                        btn.innerText = cat.name;
+                        
+                        if (cat.disabled) {
+                            btn.disabled = true;
+                        } else {
+                            btn.onclick = () => {
+                                if(conn && conn.open) {
+                                    conn.send({ type: 'master_cmd', action: 'selectCategory', category: cat.name, teamIndex: data.currentChoosingTeam });
+                                }
+                            };
+                        }
+                        grid.appendChild(btn);
+                    });
+                }
+            }
+            else if(data.phase==='p2_q' && data.p2AwaitingAnswer){
                 standard.style.display='none'; p2.style.display='flex';
             }else if(data.phase==='p3_q' && !data.transitionAction){
                 p3.style.display='flex'; standard.style.display='flex';
