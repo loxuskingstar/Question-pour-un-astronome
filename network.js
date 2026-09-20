@@ -33,22 +33,10 @@ function handleNetworkData(conn, data) {
         conn.send({ type: 'joined', success: true });
     } 
     else if (data.type === 'buzz') {
-        // Le premier signal reçu bloque immédiatement les autres
-        if (isBuzzerActive && !getTeam(data.teamName).blocked) {
-            isBuzzerActive = false;
-            currentBuzzerWinner = data.teamName;
-            
-            // Verrouille tous les autres téléphones
-            Object.values(connections).forEach(c => {
-                c.send({ type: 'lock', winner: currentBuzzerWinner });
-            });
-            
-            // Déclenche l'affichage sur l'écran principal
-            triggerBuzzUI(currentBuzzerWinner);
-        }
+        // Envoie le buzz dans la nouvelle fonction de gestion de file d'attente
+        handleIncomingBuzz(data.teamName);
     }
 }
-
 function openBuzzers() {
     isBuzzerActive = true;
     currentBuzzerWinner = null;
@@ -101,8 +89,12 @@ function triggerBuzzPopup(teamName) {
     document.getElementById('buzz-team-name').innerText = getTeam(teamName).emoji + ' ' + teamName;
     document.getElementById('buzz-popup').style.display = 'flex';
     
-    // Pour la Phase 3 : Met en pause l'animation des lettres
-    if (currentPhase === 'p3_q') {
+    // Verrouille immédiatement tous les téléphones pour écouter la réponse
+    Object.values(connections).forEach(c => {
+        c.send({ type: 'lock', winner: teamName });
+    });
+    
+    if (typeof currentPhase !== 'undefined' && currentPhase === 'p3_q') {
         pausePhase3Animation = true; 
     }
 }

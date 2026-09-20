@@ -1206,43 +1206,63 @@
             }, 100); 
         }
 
+        function getCurrentQuestionPoints() {
+            if (currentPhase === 'p1') return QUESTIONS.phase1[currentQuestionIndex].pts;
+            if (currentPhase === 'p2_q') return QUESTIONS.phase2[activeCategory][currentQuestionIndex].pts;
+            if (currentPhase === 'p3_q') return QUESTIONS.phase3[currentQuestionIndex].pts;
+            return 1;
+        }
+
+        function goToNextQuestion() {
+            currentQuestionIndex++;
+            if (currentPhase === 'p1') {
+                renderGeneralPhase("Qualifications", QUESTIONS.phase1, 'startPhase2Categories');
+            } else if (currentPhase === 'p2_q') {
+                renderPhase2Question();
+            } else if (currentPhase === 'p3_q') {
+                renderPhase3Question();
+            }
+        }
+
+        function sendLockToPhone(teamName) {
+            // Utilisé pour bloquer uniquement l'équipe qui s'est trompée
+            if (typeof connections !== 'undefined' && connections[teamName]) {
+                connections[teamName].send({ type: 'lock', winner: 'Faux (Bloqué)' });
+            }
+        }
+
         function resolveBuzz(isCorrect) {
             document.getElementById('buzz-popup').style.display = 'none';
             
             if (isCorrect) {
-                // Bonne réponse : On donne les points, on révèle la réponse et on bloque les buzz
                 addPoints(currentBuzzedTeam, getCurrentQuestionPoints());
                 isQuestionActive = false;
-                revealAnswer(); // Ta fonction actuelle qui affiche la réponse
+                buzzQueue = []; // On vide la file d'attente
+                revealAnswer(); 
                 document.getElementById('btn-skip-question').style.display = 'block'; 
                 
             } else {
-                // Mauvaise réponse
-                getTeam(currentBuzzedTeam).blocked = true; // Bloqué pour le reste de la question
-                sendLockToPhone(currentBuzzedTeam); // Met son écran en rouge
-                
+                getTeam(currentBuzzedTeam).blocked = true; 
+                sendLockToPhone(currentBuzzedTeam); 
                 currentBuzzedTeam = null;
 
                 if (currentPhase === 'p2_q') {
-                    // En phase 2, si le vol échoue, c'est fini pour cette question
                     isQuestionActive = false;
                     revealAnswer();
                     document.getElementById('btn-skip-question').style.display = 'block';
-                    
                 } else {
-                    // Phases 1 & 3 : On passe au suivant dans la file, ou on reprend la lecture
                     if (buzzQueue.length > 0) {
-                        processNextInQueue();
+                        processNextInQueue(); // Au suivant dans la file
                     } else {
-                        // S'il n'y a plus de buzz en attente, le jeu reprend
+                        // S'il n'y a plus personne en attente, on ré-ouvre les buzzers restants
+                        openBuzzers(); 
                         if (currentPhase === 'p3_q') {
-                            pausePhase3Animation = false; // Reprise de l'affichage des lettres
+                            pausePhase3Animation = false; 
                         }
                     }
                 }
             }
         }
-
         // Fonction pour le bouton "Passer" du maître du jeu
         function skipQuestion() {
             document.getElementById('btn-skip-question').style.display = 'none';
