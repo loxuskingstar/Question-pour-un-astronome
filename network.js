@@ -37,16 +37,18 @@ function handleNetworkData(conn, data) {
         handleIncomingBuzz(data.teamName);
     }
 }
+
 function openBuzzers() {
-    isBuzzerActive = true;
-    currentBuzzerWinner = null;
+    isQuestionActive = true;
+    currentBuzzedTeam = null; // ➔ On s'assure que la place est libre !
+    buzzQueue = []; // ➔ On vide la file d'attente par sécurité
     
     // Débloque uniquement les équipes qui n'ont pas fait d'erreur sur cette question
     Object.keys(connections).forEach(teamName => {
         if (!getTeam(teamName).blocked) {
             connections[teamName].send({ type: 'unlock' });
         } else {
-            connections[teamName].send({ type: 'lock', winner: 'Erreur - Bloqué pour cette question' });
+            connections[teamName].send({ type: 'lock', winner: 'Bloqué' });
         }
     });
 }

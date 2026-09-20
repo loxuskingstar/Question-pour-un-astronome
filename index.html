@@ -1236,6 +1236,7 @@
                 addPoints(currentBuzzedTeam, getCurrentQuestionPoints()); 
                 isQuestionActive = false;
                 buzzQueue = []; 
+                currentBuzzedTeam = null; 
                 revealAnswer(); 
                 document.getElementById('btn-skip-question').style.display = 'block'; 
                 
