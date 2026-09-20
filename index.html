@@ -1355,6 +1355,31 @@
             syncMaster(); 
         }
 
+        // Simulation de la barre Espace (Phase 3) depuis la télécommande
+        function simulateSpace(isDown) {
+            if (isDown) {
+                if (currentPhase === 'p3_q' && !currentBuzzedTeam) {
+                    if (!p3RevealInterval && p3CurrentIndex < p3FullText.length) {
+                        p3RevealInterval = setInterval(() => {
+                            if (p3CurrentIndex < p3FullText.length) {
+                                const spanLetter = document.getElementById(`p3-l-${p3CurrentIndex}`);
+                                if(spanLetter) spanLetter.classList.add('revealed');
+                                p3CurrentIndex++;
+                            } else {
+                                clearInterval(p3RevealInterval);
+                                p3RevealInterval = null;
+                            }
+                        }, 60);
+                    }
+                }
+            } else {
+                if (p3RevealInterval) {
+                    clearInterval(p3RevealInterval);
+                    p3RevealInterval = null;
+                }
+            }
+        }
+        
         function syncMaster() {
             if (typeof masterConn !== 'undefined' && masterConn && masterConn.open) {
                 let qText = "En attente..."; let aText = "..."; let descText = "";
@@ -1376,7 +1401,7 @@
                     p2Cats = Object.keys(QUESTIONS.phase2).map(c => ({ name: c, disabled: categoriesDone.includes(c) }));
                 } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory][currentQuestionIndex]) {
                     qText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].q; aText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].a; descText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].d || "";
-                    if (!isQuestionActive && !currentBuzzedTeam) p2Awaiting = true;
+                    if (!isQuestionActive && !currentBuzzedTeam && !isAnswerRevealed) p2Awaiting = true;
                 } else if (currentPhase === 'p3_q' && QUESTIONS.phase3[currentQuestionIndex]) {
                     qText = QUESTIONS.phase3[currentQuestionIndex].q; aText = QUESTIONS.phase3[currentQuestionIndex].a; descText = QUESTIONS.phase3[currentQuestionIndex].d || "";
                 }
