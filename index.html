@@ -290,51 +290,46 @@
         }
 
         .question-box {
-            padding: 40px;
+            padding: 50px;
             border-radius: 30px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 900px;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: clamp(1.8rem, 4vw, 2.8rem); /* Texte beaucoup plus gros et adaptatif */
-            font-weight: 600;
+            margin-bottom: 35px;
+            font-size: 1.8rem;
+            font-weight: 400;
             line-height: 1.5;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         
         .answer-box {
-            color: var(--success-color); /* Vert pour bien différencier de la question */
+            color: var(--accent-color);
             margin-top: 30px;
             opacity: 0;
             max-height: 0;
             overflow: hidden;
             transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-            background: rgba(0, 0, 0, 0.2); /* Fond léger pour détacher la réponse */
-            border-radius: 20px;
         }
-
         .answer-box.visible {
             opacity: 1;
-            max-height: 600px;
+            max-height: 400px;
             margin-top: 30px;
-            padding: 30px 20px;
+            padding-top: 30px;
             border-top: 1px solid rgba(255,255,255,0.15);
         }
 
         .answer-main {
             font-weight: 700;
-            font-size: clamp(2.5rem, 5vw, 4.5rem); /* Réponse massive */
-            text-shadow: 0 0 20px rgba(0, 184, 148, 0.4);
+            font-size: 2.4rem;
         }
-        
         .answer-desc {
-            font-size: clamp(1.4rem, 3vw, 1.8rem); /* Anecdote plus lisible */
+            font-size: 1.3rem;
             font-weight: 300;
             font-family: 'Josefin Sans', sans-serif;
-            color: #e0e0e0;
-            margin-top: 20px;
-            line-height: 1.5;
+            color: #dcdcdc;
+            margin-top: 15px;
+            line-height: 1.4;
             font-style: italic;
+            opacity: 0.9;
         }
 
         .btn-reveal-container {
@@ -605,10 +600,7 @@
         let categoriesDone = [];
         
         let phase2Order = []; 
-        let phase2Turn = 0;
-        let phase2AnswerLocked = false; // Empêche une double validation et les points infinis
-        let answerRevealedForSync = false; // État réel de révélation envoyé à la télécommande
-        let phase3Started = false; // Distingue l'écran d'introduction du Jeu Décisif de la première question
+        let phase2Turn = 0;   
 
         let p3RevealInterval = null;
         let p3FullText = "";
@@ -851,7 +843,6 @@
         }
 
         function revealAnswer() {
-            answerRevealedForSync = true;
             // Affiche le texte de la réponse
             document.getElementById('answer').classList.add('visible');
             
@@ -882,7 +873,6 @@
                 return;
             }
 
-            answerRevealedForSync = false;
             const q = questionArray[currentQuestionIndex];
             const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
             
@@ -996,8 +986,6 @@
                 return;
             }
 
-            phase2AnswerLocked = false;
-            answerRevealedForSync = false;
             const q = questionArray[currentQuestionIndex];
             const activeTeamName = teams[activeTeamIndex].name;
             const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
@@ -1040,28 +1028,26 @@
         }
 
         function handleActiveTeamAnswer(isCorrect) {
-            // Une seule validation par question : empêche les doubles clics et les points infinis.
-            if (currentPhase !== 'p2_q' || activeTeamIndex === -1 || phase2AnswerLocked) return;
-            phase2AnswerLocked = true;
-
-            const controls = document.getElementById('active-team-controls');
-            if (controls) controls.style.display = 'none';
+            // On cache les boutons de contrôle direct
+            document.getElementById('active-team-controls').style.display = 'none';
             
-            const activeTeamName = teams[activeTeamIndex].name;
+            // On récupère le vrai NOM de l'équipe active
+            let activeTeamName = teams[activeTeamIndex].name;
             
             if (isCorrect) {
+                // 1. Ils ont bon : on donne les points (avec le NOM) et on passe à la suite
                 addPoints(activeTeamName, getCurrentQuestionPoints());
                 revealAnswer();
                 lockAllBuzzers();
             } else {
-                // L'équipe active ne peut plus être revalidée sur cette question.
-                getTeam(activeTeamName).blocked = true;
+                // 2. Ils ont faux : ON OUVRE LE VOL AUX AUTRES !
+                getTeam(activeTeamName).blocked = true; // Bloque l'équipe active
                 sendLockToPhone(activeTeamName);
                 
-                isQuestionActive = true;
+                isQuestionActive = true; 
                 currentBuzzedTeam = null;
                 buzzQueue = [];
-                openBuzzers();
+                openBuzzers(); // Débloque le bouton de toutes les autres équipes
             }
         }
 
@@ -1083,7 +1069,6 @@
         function startPhase3() {
             currentPhase = 'p3_q';
             currentQuestionIndex = 0;
-            phase3Started = false;
             
             renderView(`
                 <h1 style="font-size: 5rem; text-shadow: 0 0 30px rgba(247, 183, 49, 0.7); color: var(--accent-color);">Le Jeu Décisif</h1>
@@ -1094,13 +1079,11 @@
 
         function renderPhase3Question() {
             currentPhase = 'p3_q';
-            phase3Started = true;
             if (currentQuestionIndex >= QUESTIONS.phase3.length) {
                 showPodium();
                 return;
             }
 
-            answerRevealedForSync = false;
             const q = QUESTIONS.phase3[currentQuestionIndex];
             const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
             
@@ -1298,8 +1281,6 @@
         }
 
         function resolveBuzz(isCorrect) {
-            // Une résolution ne peut être effectuée qu'une seule fois pour un buzz.
-            if (!currentBuzzedTeam) return;
             document.getElementById('buzz-popup').style.display = 'none';
             
             if (isCorrect) {
@@ -1351,24 +1332,7 @@
         function handleMasterCommand(data) {
             if (data.action === 'resolve') resolveBuzz(data.isCorrect);
             else if (data.action === 'p2_resolve') handleActiveTeamAnswer(data.isCorrect);
-            else if (data.action === 'skip') {
-                // Impossible de passer tant que la réponse n'est pas réellement révélée.
-                if (answerRevealedForSync && !currentBuzzedTeam && ['p1','p2_q','p3_q'].includes(currentPhase)) {
-                    skipQuestion();
-                }
-            }
-            else if (data.action === 'start_phase2') {
-                if (currentPhase === 'p1') startPhase2Categories();
-            }
-            else if (data.action === 'continue_phase2') {
-                if (currentPhase === 'p2_q' || currentPhase === 'p2_cat') startPhase2Categories();
-            }
-            else if (data.action === 'start_phase3') {
-                if (currentPhase === 'p2_cat') startPhase3();
-            }
-            else if (data.action === 'start_phase3_questions') {
-                if (currentPhase === 'p3_q') renderPhase3Question();
-            }
+            else if (data.action === 'skip') skipQuestion();
             else if (data.action === 'reveal') {
                 if (currentPhase === 'p3_q') revealAnswerPhase3();
                 else revealAnswer();
@@ -1376,7 +1340,7 @@
             else if (data.action === 'p3_down') simulateSpace(true);
             else if (data.action === 'p3_up') simulateSpace(false);
             
-            syncMaster();
+            syncMaster(); // Met à jour la télécommande après une action
         }
 
         // 2. Simulation de la barre Espace (Phase 3) depuis le téléphone
@@ -1409,41 +1373,16 @@
             if (typeof masterConn !== 'undefined' && masterConn && masterConn.open) {
                 let qText = "En attente...";
                 let aText = "...";
-                let aDesc = "";
-
+                
                 if (currentPhase === 'p1' && QUESTIONS.phase1[currentQuestionIndex]) {
-                    const q = QUESTIONS.phase1[currentQuestionIndex];
-                    qText = q.q; aText = q.a; aDesc = q.d || "";
-                } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory] && QUESTIONS.phase2[activeCategory][currentQuestionIndex]) {
-                    const q = QUESTIONS.phase2[activeCategory][currentQuestionIndex];
-                    qText = q.q; aText = q.a; aDesc = q.d || "";
+                    qText = QUESTIONS.phase1[currentQuestionIndex].q;
+                    aText = QUESTIONS.phase1[currentQuestionIndex].a;
+                } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory][currentQuestionIndex]) {
+                    qText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].q;
+                    aText = QUESTIONS.phase2[activeCategory][currentQuestionIndex].a;
                 } else if (currentPhase === 'p3_q' && QUESTIONS.phase3[currentQuestionIndex]) {
-                    const q = QUESTIONS.phase3[currentQuestionIndex];
-                    qText = q.q; aText = q.a; aDesc = q.d || "";
-                }
-
-                let transitionAction = null;
-                let transitionTitle = "";
-                let transitionLabel = "";
-
-                if (currentPhase === 'p1' && currentQuestionIndex >= QUESTIONS.phase1.length) {
-                    transitionAction = 'start_phase2';
-                    transitionTitle = 'Qualifications terminées';
-                    transitionLabel = 'PASSER À « À LA CARTE » ➜';
-                } else if (currentPhase === 'p2_q' && activeCategory && QUESTIONS.phase2[activeCategory] && currentQuestionIndex >= QUESTIONS.phase2[activeCategory].length) {
-                    transitionAction = 'continue_phase2';
-                    transitionTitle = 'Thème terminé';
-                    transitionLabel = 'CONTINUER ➜';
-                } else if (currentPhase === 'p2_cat' && phase2Turn >= phase2Order.length && phase2Order.length > 0) {
-                    transitionAction = 'start_phase3';
-                    transitionTitle = 'À la carte terminée';
-                    transitionLabel = 'PASSER AU JEU DÉCISIF ➜';
-                } else if (currentPhase === 'p3_q' && !phase3Started) {
-                    transitionAction = 'start_phase3_questions';
-                    transitionTitle = 'Jeu Décisif prêt';
-                    transitionLabel = 'COMMENCER LES QUESTIONS ➜';
-                } else if (currentPhase === 'p3_q' && currentQuestionIndex >= QUESTIONS.phase3.length) {
-                    transitionAction = null;
+                    qText = QUESTIONS.phase3[currentQuestionIndex].q;
+                    aText = QUESTIONS.phase3[currentQuestionIndex].a;
                 }
 
                 masterConn.send({
@@ -1451,15 +1390,9 @@
                     phase: currentPhase,
                     question: qText,
                     answer: aText,
-                    answerDescription: aDesc,
-                    answerRevealed: answerRevealedForSync,
                     buzzedTeam: currentBuzzedTeam,
                     activeTeamName: (currentPhase === 'p2_q' && activeTeamIndex !== -1) ? teams[activeTeamIndex].name : null,
-                    isQuestionActive: isQuestionActive,
-                    p2AwaitingAnswer: (currentPhase === 'p2_q' && !answerRevealedForSync && !isQuestionActive && !currentBuzzedTeam && !phase2AnswerLocked),
-                    transitionAction,
-                    transitionTitle,
-                    transitionLabel
+                    isQuestionActive: isQuestionActive
                 });
             }
         }
@@ -1472,9 +1405,8 @@
         };
 
         function skipQuestion() {
-            if (!answerRevealedForSync || currentBuzzedTeam || !['p1','p2_q','p3_q'].includes(currentPhase)) return;
-            document.getElementById('btn-skip-question').style.display = 'none';
-            goToNextQuestion();
+            document.getElementById('btn-skip-question').style.display = 'none'; // Cache le bouton
+            goToNextQuestion(); // Passe à la question suivante
         }
     </script>
 </body>
