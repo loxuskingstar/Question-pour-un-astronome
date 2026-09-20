@@ -55,14 +55,12 @@ let buzzQueue = [];
 let isQuestionActive = false;
 let currentBuzzedTeam = null;
 
-// Quand un signal 'buzz' arrive d'un téléphone :
 function handleIncomingBuzz(teamName) {
     if (!isQuestionActive || getTeam(teamName).blocked) return;
 
     if (currentPhase === 'p2_q') {
-        // PHASE 2 : Mode "Vol"
-        // Si c'est le moment de voler, seul le PREMIER buzz est pris.
-        if (canSteal && !currentBuzzedTeam) {
+        // PHASE 2 : Un seul buzz pris à la fois (pas de file d'attente)
+        if (!currentBuzzedTeam) {
             triggerBuzzPopup(teamName);
         }
     } else {

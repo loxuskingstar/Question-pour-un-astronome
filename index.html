@@ -851,17 +851,6 @@
                 </div>
                 <div id="btn-reveal" class="btn-reveal-container">
                     <button class="btn-accent" onclick="revealAnswer()">Révéler la réponse</button>
-                </div>
-                <div id="btn-attrib" class="action-area" style="display: none;">
-                    <p style="width: 100%; text-align: center; margin: 0; margin-bottom:10px; color: #a0a0a0;">À qui attribuer les points ?</p>
-                    <div class="team-btn-container">
-            `;
-            
-            teams.forEach((team, index) => {
-                html += `<button class="glass-panel" onclick="handleGeneralAnswer(${index}, true, '${phaseTitle}', event, ${q.pts})">${team.emoji} ${team.name}</button>`;
-            });
-            html += `<button class="btn-danger" onclick="handleGeneralAnswer(-1, false, '${phaseTitle}', event, ${q.pts})">Personne</button>
-                    </div>
                 </div>`;
                 
             renderView(html);
@@ -978,10 +967,6 @@
                 <div id="btn-reveal" class="btn-reveal-container">
                     <button class="btn-accent" onclick="revealAnswer()">Révéler la réponse</button>
                 </div>
-                <div id="btn-attrib" class="action-area" style="display: none; flex-direction: row; justify-content: center; gap: 20px;">
-                    <button class="btn-success glass-panel" onclick="handlePhase2Answer(true, event, ${q.pts})">Bonne réponse (+${q.pts} pt${q.pts > 1 ? 's' : ''})</button>
-                    <button class="btn-danger glass-panel" onclick="handlePhase2Answer(false, event, ${q.pts})">Mauvaise réponse</button>
-                </div>
             `;
             renderView(html);
 
@@ -1074,17 +1059,6 @@
                 </div>
                 <div id="btn-reveal" class="btn-reveal-container">
                     <button class="btn-accent" onclick="revealAnswerPhase3()">Révéler la réponse</button>
-                </div>
-                <div id="btn-attrib" class="action-area" style="display: none;">
-                    <p style="width: 100%; text-align: center; margin: 0; margin-bottom: 10px; color: #a0a0a0;">À qui attribuer les points ?</p>
-                    <div class="team-btn-container">
-            `;
-            
-            teams.forEach((team, index) => {
-                html += `<button class="glass-panel" onclick="handlePhase3Answer(${index}, true, event, ${q.pts})">${team.emoji} ${team.name}</button>`;
-            });
-            html += `<button class="btn-danger" onclick="handlePhase3Answer(-1, false, event, ${q.pts})">Personne</button>
-                    </div>
                 </div>`;
                 
             renderView(html);
@@ -1235,34 +1209,48 @@
             document.getElementById('buzz-popup').style.display = 'none';
             
             if (isCorrect) {
-                addPoints(currentBuzzedTeam, getCurrentQuestionPoints());
+                // BONNE RÉPONSE
+                addPoints(currentBuzzedTeam, getCurrentQuestionPoints()); // Ajoute les points
                 isQuestionActive = false;
                 buzzQueue = []; // On vide la file d'attente
                 revealAnswer(); 
                 document.getElementById('btn-skip-question').style.display = 'block'; 
                 
             } else {
-                getTeam(currentBuzzedTeam).blocked = true; 
-                sendLockToPhone(currentBuzzedTeam); 
-                currentBuzzedTeam = null;
+                // MAUVAISE RÉPONSE
+                let failedTeam = currentBuzzedTeam; // On mémorise qui s'est trompé
+                getTeam(failedTeam).blocked = true; // On bloque l'équipe
+                sendLockToPhone(failedTeam); // Écran rouge pour eux
+                
+                currentBuzzedTeam = null; // On libère la place
 
                 if (currentPhase === 'p2_q') {
-                    isQuestionActive = false;
-                    revealAnswer();
-                    document.getElementById('btn-skip-question').style.display = 'block';
-                } else {
-                    if (buzzQueue.length > 0) {
-                        processNextInQueue(); // Au suivant dans la file
+                    // LOGIQUE PHASE 2 : LE VOL
+                    let activeTeamName = teams[activeTeamIndex].name;
+                    
+                    if (failedTeam === activeTeamName) {
+                        // L'équipe qui a choisi le thème s'est trompée : ON OUVRE LE VOL !
+                        openBuzzers();
                     } else {
-                        // S'il n'y a plus personne en attente, on ré-ouvre les buzzers restants
-                        openBuzzers(); 
+                        // Une équipe a tenté de voler et s'est trompée : Fin de la question
+                        isQuestionActive = false;
+                        revealAnswer();
+                        document.getElementById('btn-skip-question').style.display = 'block';
+                    }
+                } else {
+                    // LOGIQUE PHASES 1 & 3 : FILE D'ATTENTE
+                    if (buzzQueue.length > 0) {
+                        processNextInQueue(); // Au suivant dans la file !
+                    } else {
+                        openBuzzers(); // Personne en attente, on rouvre tout
                         if (currentPhase === 'p3_q') {
-                            pausePhase3Animation = false; 
+                            pausePhase3Animation = false; // Reprise des lettres
                         }
                     }
                 }
             }
         }
+
         // Fonction pour le bouton "Passer" du maître du jeu
         function skipQuestion() {
             document.getElementById('btn-skip-question').style.display = 'none';
