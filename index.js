@@ -257,33 +257,39 @@ function showTeamSetup() {
     
     renderView(`
         <h1>Inscrire les équipes</h1>
-        <div class="glass-panel" style="padding: 20px 40px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 2px solid var(--accent-color);">
-            <p style="font-size: 1.5rem; margin-bottom: 10px; color: #dcdcdc;">Les joueurs peuvent rejoindre le buzzer avec ce code :</p>
+        <div class="glass-panel" style="padding: 20px 40px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 2px solid var(--accent-color);">
+            <p style="font-size: 1.5rem; margin-bottom: 10px; color: #dcdcdc;">Code du salon :</p>
             <h2 id="room-code-display" style="font-size: 5rem; color: var(--accent-color); margin: 0; font-family: 'Chau Philomene One', sans-serif; letter-spacing: 5px;">...</h2>
         </div>
         
-        <div style="margin-bottom: 30px; display:flex; align-items:center;">
+        <div style="margin-bottom: 20px; display:flex; align-items:center;">
             <input type="text" id="teamName-input" placeholder="Ajout manuel (si besoin)" onkeypress="if(event.key==='Enter') { addTeam(this.value); this.value=''; }">
             <button class="btn-accent" onclick="addTeam(document.getElementById('teamName-input').value); document.getElementById('teamName-input').value='';">Ajouter</button>
         </div>
-        <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
+        <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 20px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
+        
+        <!-- NOUVEAU : Paramètres de la partie -->
+        <div class="glass-panel" style="padding: 20px 30px; border-radius: 20px; margin-bottom: 30px; max-width: 500px; width: 100%; display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.3);">
+            <h3 style="margin: 0; text-align: center; color: var(--accent-color); font-size: 1.8rem;">⚙️ Paramètres (Nombre de questions)</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem;">
+                <span>Phase 1 (Total) :</span>
+                <input type="number" id="cfg-p1" value="15" min="3" style="width: 80px; margin: 0; padding: 10px; text-align: center;">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem;">
+                <span>Phase 2 (Par thème) :</span>
+                <input type="number" id="cfg-p2" value="5" min="3" style="width: 80px; margin: 0; padding: 10px; text-align: center;">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem;">
+                <span>Phase 3 (Total) :</span>
+                <input type="number" id="cfg-p3" value="5" min="3" style="width: 80px; margin: 0; padding: 10px; text-align: center;">
+            </div>
+        </div>
         
         <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie ➔</button>
-
-        <!-- ========================================== -->
-        <!-- ZONE DEV (À SUPPRIMER POUR LA PROD)        -->
-        <!-- ========================================== -->
-        <div style="margin-top: 60px; padding: 20px; border: 2px dashed #ff7675; border-radius: 15px; background: rgba(255, 118, 117, 0.1); display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center;">
-            <span style="color: #ff7675; font-weight: bold; font-size: 1.2rem; margin-right: 10px;">🔧 OUTILS DEV :</span>
-            <button class="btn-danger" style="font-size: 1rem; padding: 10px 20px; margin: 0;" onclick="startPhase2Categories()">Sauter vers Phase 2</button>
-            <button class="btn-danger" style="font-size: 1rem; padding: 10px 20px; margin: 0;" onclick="startPhase3()">Sauter vers Phase 3</button>
-        </div>
-        <!-- ========================================== -->
-        
     `);
     renderTeamList();
 }
-
+    
 function renderTeamList() {
     const list = document.getElementById('team-list');
     if(list) list.innerHTML = teams.map(t => `<div class="team-score glass-panel" style="white-space: normal; word-break: break-word;">${t.emoji} ${t.name}</div>`).join('');
@@ -303,11 +309,72 @@ function revealAnswer() {
     syncMaster(); 
 }
 
+// Fonction qui sélectionne n questions intelligemment (1/3 de chaque difficulté)
+function selectQuestions(bankArray, totalNeeded) {
+    if (!bankArray || bankArray.length === 0) return [];
+    
+    // Sécurité : on ne peut pas demander plus de questions qu'il n'y en a dans la banque
+    totalNeeded = Math.min(totalNeeded, bankArray.length);
+
+    // On trie la banque par difficulté
+    let diff1 = bankArray.filter(q => q.pts === 1);
+    let diff2 = bankArray.filter(q => q.pts === 2);
+    let diff3 = bankArray.filter(q => q.pts === 3);
+
+    // Fonction pour mélanger un tableau
+    const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+
+    shuffle(diff1); shuffle(diff2); shuffle(diff3);
+
+    // On calcule le minimum syndical par difficulté (ex: si on veut 5 questions, on veut min 1 de chaque)
+    const minPerDiff = Math.floor(totalNeeded / 3);
+    let selected = [];
+
+    // On prend 1/3 de Faciles, 1/3 de Moyennes, 1/3 de Difficiles (dans la limite des stocks disponibles)
+    selected.push(...diff1.splice(0, Math.min(minPerDiff, diff1.length)));
+    selected.push(...diff2.splice(0, Math.min(minPerDiff, diff2.length)));
+    selected.push(...diff3.splice(0, Math.min(minPerDiff, diff3.length)));
+
+    // S'il manque des questions pour atteindre le total, on complète au hasard avec ce qui reste
+    const remainingPool = shuffle([...diff1, ...diff2, ...diff3]);
+    const needed = totalNeeded - selected.length;
+    if (needed > 0) {
+        selected.push(...remainingPool.splice(0, needed));
+    }
+
+    // On mélange la sélection finale pour ne pas que les difficultés soient toujours dans le même ordre !
+    return shuffle(selected);
+}
+
+// Fonction qui génère la variable globale QUESTIONS pour la partie en cours
+function buildGameQuestions() {
+    // Récupération des paramètres (ou valeurs par défaut si bug)
+    const p1Count = parseInt(document.getElementById('cfg-p1').value) || 15;
+    const p2Count = parseInt(document.getElementById('cfg-p2').value) || 5;
+    const p3Count = parseInt(document.getElementById('cfg-p3').value) || 5;
+
+    // Création de l'objet contenant les questions de CETTE partie
+    window.QUESTIONS = {
+        phase1: selectQuestions(window.QUESTION_BANK.phase1, p1Count),
+        phase2: {},
+        phase3: selectQuestions(window.QUESTION_BANK.phase3, p3Count)
+    };
+
+    // Boucle sur les catégories de la Phase 2
+    Object.keys(window.QUESTION_BANK.phase2).forEach(cat => {
+        window.QUESTIONS.phase2[cat] = selectQuestions(window.QUESTION_BANK.phase2[cat], p2Count);
+    });
+    
+    console.log("Questions générées pour la partie :", window.QUESTIONS);
+}
+
 function startPhase1() {
+    buildGameQuestions(); 
+    
     currentPhase = 'p1';
     currentQuestionIndex = 0;
     isAnswerRevealed = false;
-    pendingTransition = null; // Pour être sûr que rien ne bloque !
+    pendingTransition = null; 
     renderGeneralPhase("Qualifications", QUESTIONS.phase1, 'startPhase2Categories');
 }
 

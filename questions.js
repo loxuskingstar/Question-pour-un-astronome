@@ -1,4 +1,4 @@
-window.QUESTIONS = {
+window.QUESTION_BANK = {
     phase1: [
         // 5 Faciles - Niveau Initié (1 pt)
         { q: "Quelle est la seule planète du Système solaire à avoir été découverte par des calculs mathématiques avant même d'être observée au télescope ?", a: "Neptune", d: "C'est l'astronome français Urbain Le Verrier qui a déduit sa position en étudiant les anomalies de l'orbite d'Uranus. On théorise qu'il y pleut des diamants !", pts: 1 },
