@@ -3,113 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Buzzer Spatial</title>
+    <title>Buzzer</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chau+Philomene+One&family=Josefin+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-dark: #0f0d1b;
+            --bg-panel: #1a172c;
+            --accent: #f7b731;
+            --success: #00e676;
+            --danger: #ff5252;
+            --text-light: #ffffff;
+            --text-muted: #8b86a8;
+        }
+
+        * { box-sizing: border-box; font-family: 'Josefin Sans', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+
         body {
-            margin: 0; padding: 0; font-family: 'Josefin Sans', sans-serif;
-            background-color: #191631; color: white; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; 
-            min-height: 100vh; min-height: 100dvh;
-            overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
-        }
-        
-        /* Conteneur de connexion occupant presque tout l'écran */
-        #login-screen { 
-            width: 90vw; max-width: 400px; text-align: center; 
-            background: rgba(255,255,255,0.05); padding: 40px 20px; 
-            border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-sizing: border-box;
+            margin: 0; padding: 0; background-color: var(--bg-dark); color: var(--text-light);
+            height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden; touch-action: manipulation;
         }
 
-        h1 { font-size: 2.5rem; margin-top: 0; margin-bottom: 30px; color: #f7b731; }
-        
-        #buzzer-screen { 
-            display: none; height: 100%; width: 100%; 
-            flex-direction: column; align-items: center; justify-content: center; 
-            box-sizing: border-box;
+        h1, h2, .title-font { font-family: 'Chau Philomene One', sans-serif; margin: 0; }
+
+        /* --- ÉCRAN DE CONNEXION --- */
+        #login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: 100%; padding: 25px;
         }
         
-        /* Champs de texte massifs pour éviter le zoom iOS/Android */
+        .login-card {
+            background: var(--bg-panel); width: 100%; max-width: 360px;
+            padding: 40px 25px; border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        .login-title { font-size: 3rem; color: var(--accent); margin-bottom: 5px; line-height: 1; }
+        .login-subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 35px; }
+
+        .input-group { margin-bottom: 20px; }
         input {
-            width: 100%; padding: 20px; margin-bottom: 20px; 
-            font-size: 1.5rem; border-radius: 15px; border: 2px solid #f7b731; 
-            background: rgba(0,0,0,0.5); color: white; 
-            box-sizing: border-box; text-align: center;
+            width: 100%; padding: 18px 20px; border-radius: 16px; border: 2px solid transparent;
+            background: rgba(0,0,0,0.4); color: var(--text-light); font-size: 1.3rem; text-align: center;
+            outline: none; transition: all 0.3s;
         }
-        
+        input::placeholder { color: rgba(255,255,255,0.3); }
+        input:focus { border-color: var(--accent); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(247, 183, 49, 0.2); }
+
         .btn-join {
-            width: 100%; padding: 20px; font-size: 1.5rem; font-weight: bold;
-            border-radius: 15px; background: #f7b731; color: #191631; border: none;
-            cursor: pointer; text-transform: uppercase;
+            width: 100%; padding: 18px; border-radius: 16px; border: none; margin-top: 10px;
+            background: var(--accent); color: var(--bg-dark); font-size: 1.3rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; cursor: pointer; transition: transform 0.1s;
+            box-shadow: 0 8px 25px rgba(247, 183, 49, 0.3);
+        }
+        .btn-join:active { transform: scale(0.96); }
+
+        /* --- ÉCRAN DU BUZZER --- */
+        #buzzer-screen {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: 100%; padding: 20px;
         }
 
-        /* Buzzer géant */
+        .status-container { margin-bottom: 5vh; text-align: center; height: 80px; display: flex; align-items: center; justify-content: center; }
+        #status-text { font-size: 2.2rem; font-weight: 700; color: var(--text-muted); line-height: 1.2; word-break: break-word; }
+        .status-highlight { color: var(--accent); font-family: 'Chau Philomene One', sans-serif; font-size: 2.8rem; text-shadow: 0 0 20px rgba(247, 183, 49, 0.4); }
+
+        /* Le Bouton de Buzz Principal */
+        .buzzer-wrapper {
+            position: relative; width: 80vw; max-width: 350px; aspect-ratio: 1/1;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+        }
+
         #big-buzzer {
-            width: 85vw; max-width: 400px; aspect-ratio: 1 / 1; 
-            border-radius: 50%; border: none;
-            font-size: 3rem; font-weight: bold; text-transform: uppercase;
-            transition: transform 0.1s ease; cursor: pointer;
-            -webkit-tap-highlight-color: transparent; 
-            margin: 20px 0; line-height: 1.2; box-sizing: border-box;
+            width: 90%; height: 90%; border-radius: 50%; border: none; outline: none;
+            font-size: 3rem; font-family: 'Chau Philomene One', sans-serif; color: var(--bg-dark);
+            cursor: pointer; transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
         }
         
-        .buzzer-ready { 
-            background: radial-gradient(circle at 30% 30%, #00e676, #00b894); color: white; 
-            box-shadow: 0 15px 0 #008f73, 0 10px 30px rgba(0, 184, 148, 0.4); 
+        .icon { font-size: 3.5rem; line-height: 1; }
+
+        /* ÉTATS DU BUZZER */
+        .buzzer-locked {
+            background: linear-gradient(145deg, #2a2542, #181528); color: var(--text-muted) !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.05);
+            pointer-events: none; transform: translateY(5px);
         }
-        .buzzer-ready:active { transform: translateY(15px); box-shadow: 0 0 0 #008f73; }
-        
-        .buzzer-locked { 
-            background: radial-gradient(circle at 30% 30%, #ff7675, #d63031); 
-            color: rgba(255,255,255,0.9); box-shadow: 0 10px 0 #b22828;
-            pointer-events: none;
+        .buzzer-locked .icon { opacity: 0.5; filter: grayscale(1); }
+
+        .buzzer-ready {
+            background: linear-gradient(145deg, var(--success), #00b35c);
+            box-shadow: 0 15px 35px rgba(0, 230, 118, 0.4), inset 0 5px 15px rgba(255,255,255,0.3);
+        }
+        .buzzer-ready:active {
+            transform: scale(0.92); box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3), inset 0 10px 25px rgba(0,0,0,0.3);
         }
 
         .buzzer-winner {
-            background: radial-gradient(circle at 30% 30%, #f1c40f, #f39c12); 
-            color: #191631; box-shadow: 0 10px 0 #d35400;
-            pointer-events: none;
-        }
-        
-        #status-text { 
-            font-size: 2rem; min-height: 60px; margin-bottom: 20px; 
-            font-weight: bold; text-align: center; width: 90%; word-break: break-word;
+            background: linear-gradient(145deg, var(--accent), #e19b10);
+            box-shadow: 0 0 50px rgba(247, 183, 49, 0.5), inset 0 5px 15px rgba(255,255,255,0.4);
+            pointer-events: none; animation: pulseWinner 2s infinite;
         }
 
-        /* Couleurs du podium pour le fond d'écran entier */
-        body.rank-1 { background: radial-gradient(circle at 50% 50%, #ffd700, #d4af37); color: #191631; }
-        body.rank-2 { background: radial-gradient(circle at 50% 50%, #e0e0e0, #a0a0a0); color: #191631; }
-        body.rank-3 { background: radial-gradient(circle at 50% 50%, #cd7f32, #8b4513); color: white; }
-        
-        #podium-screen { 
-            display: none; flex-direction: column; align-items: center; justify-content: center; 
-            height: 100%; width: 100%; text-align: center;
+        @keyframes pulseWinner {
+            0% { box-shadow: 0 0 30px rgba(247, 183, 49, 0.4), inset 0 5px 15px rgba(255,255,255,0.4); }
+            50% { box-shadow: 0 0 60px rgba(247, 183, 49, 0.8), inset 0 5px 15px rgba(255,255,255,0.4); }
+            100% { box-shadow: 0 0 30px rgba(247, 183, 49, 0.4), inset 0 5px 15px rgba(255,255,255,0.4); }
         }
-        .medal { font-size: clamp(6rem, 15vw, 8rem); margin-bottom: 20px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
-        .rank-text { font-size: clamp(3rem, 10vw, 5rem); font-family: 'Chau Philomene One', sans-serif; margin: 0; line-height: 1; }
-        .score-text { font-size: 1.8rem; margin-top: 15px; font-weight: bold; opacity: 0.9; }
+
+        /* --- ÉCRAN PODIUM --- */
+        body.rank-1 { background: radial-gradient(circle at 50% 30%, #f7b731, #a67c00); }
+        body.rank-2 { background: radial-gradient(circle at 50% 30%, #e0e0e0, #888888); }
+        body.rank-3 { background: radial-gradient(circle at 50% 30%, #cd7f32, #7a461b); }
+        
+        #podium-screen {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: 100%; text-align: center;
+        }
+        .medal { font-size: 8rem; margin-bottom: 20px; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4)); animation: floatMedal 3s ease-in-out infinite; }
+        .rank-text { font-size: 5rem; font-family: 'Chau Philomene One', sans-serif; margin: 0; line-height: 1; text-shadow: 0 5px 15px rgba(0,0,0,0.3); color: white; }
+        .score-text { font-size: 1.8rem; margin-top: 20px; font-weight: 700; color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.2); padding: 10px 25px; border-radius: 20px; }
+
+        @keyframes floatMedal {
+            0% { transform: translateY(0); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h1>Buzzer Spatial</h1>
-        <input type="number" id="code-input" placeholder="Code salon" pattern="\d*">
-        <input type="text" id="team-input" placeholder="Nom d'équipe">
-        <button class="btn-join" onclick="joinGame()">Rejoindre</button>
+        <div class="login-card">
+            <h1 class="login-title">Buzzer</h1>
+            <div class="login-subtitle">Rejoignez la partie</div>
+            
+            <div class="input-group">
+                <input type="number" id="code-input" placeholder="Code salon" pattern="\d*">
+            </div>
+            <div class="input-group">
+                <input type="text" id="team-input" placeholder="Nom d'équipe" maxlength="15">
+            </div>
+            
+            <button class="btn-join" onclick="joinGame()" id="btn-connect">Jouer</button>
+        </div>
     </div>
 
     <div id="buzzer-screen">
-        <div id="status-text">En attente...</div>
-        <button id="big-buzzer" class="buzzer-locked">🔒<br>ATTENTE</button>
+        <div class="status-container">
+            <div id="status-text">En attente...</div>
+        </div>
+        
+        <div class="buzzer-wrapper">
+            <button id="big-buzzer" class="buzzer-locked">
+                <span class="icon">🔒</span>
+                <span>Bloqué</span>
+            </button>
+        </div>
     </div>
 
     <div id="podium-screen">
         <div class="medal" id="podium-medal">🏅</div>
         <h2 class="rank-text" id="podium-rank-text">1er</h2>
-        <div class="score-text" id="podium-score-text">15 pts</div>
+        <div class="score-text" id="podium-score-text">0 pts</div>
     </div>
 
     <script>
@@ -122,8 +179,9 @@
             myTeamName = document.getElementById('team-input').value.trim();
             if(!code || !myTeamName) return;
 
-            // Affichage de chargement
-            document.querySelector('.btn-join').innerText = "Connexion...";
+            const btn = document.getElementById('btn-connect');
+            btn.innerText = "Connexion...";
+            btn.style.opacity = "0.7";
 
             peer = new Peer(); 
             peer.on('open', () => {
@@ -139,21 +197,23 @@
                         document.getElementById('buzzer-screen').style.display = 'flex';
                     }
                     else if (data.type === 'unlock') {
-                        const btn = document.getElementById('big-buzzer');
-                        btn.className = 'buzzer-ready';
-                        btn.innerHTML = 'BUZZ';
-                        document.getElementById('status-text').innerText = 'C\'EST PARTI !';
+                        const b = document.getElementById('big-buzzer');
+                        b.className = 'buzzer-ready';
+                        b.innerHTML = '<span class="icon">⚡</span><span>BUZZ</span>';
+                        document.getElementById('status-text').innerText = 'Prêt !';
+                        if(navigator.vibrate) navigator.vibrate([30, 50, 30]); // Double petite vibration
                     }
                     else if (data.type === 'lock') {
-                        const btn = document.getElementById('big-buzzer');
+                        const b = document.getElementById('big-buzzer');
                         if(data.winner === myTeamName) {
-                            document.getElementById('status-text').innerHTML = '<span style="color:#f7b731">À VOUS !</span>';
-                            btn.className = 'buzzer-winner';
-                            btn.innerHTML = '🎤<br>PARLEZ';
+                            document.getElementById('status-text').innerHTML = '<span class="status-highlight">C\'EST À VOUS !</span>';
+                            b.className = 'buzzer-winner';
+                            b.innerHTML = '<span class="icon">🎤</span><span>PARLEZ</span>';
+                            if(navigator.vibrate) navigator.vibrate(200); // Longue vibration pour le gagnant
                         } else {
                             document.getElementById('status-text').innerText = data.winner ? data.winner : 'Bloqué';
-                            btn.className = 'buzzer-locked';
-                            btn.innerHTML = '🔒<br>BLOQUÉ';
+                            b.className = 'buzzer-locked';
+                            b.innerHTML = '<span class="icon">🔒</span><span>BLOQUÉ</span>';
                         }
                     } else if (data.type === 'podium_result') {
                         document.getElementById('buzzer-screen').style.display = 'none';
@@ -164,7 +224,7 @@
                         const medal = document.getElementById('podium-medal');
                         document.getElementById('podium-score-text').innerText = data.score + ' pts';
                         
-                        document.body.className = ''; // Réinitialise la couleur du fond
+                        document.body.className = ''; 
                         
                         if (data.rank === 1) {
                             document.body.classList.add('rank-1');
@@ -178,18 +238,28 @@
                         } else {
                             rText.innerText = data.rank + 'ème'; medal.innerText = '👏';
                         }
+                        if(navigator.vibrate) navigator.vibrate([100, 100, 100, 100, 300]); // Célébration
                     }
                 });
                 
                 conn.on('error', () => {
-                    document.querySelector('.btn-join').innerText = "Erreur, réessayer";
+                    btn.innerText = "Erreur, réessayer";
+                    btn.style.opacity = "1";
+                    btn.style.background = "var(--danger)";
+                    btn.style.color = "white";
                 });
             });
         }
 
         function triggerBuzz(e) {
             if (e) e.preventDefault(); 
-            if (conn && conn.open && document.getElementById('big-buzzer').classList.contains('buzzer-ready')) {
+            const btn = document.getElementById('big-buzzer');
+            if (conn && conn.open && btn.classList.contains('buzzer-ready')) {
+                // Rendu immédiat pour la sensation de vitesse avant même le retour réseau
+                btn.className = 'buzzer-locked';
+                btn.innerHTML = '<span class="icon">⌛</span><span>ENVOI...</span>';
+                if(navigator.vibrate) navigator.vibrate(50);
+                
                 conn.send({ type: 'buzz', teamName: myTeamName });
             }
         }
