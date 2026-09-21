@@ -335,8 +335,7 @@
         }
 
         function updateMasterUI(data){
-            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'Choix du thème'};
-            document.getElementById('ui-phase').innerText=names[data.phase]||'Accueil';
+            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'Choix du thème', pre_podium:'Fin de partie', podium:'Classement Final'};             document.getElementById('ui-phase').innerText=names[data.phase]||'Accueil';
             document.getElementById('ui-question').innerHTML=data.question||'En attente...';
             document.getElementById('ui-answer').innerHTML=data.answer||'••••••••';
 
