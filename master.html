@@ -14,9 +14,7 @@
             --text-muted: #958fb8;
             --accent: #f7b731;
             --success: #00e676;
-            --success-bg: rgba(0, 230, 118, 0.15);
             --danger: #ff5252;
-            --danger-bg: rgba(255, 82, 82, 0.15);
             --info: #3498db;
             --purple: #9b59b6;
         }
@@ -25,25 +23,25 @@
 
         body {
             margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main);
-            min-height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+            height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
         }
 
         /* --- TYPOGRAPHIE --- */
         h1, h2, .font-title { font-family: 'Chau Philomene One', sans-serif; margin: 0; }
-        .label { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 8px; }
+        .label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 5px; }
 
         /* --- LOGIN SCREEN --- */
         #login-screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100dvh; padding: 20px;
+            height: 100dvh; padding: 15px;
         }
         .login-box {
-            background: var(--card-bg); padding: 40px 30px; border-radius: 30px; width: 100%; max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;
+            background: var(--card-bg); padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
         }
         input {
-            width: 100%; padding: 20px; margin: 20px 0; border-radius: 15px; border: 2px solid #362f59;
-            background: rgba(0,0,0,0.3); color: white; font-size: 1.5rem; text-align: center; outline: none; transition: 0.3s;
+            width: 100%; padding: 15px; margin: 15px 0; border-radius: 12px; border: 2px solid #362f59;
+            background: rgba(0,0,0,0.3); color: white; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s;
         }
         input:focus { border-color: var(--accent); }
 
@@ -56,75 +54,73 @@
         /* HEADER */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: var(--bg-color); flex-shrink: 0;
+            padding: 10px 15px; background: var(--bg-color); flex-shrink: 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .phase-badge { color: var(--accent); font-weight: 700; font-size: 1.2rem; }
-        .status-dot { color: var(--success); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .phase-badge { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
+        .status-dot { color: var(--success); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
 
         /* CONTENT AREA (Scrollable) */
         .content-area {
-            flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px;
+            flex-grow: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;
         }
         
-        .card { background: var(--card-bg); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         
-        .q-text { font-size: 1.6rem; font-weight: 600; line-height: 1.4; margin: 0; }
-        .a-text { font-size: 2rem; font-weight: 700; color: var(--success); margin: 0; line-height: 1.2; text-shadow: 0 0 15px rgba(0, 230, 118, 0.3); }
+        .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.3; margin: 0; }
+        .a-text { font-size: 1.6rem; font-weight: 700; color: var(--success); margin: 0; line-height: 1.2; text-shadow: 0 0 10px rgba(0, 230, 118, 0.2); }
         
         .desc-box {
-            margin-top: 15px; padding: 15px 20px; background: rgba(0,0,0,0.2);
-            border-left: 4px solid var(--info); border-radius: 10px; display: none;
+            margin-top: 10px; padding: 10px 15px; background: rgba(0,0,0,0.2);
+            border-left: 3px solid var(--info); border-radius: 10px; display: none;
         }
-        .desc-text { font-size: 1.1rem; color: #dcdcdc; font-style: italic; line-height: 1.5; margin: 0; }
+        .desc-text { font-size: 0.95rem; color: #dcdcdc; font-style: italic; line-height: 1.4; margin: 0; }
 
         /* --- CONTROL AREA (Sticky Bottom) --- */
         .control-area {
-            background: var(--bg-color); padding: 20px; flex-shrink: 0;
-            border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            background: var(--bg-color); padding: 12px; flex-shrink: 0;
+            border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
 
         .btn {
-            width: 100%; border: none; border-radius: 20px; padding: 20px 15px;
-            font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: transform 0.1s, filter 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px;
+            width: 100%; border: none; border-radius: 15px; padding: 15px 10px;
+            font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; gap: 8px;
         }
         .btn:active { transform: scale(0.96); }
         .btn:disabled { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
 
-        .btn-accent { background: var(--accent); color: #0b0914; box-shadow: 0 10px 20px rgba(247, 183, 49, 0.3); }
+        .btn-accent { background: var(--accent); color: #0b0914; box-shadow: 0 5px 15px rgba(247, 183, 49, 0.3); }
         .btn-reveal { background: #2c2747; color: white; border: 2px solid #48416d; }
-        .btn-skip { background: var(--info); color: white; box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3); }
+        .btn-skip { background: var(--info); color: white; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3); }
         
-        /* Boutons Vrai/Faux massifs et colorés */
-        .btn-true { background: var(--success); color: #004d27; box-shadow: 0 10px 25px rgba(0, 230, 118, 0.3); font-size: 1.5rem; }
-        .btn-false { background: var(--danger); color: #4a0000; box-shadow: 0 10px 25px rgba(255, 82, 82, 0.3); font-size: 1.5rem; }
+        .btn-true { background: var(--success); color: #004d27; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.2); font-size: 1.2rem; }
+        .btn-false { background: var(--danger); color: #4a0000; box-shadow: 0 5px 15px rgba(255, 82, 82, 0.2); font-size: 1.2rem; }
         
-        .btn-hold { background: var(--purple); color: white; padding: 30px 15px; font-size: 1.3rem; box-shadow: 0 10px 30px rgba(155, 89, 182, 0.4); }
+        .btn-hold { background: var(--purple); color: white; padding: 20px 10px; box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3); }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        .turn-info { text-align: center; color: var(--accent); font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
-        .skip-note { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 15px; }
+        .turn-info { text-align: center; color: var(--accent); font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
+        .skip-note { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 10px; }
 
         /* --- OVERLAYS (Plein écran) --- */
         .overlay {
             display: none; position: fixed; inset: 0; background: rgba(11, 9, 20, 0.98); z-index: 1000;
-            flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+            flex-direction: column; align-items: center; justify-content: center; padding: 15px;
         }
         .overlay-card {
-            width: 100%; max-width: 500px; background: var(--card-bg); padding: 40px 20px;
-            border-radius: 30px; border: 2px solid var(--accent); text-align: center;
+            width: 100%; max-width: 400px; background: var(--card-bg); padding: 30px 15px;
+            border-radius: 25px; border: 2px solid var(--accent); text-align: center;
         }
-        .overlay-title { font-size: 3rem; color: var(--accent); margin-bottom: 30px; line-height: 1.1; word-break: break-word; }
+        .overlay-title { font-size: 2.2rem; color: var(--accent); margin-bottom: 25px; line-height: 1.1; word-break: break-word; }
 
-        /* --- RESPONSIVE TABLETTE / PAYSAGE --- */
+        /* --- RESPONSIVE TABLETTE --- */
         @media (min-width: 768px) {
             #master-screen { flex-direction: row; }
             .header { position: absolute; top: 0; width: 100%; z-index: 10; background: transparent; border: none; }
-            .content-area { flex: 1; padding: 80px 40px 40px 40px; }
-            .control-area { width: 400px; border-top: none; border-left: 1px solid rgba(255,255,255,0.05); padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; }
-            .q-text { font-size: 2rem; } .a-text { font-size: 2.5rem; }
+            .content-area { flex: 1; padding: 60px 30px 30px 30px; }
+            .control-area { width: 350px; border-top: none; border-left: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; display: flex; flex-direction: column; justify-content: center; }
         }
     </style>
 </head>
@@ -133,11 +129,11 @@
     <!-- ÉCRAN DE CONNEXION -->
     <div id="login-screen">
         <div class="login-box">
-            <h1 style="color: var(--accent); font-size: 3.5rem; margin-bottom: 10px;">Master</h1>
-            <p style="color: var(--text-muted); margin-bottom: 30px;">Contrôle à distance</p>
+            <h1 style="color: var(--accent); font-size: 2.8rem; margin-bottom: 5px;">Master</h1>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Contrôle à distance</p>
             <input type="number" id="code-input" placeholder="Code (5 chiffres)" pattern="\d*">
             <button class="btn btn-accent" onclick="joinMaster()">Connecter</button>
-            <p id="status-msg" style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;"></p>
+            <p id="status-msg" style="margin-top: 15px; color: var(--text-muted); font-size: 0.9rem;"></p>
         </div>
     </div>
 
@@ -150,30 +146,30 @@
             <span class="status-dot">● Connecté</span>
         </div>
 
-        <!-- ZONE DE TEXTE -->
+        <!-- ZONE DE TEXTE (Défilement fluide) -->
         <div class="content-area">
             <div class="card">
-                <div class="label">Question à l'écran</div>
+                <div class="label">Question</div>
                 <div class="q-text" id="ui-question">En attente du lancement du jeu...</div>
             </div>
             
-            <div class="card" style="border: 1px solid rgba(0, 230, 118, 0.3);">
+            <div class="card" style="border: 1px solid rgba(0, 230, 118, 0.2);">
                 <div class="label" style="color: var(--success);">Réponse secrète</div>
                 <div class="a-text" id="ui-answer">••••••••</div>
                 
                 <div class="desc-box" id="ui-answer-description">
-                    <div class="label" style="color: var(--info);">Anecdote / Infos</div>
+                    <div class="label" style="color: var(--info);">Infos</div>
                     <div class="desc-text" id="ui-answer-description-text"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ZONE DE CONTRÔLE -->
+        <!-- ZONE DE CONTRÔLE (Fixe en bas) -->
         <div class="control-area">
             
             <!-- Standard : Révéler / Passer -->
             <div id="ctrl-standard">
-                <button id="btn-reveal" class="btn btn-reveal" onclick="sendCmd('reveal')" style="margin-bottom: 15px;">👁️ Révéler la réponse</button>
+                <button id="btn-reveal" class="btn btn-reveal" onclick="sendCmd('reveal')" style="margin-bottom: 10px;">👁️ Révéler la réponse</button>
                 <button id="btn-skip" class="btn btn-skip" onclick="requestSkip()" disabled>Passer à la suite ➔</button>
                 <div class="skip-note" id="skip-note">Révélez d'abord la réponse.</div>
             </div>
@@ -191,18 +187,18 @@
                     <button class="btn btn-true" onclick="sendCmd('p2_resolve', true)">✅ VRAI</button>
                     <button class="btn btn-false" onclick="sendCmd('p2_resolve', false)">❌ FAUX</button>
                 </div>
-                <div class="skip-note">"Faux" ouvrira le vol aux autres équipes.</div>
+                <div class="skip-note">"Faux" ouvrira le vol.</div>
             </div>
 
-            <!-- Phase 2 : Grille de choix du thème -->
+            <!-- Phase 2 : Grille de choix du thème (très compacte) -->
             <div id="ctrl-p2-cat" style="display: none; flex-direction: column;">
-                <div class="turn-info">Choix du thème pour : <span id="p2-cat-team-name" style="color: white;"></span></div>
-                <div class="grid-2" id="p2-cat-grid" style="gap: 12px; overflow-y: auto; max-height: 40vh; padding-bottom: 10px;"></div>
+                <div class="turn-info" style="margin-bottom: 5px;">Choix pour : <span id="p2-cat-team-name" style="color: white;"></span></div>
+                <div class="grid-2" id="p2-cat-grid" style="gap: 8px;"></div>
             </div>
 
             <!-- Phase 3 : Bouton Maintenir -->
             <div id="ctrl-p3" style="display: none;">
-                <div class="skip-note" style="margin-bottom: 15px;">Le texte se dévoile tant que vous appuyez.</div>
+                <div class="skip-note" style="margin-bottom: 10px;">Le texte se dévoile tant que vous appuyez.</div>
                 <button class="btn btn-hold" id="btn-p3-anim">🪄 MAINTENIR POUR DÉVOILER</button>
             </div>
         </div>
@@ -211,11 +207,11 @@
     <!-- OVERLAY DE BUZZ PLEIN ÉCRAN -->
     <div id="buzz-overlay" class="overlay">
         <div class="overlay-card">
-            <div class="label" style="color: white; margin-bottom: 15px;">A BUZZÉ</div>
+            <div class="label" style="color: white; margin-bottom: 10px;">A BUZZÉ</div>
             <div class="overlay-title font-title" id="buzz-team-title">Équipe !</div>
-            <div class="grid-2" style="margin-top: 40px;">
-                <button class="btn btn-true" onclick="sendCmd('resolve', true)" style="padding: 30px 10px;">✅ VRAI</button>
-                <button class="btn btn-false" onclick="sendCmd('resolve', false)" style="padding: 30px 10px;">❌ FAUX</button>
+            <div class="grid-2" style="margin-top: 25px;">
+                <button class="btn btn-true" onclick="sendCmd('resolve', true)" style="padding: 20px 10px;">✅ VRAI</button>
+                <button class="btn btn-false" onclick="sendCmd('resolve', false)" style="padding: 20px 10px;">❌ FAUX</button>
             </div>
         </div>
     </div>
@@ -249,8 +245,7 @@
 
         function sendCmd(action, isCorrect=null){
             if(conn && conn.open) {
-                // Vibration haptique sur mobile si supportée pour confirmer l'action
-                if(navigator.vibrate) navigator.vibrate(50);
+                if(navigator.vibrate) navigator.vibrate(40); // Vibration courte
                 conn.send({type:'master_cmd', action, isCorrect});
             }
         }
@@ -263,7 +258,7 @@
         function updateSkipButton(){
             const btn=document.getElementById('btn-skip'), note=document.getElementById('skip-note');
             btn.disabled=!canSkip;
-            note.innerText = canSkip ? "Passez à la question suivante." : "Révélez d'abord la réponse.";
+            note.innerText = canSkip ? "Passez à la suite." : "Révélez d'abord la réponse.";
         }
 
         function requestTransition(){
@@ -290,7 +285,6 @@
             const answerRevealed = data.answerRevealed===true || data.canSkip===true;
             canSkip = answerRevealed && ['p1','p2_q','p3_q'].includes(data.phase);
 
-            // Hide all controls first
             ['ctrl-standard', 'phase-transition', 'ctrl-p2', 'ctrl-p2-cat', 'ctrl-p3', 'buzz-overlay'].forEach(id => {
                 document.getElementById(id).style.display = 'none';
             });
@@ -298,7 +292,6 @@
 
             transitionAction = data.transitionAction || null;
 
-            // Display logic based on state priority
             if (data.buzzedTeam) {
                 document.getElementById('buzz-overlay').style.display='flex';
                 document.getElementById('buzz-team-title').innerText = data.buzzedTeam;
@@ -317,11 +310,10 @@
                 data.p2Cats.forEach(cat => {
                     const btn = document.createElement('button');
                     btn.className = 'btn ' + (cat.disabled ? 'btn-reveal' : 'btn-skip');
-                    btn.innerText = cat.name; btn.style.padding = "15px"; fontStyle = "1.1rem";
+                    btn.innerText = cat.name; 
+                    btn.style.padding = "8px"; btn.style.fontSize = "0.95rem"; btn.style.minHeight = "55px"; // Modifié ici pour la grille
                     if (cat.disabled) btn.disabled = true;
-                    else btn.onclick = () => sendCmd('selectCategory', null, {category: cat.name, teamIndex: data.currentChoosingTeam}); // Fixed nested arg logic below
-                    // Hack to fix arguments for selectCategory
-                    if (!cat.disabled) btn.onclick = () => { if(conn && conn.open) conn.send({ type: 'master_cmd', action: 'selectCategory', category: cat.name, teamIndex: data.currentChoosingTeam }); };
+                    else btn.onclick = () => { if(conn && conn.open) conn.send({ type: 'master_cmd', action: 'selectCategory', category: cat.name, teamIndex: data.currentChoosingTeam }); };
                     grid.appendChild(btn);
                 });
             }
@@ -340,7 +332,6 @@
             updateSkipButton();
         }
 
-        // Phase 3 Hold button logic
         const btnP3 = document.getElementById('btn-p3-anim');
         btnP3.addEventListener('pointerdown', (e) => {
             e.preventDefault(); if(p3PointerDown) return;
