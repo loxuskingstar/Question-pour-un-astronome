@@ -6,10 +6,7 @@ let isBuzzerActive = false;
 let currentBuzzerWinner = null;
 
 function initNetwork() {
-    // Génère un code à 5 chiffres
     roomCode = Math.floor(10000 + Math.random() * 90000).toString();
-    
-    // Initialise le serveur PeerJS avec un préfixe unique
     peer = new Peer('astro-' + roomCode);
 
     peer.on('open', (id) => {
@@ -25,23 +22,45 @@ function initNetwork() {
     });
 }
 
-let masterConn = null; // Stocke la connexion de la télécommande
+let masterConn = null;
 
 function handleNetworkData(conn, data) {
     if (data.type === 'join') {
         const teamName = data.teamName.trim();
-        connections[teamName] = conn;
-        addTeam(teamName); 
+        const isReconnecting = teams.some(t => t.name === teamName);
+        
+        // On écrase l'ancienne connexion par la nouvelle
+        connections[teamName] = conn; 
+        
+        if (!isReconnecting) {
+            addTeam(teamName); 
+        }
         conn.send({ type: 'joined', success: true });
+        
+        // RECONNEXION AUTOMATIQUE : On renvoie l'état exact du jeu à l'écran
+        setTimeout(() => {
+            if (currentPhase !== '') {
+                const teamData = getTeam(teamName);
+                if (teamData.blocked) {
+                    conn.send({ type: 'lock', winner: 'Bloqué' });
+                } else if (currentBuzzedTeam === teamName) {
+                    conn.send({ type: 'lock', winner: teamName });
+                } else if (currentPhase === 'p2_q' && !isQuestionActive && activeTeamIndex !== -1 && teams[activeTeamIndex].name === teamName && !currentBuzzedTeam) {
+                    conn.send({ type: 'lock', winner: teamName }); // Écran jaune Phase 2
+                } else if (!isQuestionActive) {
+                    conn.send({ type: 'lock', winner: 'Écoutez bien...' });
+                } else {
+                    conn.send({ type: 'unlock' });
+                }
+            }
+        }, 500);
     } 
     else if (data.type === 'join_master') {
-        // NOUVEAU : Connexion de la télécommande
         masterConn = conn;
         conn.send({ type: 'master_joined' });
         if (typeof syncMaster === 'function') syncMaster();
     }
     else if (data.type === 'master_cmd') {
-        // NOUVEAU : Réception des clics de la télécommande
         if (typeof handleMasterCommand === 'function') handleMasterCommand(data);
     }
     else if (data.type === 'buzz') {
@@ -49,7 +68,6 @@ function handleNetworkData(conn, data) {
     }
 }
 
-// Intercepte l'affichage de la pop-up pour mettre à jour la télécommande
 const originalTriggerBuzzPopup = triggerBuzzPopup;
 triggerBuzzPopup = function(teamName) {
     originalTriggerBuzzPopup(teamName);
@@ -58,10 +76,8 @@ triggerBuzzPopup = function(teamName) {
 
 function openBuzzers() {
     isQuestionActive = true;
-    currentBuzzedTeam = null; // ➔ On s'assure que la place est libre !
-    buzzQueue = []; // ➔ On vide la file d'attente par sécurité
-    
-    // Débloque uniquement les équipes qui n'ont pas fait d'erreur sur cette question
+    currentBuzzedTeam = null; 
+    buzzQueue = []; 
     Object.keys(connections).forEach(teamName => {
         if (!getTeam(teamName).blocked) {
             connections[teamName].send({ type: 'unlock' });
@@ -79,25 +95,18 @@ function handleIncomingBuzz(teamName) {
     if (!isQuestionActive || getTeam(teamName).blocked) return;
 
     if (currentPhase === 'p2_q') {
-        // PHASE 2 : Un seul buzz pris à la fois (pas de file d'attente)
-        if (!currentBuzzedTeam) {
-            triggerBuzzPopup(teamName);
-        }
+        if (!currentBuzzedTeam) triggerBuzzPopup(teamName);
     } else {
-        // PHASES 1 & 3 : File d'attente
         if (!buzzQueue.includes(teamName)) {
             buzzQueue.push(teamName);
-            // S'il n'y a personne en train de répondre, on affiche direct la popup
-            if (!currentBuzzedTeam) {
-                processNextInQueue();
-            }
+            if (!currentBuzzedTeam) processNextInQueue();
         }
     }
 }
 
 function processNextInQueue() {
     if (buzzQueue.length > 0) {
-        let nextTeam = buzzQueue.shift(); // Récupère le premier de la file
+        let nextTeam = buzzQueue.shift();
         triggerBuzzPopup(nextTeam);
     }
 }
@@ -107,16 +116,13 @@ function triggerBuzzPopup(teamName) {
     document.getElementById('buzz-team-name').innerText = getTeam(teamName).emoji + ' ' + teamName;
     document.getElementById('buzz-popup').style.display = 'flex';
     
-    // On cache le bouton "Révéler la réponse" pendant la décision
     const btnReveal = document.getElementById('btn-reveal');
     if (btnReveal) btnReveal.style.display = 'none';
     
-    // Verrouille immédiatement tous les téléphones pour écouter la réponse
     Object.values(connections).forEach(c => {
         c.send({ type: 'lock', winner: teamName });
     });
     
-    // AJOUT : Si on est en Phase 3, on stoppe net l'animation de la touche Espace
     if (typeof currentPhase !== 'undefined' && currentPhase === 'p3_q') {
         if (typeof p3RevealInterval !== 'undefined' && p3RevealInterval) {
             clearInterval(p3RevealInterval);
@@ -125,7 +131,6 @@ function triggerBuzzPopup(teamName) {
     }
 }
 
-// Réinitialise les blocages pour la question suivante
 function resetBuzzerBlocks() {
     teams.forEach(t => t.blocked = false);
 }

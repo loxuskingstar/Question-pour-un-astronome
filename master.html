@@ -7,114 +7,63 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chau+Philomene+One&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0b0914; 
-            --card-bg: #1a162e;
-            --text-main: #ffffff;
-            --text-muted: #958fb8;
-            --accent: #f7b731;
-            --success: #00e676;
-            --danger: #ff5252;
-            --info: #3498db;
-            --purple: #9b59b6;
-        }
-
+        :root { --bg-color: #0b0914; --card-bg: #1a162e; --text-main: #ffffff; --text-muted: #958fb8; --accent: #f7b731; --success: #00e676; --danger: #ff5252; --info: #3498db; --purple: #9b59b6; }
         * { box-sizing: border-box; font-family: 'Josefin Sans', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
 
-        body {
-            margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main);
-            height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
-        }
-
-        /* --- TYPOGRAPHIE --- */
         h1, h2, .font-title { font-family: 'Chau Philomene One', sans-serif; margin: 0; }
         .label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 5px; }
 
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100dvh; padding: 15px;
-        }
-        .login-box {
-            background: var(--card-bg); padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
-        }
-        input {
-            width: 100%; padding: 15px; margin: 15px 0; border-radius: 12px; border: 2px solid #362f59;
-            background: rgba(0,0,0,0.3); color: white; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s;
-        }
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100dvh; padding: 15px; }
+        .login-box { background: var(--card-bg); padding: 30px 20px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 12px; border: 2px solid #362f59; background: rgba(0,0,0,0.3); color: white; font-size: 1.2rem; text-align: center; outline: none; transition: 0.3s; }
         input:focus { border-color: var(--accent); }
 
-        /* --- MAIN SCREEN LAYOUT --- */
-        #master-screen {
-            display: none; flex-direction: column; height: 100dvh;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
+        #master-screen { display: none; flex-direction: column; height: 100dvh; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 
-        /* HEADER */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; background: var(--bg-color); flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: var(--bg-color); flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .phase-badge { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
-        .status-dot { color: var(--success); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-
-        /* CONTENT AREA (Scrollable) */
-        .content-area {
-            flex-grow: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px;
-        }
+        .status-area { display: flex; align-items: center; gap: 10px; }
         
+        /* Bouton correcteur de scores */
+        .btn-scores { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 5px 10px; font-weight: bold; cursor: pointer; }
+
+        .content-area { flex-grow: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
         .card { background: var(--card-bg); padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         
         .q-text { font-size: 1.25rem; font-weight: 600; line-height: 1.3; margin: 0; }
         .a-text { font-size: 1.6rem; font-weight: 700; color: var(--success); margin: 0; line-height: 1.2; text-shadow: 0 0 10px rgba(0, 230, 118, 0.2); }
         
-        .desc-box {
-            margin-top: 10px; padding: 10px 15px; background: rgba(0,0,0,0.2);
-            border-left: 3px solid var(--info); border-radius: 10px; display: none;
-        }
+        .desc-box { margin-top: 10px; padding: 10px 15px; background: rgba(0,0,0,0.2); border-left: 3px solid var(--info); border-radius: 10px; display: none; }
         .desc-text { font-size: clamp(1.15rem, 3.5vw, 1.3rem); color: #dcdcdc; font-style: italic; line-height: 1.4; margin: 0; }
-        /* --- CONTROL AREA (Sticky Bottom) --- */
-        .control-area {
-            background: var(--bg-color); padding: 12px; flex-shrink: 0;
-            border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: calc(12px + env(safe-area-inset-bottom));
-        }
 
-        .btn {
-            width: 100%; border: none; border-radius: 15px; padding: 15px 10px;
-            font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
+        .control-area { background: var(--bg-color); padding: 12px; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+
+        .btn { width: 100%; border: none; border-radius: 15px; padding: 15px 10px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: transform 0.1s; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn:active { transform: scale(0.96); }
         .btn:disabled { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
 
-        .btn-accent { background: var(--accent); color: #0b0914; box-shadow: 0 5px 15px rgba(247, 183, 49, 0.3); }
+        .btn-accent { background: var(--accent); color: #0b0914; }
         .btn-reveal { background: #2c2747; color: white; border: 2px solid #48416d; }
-        .btn-skip { background: var(--info); color: white; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3); }
-        
-        .btn-true { background: var(--success); color: #004d27; box-shadow: 0 5px 15px rgba(0, 230, 118, 0.2); font-size: 1.2rem; }
-        .btn-false { background: var(--danger); color: #4a0000; box-shadow: 0 5px 15px rgba(255, 82, 82, 0.2); font-size: 1.2rem; }
-        
-        .btn-hold { background: var(--purple); color: white; padding: 20px 10px; box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3); }
+        .btn-skip { background: var(--info); color: white; }
+        .btn-true { background: var(--success); color: #004d27; font-size: 1.2rem; }
+        .btn-false { background: var(--danger); color: #4a0000; font-size: 1.2rem; }
+        .btn-hold { background: var(--purple); color: white; padding: 20px 10px; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
         .turn-info { text-align: center; color: var(--accent); font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; }
         .skip-note { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 10px; }
 
-        /* --- OVERLAYS (Plein écran) --- */
-        .overlay {
-            display: none; position: fixed; inset: 0; background: rgba(11, 9, 20, 0.98); z-index: 1000;
-            flex-direction: column; align-items: center; justify-content: center; padding: 15px;
-        }
-        .overlay-card {
-            width: 100%; max-width: 400px; background: var(--card-bg); padding: 30px 15px;
-            border-radius: 25px; border: 2px solid var(--accent); text-align: center;
-        }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(11, 9, 20, 0.98); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; padding: 15px; }
+        .overlay-card { width: 100%; max-width: 400px; background: var(--card-bg); padding: 30px 15px; border-radius: 25px; border: 2px solid var(--accent); text-align: center; display: flex; flex-direction: column; max-height: 85vh; }
         .overlay-title { font-size: 2.2rem; color: var(--accent); margin-bottom: 25px; line-height: 1.1; word-break: break-word; }
 
-        /* --- RESPONSIVE TABLETTE --- */
+        .score-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 12px; margin-bottom: 10px; }
+        .score-name { font-size: 1.2rem; font-weight: 700; color: white; }
+        .score-pts { color: var(--accent); font-size: 1.2rem; font-weight: 700; margin-right: 15px; }
+        .score-btns { display: flex; gap: 8px; }
+        .btn-tiny { border: none; border-radius: 8px; font-weight: bold; padding: 10px 15px; font-size: 1.1rem; cursor: pointer; }
+
         @media (min-width: 768px) {
             #master-screen { flex-direction: row; }
             .header { position: absolute; top: 0; width: 100%; z-index: 10; background: transparent; border: none; }
@@ -125,7 +74,6 @@
 </head>
 <body>
 
-    <!-- ÉCRAN DE CONNEXION -->
     <div id="login-screen">
         <div class="login-box">
             <h1 style="color: var(--accent); font-size: 2.8rem; margin-bottom: 5px;">Master</h1>
@@ -136,16 +84,15 @@
         </div>
     </div>
 
-    <!-- INTERFACE PRINCIPALE -->
     <div id="master-screen">
-        
-        <!-- HEADER -->
         <div class="header">
             <span class="phase-badge font-title" id="ui-phase">En attente...</span>
-            <span class="status-dot">● Connecté</span>
+            <div class="status-area">
+                <span id="conn-status" style="color: var(--success); font-size: 0.85rem;">●</span>
+                <button class="btn-scores" onclick="document.getElementById('score-overlay').style.display='flex'">SCORES</button>
+            </div>
         </div>
 
-        <!-- ZONE DE TEXTE (Défilement fluide) -->
         <div class="content-area">
             <div class="card">
                 <div class="label">Question</div>
@@ -155,7 +102,6 @@
             <div class="card" style="border: 1px solid rgba(0, 230, 118, 0.2);">
                 <div class="label" style="color: var(--success);">Réponse secrète</div>
                 <div class="a-text" id="ui-answer">••••••••</div>
-                
                 <div class="desc-box" id="ui-answer-description">
                     <div class="label" style="color: var(--info);">Infos</div>
                     <div class="desc-text" id="ui-answer-description-text"></div>
@@ -163,39 +109,31 @@
             </div>
         </div>
 
-        <!-- ZONE DE CONTRÔLE (Fixe en bas) -->
         <div class="control-area">
-            
-            <!-- Standard : Révéler / Passer -->
             <div id="ctrl-standard">
-                <button id="btn-reveal" class="btn btn-reveal" onclick="sendCmd('reveal')" style="margin-bottom: 10px;">👁️ Révéler la réponse</button>
-                <button id="btn-skip" class="btn btn-skip" onclick="requestSkip()" disabled>Passer à la suite ➔</button>
+                <button id="btn-reveal" class="btn btn-reveal" onclick="sendCmd('reveal')" style="margin-bottom: 10px;">👁️ Révéler</button>
+                <button id="btn-skip" class="btn btn-skip" onclick="requestSkip()" disabled>Passer ➔</button>
                 <div class="skip-note" id="skip-note">Révélez d'abord la réponse.</div>
             </div>
 
-            <!-- Transition (Fin de manche, Démarrer, etc) -->
             <div id="phase-transition" style="display: none;">
                 <div class="turn-info" id="phase-transition-title" style="color: white;">Transition</div>
                 <button id="btn-phase-transition" class="btn btn-accent" onclick="requestTransition()">CONTINUER ➜</button>
             </div>
 
-            <!-- Phase 2 : Validation de l'équipe active -->
             <div id="ctrl-p2" style="display: none;">
                 <div class="turn-info">Tour de : <span id="p2-team-name" style="color: white;"></span></div>
                 <div class="grid-2">
                     <button class="btn btn-true" onclick="sendCmd('p2_resolve', true)">✅ VRAI</button>
                     <button class="btn btn-false" onclick="sendCmd('p2_resolve', false)">❌ FAUX</button>
                 </div>
-                <div class="skip-note">"Faux" ouvrira le vol.</div>
             </div>
 
-            <!-- Phase 2 : Grille de choix du thème (très compacte) -->
             <div id="ctrl-p2-cat" style="display: none; flex-direction: column;">
                 <div class="turn-info" style="margin-bottom: 5px;">Choix pour : <span id="p2-cat-team-name" style="color: white;"></span></div>
                 <div class="grid-2" id="p2-cat-grid" style="gap: 8px;"></div>
             </div>
 
-            <!-- Phase 3 : Bouton Maintenir -->
             <div id="ctrl-p3" style="display: none;">
                 <div class="skip-note" style="margin-bottom: 10px;">Le texte se dévoile tant que vous appuyez.</div>
                 <button class="btn btn-hold" id="btn-p3-anim">🪄 MAINTENIR POUR DÉVOILER</button>
@@ -203,7 +141,7 @@
         </div>
     </div>
 
-    <!-- OVERLAY DE BUZZ PLEIN ÉCRAN -->
+    <!-- OVERLAYS -->
     <div id="buzz-overlay" class="overlay">
         <div class="overlay-card">
             <div class="label" style="color: white; margin-bottom: 10px;">A BUZZÉ</div>
@@ -215,17 +153,25 @@
         </div>
     </div>
 
+    <!-- CORRECTION SCORES -->
+    <div id="score-overlay" class="overlay">
+        <div class="overlay-card">
+            <div class="label" style="color: white; margin-bottom: 15px;">Ajustement manuel</div>
+            <div id="score-list" style="overflow-y: auto; flex-grow: 1; display:flex; flex-direction:column; margin-bottom: 20px;"></div>
+            <button class="btn btn-skip" onclick="document.getElementById('score-overlay').style.display='none'">Fermer</button>
+        </div>
+    </div>
+
     <script>
         let peer=null, conn=null, canSkip=false, p3PointerDown=false, transitionAction=null;
 
         function joinMaster(){
             const code=document.getElementById('code-input').value.trim();
             if(!code) return;
-            const status=document.getElementById('status-msg');
-            status.innerText="Connexion en cours...";
+            document.getElementById('status-msg').innerText="Connexion en cours...";
             
             peer = new Peer();
-            peer.on('error', () => status.innerText = "Impossible de se connecter.");
+            peer.on('error', () => document.getElementById('status-msg').innerText = "Impossible de se connecter.");
             peer.on('open', () => {
                 conn = peer.connect('astro-'+code);
                 conn.on('open', () => conn.send({type:'join_master'}));
@@ -237,15 +183,21 @@
                     }else if(data.type==='sync') updateMasterUI(data);
                 });
                 
-                conn.on('close', () => { document.querySelector('.status-dot').innerHTML = '<span style="color:var(--danger)">● Déconnecté</span>'; });
-                conn.on('error', () => status.innerText = "Erreur réseau.");
+                conn.on('close', () => { document.getElementById('conn-status').style.color = "var(--danger)"; });
             });
         }
 
         function sendCmd(action, isCorrect=null){
             if(conn && conn.open) {
-                if(navigator.vibrate) navigator.vibrate(40); // Vibration courte
+                if(navigator.vibrate) navigator.vibrate(40);
                 conn.send({type:'master_cmd', action, isCorrect});
+            }
+        }
+
+        function sendScoreCmd(teamName, delta) {
+            if(conn && conn.open) {
+                if(navigator.vibrate) navigator.vibrate(30);
+                conn.send({type:'master_cmd', action:'updateScore', teamName: teamName, delta: delta});
             }
         }
 
@@ -256,8 +208,7 @@
 
         function updateSkipButton(){
             const btn=document.getElementById('btn-skip'), note=document.getElementById('skip-note');
-            btn.disabled=!canSkip;
-            note.innerText = canSkip ? "Passez à la suite." : "Révélez d'abord la réponse.";
+            btn.disabled=!canSkip; note.innerText = canSkip ? "Passez à la suite." : "Révélez d'abord la réponse.";
         }
 
         function requestTransition(){
@@ -281,12 +232,34 @@
                 descBox.style.display='none'; descText.innerHTML='';
             }
 
+            // Rafraîchir la liste des scores dans la pop-up
+            if(data.teamsList) {
+                const sList = document.getElementById('score-list');
+                sList.innerHTML = '';
+                const sorted = [...data.teamsList].sort((a,b)=>b.score-a.score);
+                sorted.forEach(t => {
+                    const row = document.createElement('div');
+                    row.className = 'score-row';
+                    row.innerHTML = `
+                        <div style="display:flex; align-items:center;">
+                            <span class="score-name">${t.name}</span>
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <span class="score-pts">${t.score}</span>
+                            <div class="score-btns">
+                                <button class="btn-tiny" style="background:var(--danger); color:#4a0000;" onclick="sendScoreCmd('${t.name}', -1)">-1</button>
+                                <button class="btn-tiny" style="background:var(--success); color:#004d27;" onclick="sendScoreCmd('${t.name}', 1)">+1</button>
+                            </div>
+                        </div>
+                    `;
+                    sList.appendChild(row);
+                });
+            }
+
             const answerRevealed = data.answerRevealed===true || data.canSkip===true;
             canSkip = answerRevealed && ['p1','p2_q','p3_q'].includes(data.phase);
 
-            ['ctrl-standard', 'phase-transition', 'ctrl-p2', 'ctrl-p2-cat', 'ctrl-p3', 'buzz-overlay'].forEach(id => {
-                document.getElementById(id).style.display = 'none';
-            });
+            ['ctrl-standard', 'phase-transition', 'ctrl-p2', 'ctrl-p2-cat', 'ctrl-p3', 'buzz-overlay'].forEach(id => { document.getElementById(id).style.display = 'none'; });
             document.getElementById('btn-reveal').style.display = answerRevealed ? 'none' : 'flex';
 
             transitionAction = data.transitionAction || null;
@@ -309,8 +282,7 @@
                 data.p2Cats.forEach(cat => {
                     const btn = document.createElement('button');
                     btn.className = 'btn ' + (cat.disabled ? 'btn-reveal' : 'btn-skip');
-                    btn.innerText = cat.name; 
-                    btn.style.padding = "8px"; btn.style.fontSize = "0.95rem"; btn.style.minHeight = "55px"; // Modifié ici pour la grille
+                    btn.innerText = cat.name; btn.style.padding = "8px"; btn.style.fontSize = "0.95rem"; btn.style.minHeight = "55px";
                     if (cat.disabled) btn.disabled = true;
                     else btn.onclick = () => { if(conn && conn.open) conn.send({ type: 'master_cmd', action: 'selectCategory', category: cat.name, teamIndex: data.currentChoosingTeam }); };
                     grid.appendChild(btn);
@@ -324,23 +296,15 @@
                 document.getElementById('ctrl-p3').style.display='block';
                 document.getElementById('ctrl-standard').style.display='block';
             }
-            else {
-                document.getElementById('ctrl-standard').style.display='block';
-            }
+            else { document.getElementById('ctrl-standard').style.display='block'; }
 
             updateSkipButton();
         }
 
         const btnP3 = document.getElementById('btn-p3-anim');
-        btnP3.addEventListener('pointerdown', (e) => {
-            e.preventDefault(); if(p3PointerDown) return;
-            p3PointerDown=true; if(btnP3.setPointerCapture) btnP3.setPointerCapture(e.pointerId); sendCmd('p3_down');
-        });
-        const stopP3 = (e) => {
-            if(!p3PointerDown) return; e.preventDefault(); p3PointerDown=false; sendCmd('p3_up');
-        };
-        btnP3.addEventListener('pointerup', stopP3);
-        btnP3.addEventListener('pointercancel', stopP3);
+        btnP3.addEventListener('pointerdown', (e) => { e.preventDefault(); if(p3PointerDown) return; p3PointerDown=true; if(btnP3.setPointerCapture) btnP3.setPointerCapture(e.pointerId); sendCmd('p3_down'); });
+        const stopP3 = (e) => { if(!p3PointerDown) return; e.preventDefault(); p3PointerDown=false; sendCmd('p3_up'); };
+        btnP3.addEventListener('pointerup', stopP3); btnP3.addEventListener('pointercancel', stopP3);
         btnP3.addEventListener('lostpointercapture', () => { if(p3PointerDown){ p3PointerDown=false; sendCmd('p3_up'); } });
     </script>
 </body>
