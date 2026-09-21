@@ -8,279 +8,218 @@
     <link href="https://fonts.googleapis.com/css2?family=Chau+Philomene+One&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg:#0b0914; --panel:rgba(255,255,255,.065); --panel-strong:rgba(255,255,255,.10);
-            --border:rgba(255,255,255,.17); --text:#fff; --muted:#c0bdcc;
-            --accent:#f7b731; --accent-glow:rgba(247,183,49,.35);
-            --success:#00b894; --danger:#ff7675; --info:#3498db; --purple:#9b59b6;
+            --bg-color: #0b0914; 
+            --card-bg: #1a162e;
+            --text-main: #ffffff;
+            --text-muted: #958fb8;
+            --accent: #f7b731;
+            --success: #00e676;
+            --success-bg: rgba(0, 230, 118, 0.15);
+            --danger: #ff5252;
+            --danger-bg: rgba(255, 82, 82, 0.15);
+            --info: #3498db;
+            --purple: #9b59b6;
         }
 
-        * { box-sizing:border-box; }
-
-        html,body {
-            margin:0; min-height:100%;
-            background:
-                radial-gradient(circle at 20% 0%,rgba(247,183,49,.10),transparent 38%),
-                radial-gradient(circle at 100% 100%,rgba(52,152,219,.10),transparent 38%),var(--bg);
-        }
+        * { box-sizing: border-box; font-family: 'Josefin Sans', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family:'Josefin Sans',sans-serif; color:var(--text); min-height:100dvh;
-            touch-action:manipulation; user-select:none; -webkit-user-select:none;
-            -webkit-tap-highlight-color:transparent; overflow:hidden;
+            margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main);
+            min-height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        button,input { font:inherit; }
-        button { touch-action:manipulation; }
+        /* --- TYPOGRAPHIE --- */
+        h1, h2, .font-title { font-family: 'Chau Philomene One', sans-serif; margin: 0; }
+        .label { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 8px; }
 
-        .glass-panel {
-            background:var(--panel); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-            border:1px solid var(--border);
-            box-shadow:0 8px 24px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04);
-            border-radius:16px;
-        }
-
+        /* --- LOGIN SCREEN --- */
         #login-screen {
-            min-height:100dvh; width:100%; display:flex; flex-direction:column;
-            align-items:center; justify-content:center;
-            padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));
-            text-align:center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100dvh; padding: 20px;
         }
-
-        .login-card { width:min(100%,400px); padding:24px; }
-        .login-title {
-            margin:0 0 8px; color:var(--accent); font-family:'Chau Philomene One',sans-serif;
-            font-size:2.2rem; line-height:1;
-        }
-        .login-subtitle {
-            margin:0 0 24px; color:var(--muted); font-size:1rem; line-height:1.4;
+        .login-box {
+            background: var(--card-bg); padding: 40px 30px; border-radius: 30px; width: 100%; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); text-align: center;
         }
         input {
-            width:100%; min-height:50px; padding:12px 16px; margin-bottom:12px; border-radius:12px;
-            border:2px solid rgba(247,183,49,.85); background:rgba(0,0,0,.40); color:#fff;
-            text-align:center; font-size:1.2rem; outline:none;
+            width: 100%; padding: 20px; margin: 20px 0; border-radius: 15px; border: 2px solid #362f59;
+            background: rgba(0,0,0,0.3); color: white; font-size: 1.5rem; text-align: center; outline: none; transition: 0.3s;
         }
-        input:focus { box-shadow:0 0 0 4px rgba(247,183,49,.14); border-color:var(--accent); }
+        input:focus { border-color: var(--accent); }
 
-        .btn-accent {
-            width:100%; min-height:50px; padding:12px 16px; border:0; border-radius:12px;
-            background:var(--accent); color:#191631; font-weight:800;
-            font-size:1.2rem; cursor:pointer; box-shadow:0 0 20px var(--accent-glow);
-        }
-        .btn-accent:active { transform:scale(.985); }
-
+        /* --- MAIN SCREEN LAYOUT --- */
         #master-screen {
-            display:none; flex-direction:column; width:100%; height:100dvh; min-height:0;
-            padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right))
-                     max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
-            gap:8px;
+            display: none; flex-direction: column; height: 100dvh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        .status-bar {
-            flex:0 0 auto; min-height:36px; display:flex; align-items:center; justify-content:space-between;
-            gap:8px; padding:0 4px; color:var(--accent);
-            font-size:1rem; font-weight:800;
+        /* HEADER */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background: var(--bg-color); flex-shrink: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .phase-badge { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .connection-status { color:var(--success); white-space:nowrap; }
+        .phase-badge { color: var(--accent); font-weight: 700; font-size: 1.2rem; }
+        .status-dot { color: var(--success); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
-        .text-box {
-            flex:1 1 auto; overflow-y:auto; overflow-x:hidden;
-            padding:16px; margin:0; -webkit-overflow-scrolling:touch;
+        /* CONTENT AREA (Scrollable) */
+        .content-area {
+            flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px;
         }
+        
+        .card { background: var(--card-bg); padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        
+        .q-text { font-size: 1.6rem; font-weight: 600; line-height: 1.4; margin: 0; }
+        .a-text { font-size: 2rem; font-weight: 700; color: var(--success); margin: 0; line-height: 1.2; text-shadow: 0 0 15px rgba(0, 230, 118, 0.3); }
+        
+        .desc-box {
+            margin-top: 15px; padding: 15px 20px; background: rgba(0,0,0,0.2);
+            border-left: 4px solid var(--info); border-radius: 10px; display: none;
+        }
+        .desc-text { font-size: 1.1rem; color: #dcdcdc; font-style: italic; line-height: 1.5; margin: 0; }
 
-        .question-section { padding-bottom:12px; }
-        .q-title,.a-title {
-            margin:0 0 6px; font-size:.9rem;
-            font-weight:800; letter-spacing:.1em; text-transform:uppercase;
-        }
-        .q-title { color:var(--muted); }
-        .a-title { color:var(--success); margin-top:16px; }
-        .q-text,.a-text { margin:0; overflow-wrap:anywhere; }
-        .q-text { font-size:1.4rem; line-height:1.3; font-weight:700; }
-        .a-text { font-size:1.3rem; line-height:1.3; font-weight:800; }
-
-        .answer-status {
-            display:inline-flex; align-items:center; gap:6px; margin-top:12px; padding:8px 12px;
-            border-radius:999px; background:rgba(0,184,148,.14); border:1px solid rgba(0,184,148,.42);
-            color:#5ff2d1; font-size:.9rem; font-weight:800;
-        }
-
-        .answer-description {
-            display:none; margin-top:12px; padding:12px; border-radius:12px;
-            background:rgba(255,255,255,.055); border-left:4px solid var(--accent);
-            color:#f1eff7; font-size:1rem; line-height:1.4; font-weight:600;
-        }
-        .desc-label {
-            display:block; margin-bottom:4px; color:var(--accent); font-size:.8em;
-            font-weight:900; letter-spacing:.05em; text-transform:uppercase;
+        /* --- CONTROL AREA (Sticky Bottom) --- */
+        .control-area {
+            background: var(--bg-color); padding: 20px; flex-shrink: 0;
+            border-top: 1px solid rgba(255,255,255,0.05); padding-bottom: calc(20px + env(safe-area-inset-bottom));
         }
 
-        .controls-container {
-            flex:0 0 auto; width:100%; display:flex; flex-direction:column; gap:8px;
+        .btn {
+            width: 100%; border: none; border-radius: 20px; padding: 20px 15px;
+            font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: transform 0.1s, filter 0.2s; display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-        .control-group { display:flex; flex-direction:column; gap:8px; }
-        .turn-label {
-            text-align:center; color:var(--accent); font-size:1rem; padding:2px 0; font-weight:700;
-        }
-        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
+        .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
 
-        .btn-action {
-            width:100%; min-height:60px; padding:12px 8px; border-radius:12px;
-            border:2px solid transparent; cursor:pointer; text-align:center;
-            font-size:1.1rem; font-weight:900; line-height:1.1;
-            transition:transform .1s ease,opacity .15s ease,filter .15s ease;
-            box-shadow:0 4px 12px rgba(0,0,0,.18);
-        }
-        .btn-action:active { transform:scale(.975); }
-        .btn-action:disabled { opacity:.40; cursor:not-allowed; filter:grayscale(.4); box-shadow:none; }
+        .btn-accent { background: var(--accent); color: #0b0914; box-shadow: 0 10px 20px rgba(247, 183, 49, 0.3); }
+        .btn-reveal { background: #2c2747; color: white; border: 2px solid #48416d; }
+        .btn-skip { background: var(--info); color: white; box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3); }
+        
+        /* Boutons Vrai/Faux massifs et colorés */
+        .btn-true { background: var(--success); color: #004d27; box-shadow: 0 10px 25px rgba(0, 230, 118, 0.3); font-size: 1.5rem; }
+        .btn-false { background: var(--danger); color: #4a0000; box-shadow: 0 10px 25px rgba(255, 82, 82, 0.3); font-size: 1.5rem; }
+        
+        .btn-hold { background: var(--purple); color: white; padding: 30px 15px; font-size: 1.3rem; box-shadow: 0 10px 30px rgba(155, 89, 182, 0.4); }
 
-        .btn-reveal {
-            background:var(--panel-strong); color:#fff; border-color:rgba(255,255,255,.30);
-        }
-        .btn-skip {
-            background:var(--info); color:#fff; border-color:rgba(255,255,255,.08);
-            box-shadow:0 6px 16px rgba(52,152,219,.28);
-        }
-        .btn-true {
-            background:rgba(0,184,148,.18); border-color:var(--success); color:#70f4d4;
-            box-shadow:0 5px 16px rgba(0,184,148,.20);
-        }
-        .btn-false {
-            background:rgba(255,118,117,.16); border-color:var(--danger); color:#ffaaa8;
-            box-shadow:0 5px 16px rgba(255,118,117,.18);
-        }
-        .btn-hold {
-            background:var(--purple); color:#fff; min-height:70px; font-size: 1rem;
-            box-shadow:0 6px 18px rgba(155,89,182,.34);
-        }
-        .skip-lock-note {
-            margin:0; text-align:center; color:var(--muted);
-            font-size:.85rem; line-height:1.2;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        .phase-transition {
-            display:none; width:100%; padding:12px; border-radius:16px;
-            background:rgba(247,183,49,.10); border:2px solid rgba(247,183,49,.55);
-            box-shadow:0 6px 18px rgba(247,183,49,.13); text-align:center;
-        }
-        .phase-transition-title {
-            margin:0 0 8px; color:var(--accent); font-size:1rem; font-weight:900;
-        }
-        .btn-transition {
-            width:100%; min-height:60px; border:0; border-radius:12px; padding:12px 10px;
-            background:var(--accent); color:#171321; font-size:1.1rem;
-            font-weight:900; box-shadow:0 6px 16px var(--accent-glow); cursor:pointer;
-        }
-        .btn-transition:active { transform:scale(.975); }
+        .turn-info { text-align: center; color: var(--accent); font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
+        .skip-note { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 15px; }
 
-        #buzz-overlay {
-            display:none; position:fixed; inset:0; z-index:200;
-            padding:max(16px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
-            max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
-            background:rgba(11,9,20,.95); align-items:center; justify-content:center; text-align:center;
+        /* --- OVERLAYS (Plein écran) --- */
+        .overlay {
+            display: none; position: fixed; inset: 0; background: rgba(11, 9, 20, 0.98); z-index: 1000;
+            flex-direction: column; align-items: center; justify-content: center; padding: 20px;
         }
-        .buzz-card { width:min(100%,500px); padding:24px; }
-        #buzz-overlay h2 {
-            margin:0 0 20px; color:var(--accent); font-family:'Chau Philomene One',sans-serif;
-            font-size:2.2rem; line-height:1.05; overflow-wrap:anywhere;
+        .overlay-card {
+            width: 100%; max-width: 500px; background: var(--card-bg); padding: 40px 20px;
+            border-radius: 30px; border: 2px solid var(--accent); text-align: center;
         }
-        #buzz-overlay .btn-action { min-height:80px; font-size:1.3rem; }
+        .overlay-title { font-size: 3rem; color: var(--accent); margin-bottom: 30px; line-height: 1.1; word-break: break-word; }
 
-        @media (min-width:700px) {
-            #master-screen { max-width:800px; margin:0 auto; padding-left:16px; padding-right:16px; gap:12px; }
-            .text-box { padding:24px; }
-            .btn-action { min-height:80px; font-size:1.3rem; }
-            .btn-hold { min-height:90px; font-size: 1.2rem; }
-            .login-card { width:min(100%,500px); }
-        }
-        @media (orientation:landscape) and (max-height:500px) {
-            #master-screen {
-                display:grid; grid-template-columns:1fr 250px;
-                grid-template-rows:auto 1fr; column-gap:12px; row-gap:6px;
-            }
-            .status-bar { grid-column:1/-1; }
-            .text-box { grid-column:1; grid-row:2; }
-            .controls-container { grid-column:2; grid-row:2; justify-content:center; }
+        /* --- RESPONSIVE TABLETTE / PAYSAGE --- */
+        @media (min-width: 768px) {
+            #master-screen { flex-direction: row; }
+            .header { position: absolute; top: 0; width: 100%; z-index: 10; background: transparent; border: none; }
+            .content-area { flex: 1; padding: 80px 40px 40px 40px; }
+            .control-area { width: 400px; border-top: none; border-left: 1px solid rgba(255,255,255,0.05); padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; }
+            .q-text { font-size: 2rem; } .a-text { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
+
+    <!-- ÉCRAN DE CONNEXION -->
     <div id="login-screen">
-        <div class="glass-panel login-card">
-            <h1 class="login-title">Console Master</h1>
-            <p class="login-subtitle">Contrôlez la partie depuis votre téléphone.</p>
-            <input type="number" id="code-input" placeholder="Code du salon" inputmode="numeric" pattern="\d*" autocomplete="off">
-            <button class="btn-accent" onclick="joinMaster()">Connecter</button>
-            <p id="status-msg" style="margin:12px 0 0;color:#dcdcdc;"></p>
+        <div class="login-box">
+            <h1 style="color: var(--accent); font-size: 3.5rem; margin-bottom: 10px;">Master</h1>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Contrôle à distance</p>
+            <input type="number" id="code-input" placeholder="Code (5 chiffres)" pattern="\d*">
+            <button class="btn btn-accent" onclick="joinMaster()">Connecter</button>
+            <p id="status-msg" style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;"></p>
         </div>
     </div>
 
+    <!-- INTERFACE PRINCIPALE -->
     <div id="master-screen">
-        <div class="status-bar">
-            <span id="ui-phase" class="phase-badge">En attente...</span>
-            <span class="connection-status">● Connecté</span>
+        
+        <!-- HEADER -->
+        <div class="header">
+            <span class="phase-badge font-title" id="ui-phase">En attente...</span>
+            <span class="status-dot">● Connecté</span>
         </div>
 
-        <div class="glass-panel text-box" id="question-card">
-            <section class="question-section">
-                <p class="q-title">Question</p>
-                <p class="q-text" id="ui-question">En attente du lancement du jeu...</p>
-            </section>
-            <section>
-                <p class="a-title">Réponse secrète</p>
-                <p class="a-text" id="ui-answer">••••••••</p>
-
-                <div id="ui-answer-description" class="answer-description">
-                    <span class="desc-label">Description / explication</span>
-                    <span id="ui-answer-description-text"></span>
-                </div>
-
-                <div id="answer-status" class="answer-status" style="display:none;">✓ Réponse révélée</div>
-            </section>
-        </div>
-
-        <div class="controls-container">
-            <div id="ctrl-p2-cat" class="control-group full-width" style="display:none;">
-                <div class="turn-label">Choix du thème pour : <b id="p2-cat-team-name"></b></div>
-                <div class="grid-2" id="p2-cat-grid"></div>
+        <!-- ZONE DE TEXTE -->
+        <div class="content-area">
+            <div class="card">
+                <div class="label">Question à l'écran</div>
+                <div class="q-text" id="ui-question">En attente du lancement du jeu...</div>
             </div>
             
-            <div id="ctrl-p2" class="control-group full-width" style="display:none;">
-                <div class="turn-label">Tour de : <b id="p2-team-name"></b></div>
-                <div class="grid-2">
-                    <button class="btn-action btn-true" onclick="sendCmd('p2_resolve',true)">✅ VRAI</button>
-                    <button class="btn-action btn-false" onclick="sendCmd('p2_resolve',false)">❌ FAUX</button>
+            <div class="card" style="border: 1px solid rgba(0, 230, 118, 0.3);">
+                <div class="label" style="color: var(--success);">Réponse secrète</div>
+                <div class="a-text" id="ui-answer">••••••••</div>
+                
+                <div class="desc-box" id="ui-answer-description">
+                    <div class="label" style="color: var(--info);">Anecdote / Infos</div>
+                    <div class="desc-text" id="ui-answer-description-text"></div>
                 </div>
             </div>
+        </div>
 
-            <div id="ctrl-p3" class="control-group full-width" style="display:none;">
-                <button class="btn-action btn-hold" id="btn-p3-anim">🪄 MAINTENIR POUR DÉVOILER</button>
+        <!-- ZONE DE CONTRÔLE -->
+        <div class="control-area">
+            
+            <!-- Standard : Révéler / Passer -->
+            <div id="ctrl-standard">
+                <button id="btn-reveal" class="btn btn-reveal" onclick="sendCmd('reveal')" style="margin-bottom: 15px;">👁️ Révéler la réponse</button>
+                <button id="btn-skip" class="btn btn-skip" onclick="requestSkip()" disabled>Passer à la suite ➔</button>
+                <div class="skip-note" id="skip-note">Révélez d'abord la réponse.</div>
             </div>
 
-            <div id="phase-transition" class="phase-transition full-width">
-                <div id="phase-transition-title" class="phase-transition-title">Transition</div>
-                <button id="btn-phase-transition" class="btn-transition" onclick="requestTransition()">CONTINUER ➜</button>
+            <!-- Transition (Fin de manche, Démarrer, etc) -->
+            <div id="phase-transition" style="display: none;">
+                <div class="turn-info" id="phase-transition-title" style="color: white;">Transition</div>
+                <button id="btn-phase-transition" class="btn btn-accent" onclick="requestTransition()">CONTINUER ➜</button>
             </div>
 
-            <div id="ctrl-standard" class="control-group full-width">
+            <!-- Phase 2 : Validation de l'équipe active -->
+            <div id="ctrl-p2" style="display: none;">
+                <div class="turn-info">Tour de : <span id="p2-team-name" style="color: white;"></span></div>
                 <div class="grid-2">
-                    <button id="btn-reveal" class="btn-action btn-reveal" onclick="sendCmd('reveal')">👁️ Révéler</button>
-                    <button id="btn-skip" class="btn-action btn-skip" onclick="requestSkip()" disabled>Passer ➔</button>
+                    <button class="btn btn-true" onclick="sendCmd('p2_resolve', true)">✅ VRAI</button>
+                    <button class="btn btn-false" onclick="sendCmd('p2_resolve', false)">❌ FAUX</button>
                 </div>
-                <p id="skip-note" class="skip-lock-note">Révélez d'abord la réponse.</p>
+                <div class="skip-note">"Faux" ouvrira le vol aux autres équipes.</div>
+            </div>
+
+            <!-- Phase 2 : Grille de choix du thème -->
+            <div id="ctrl-p2-cat" style="display: none; flex-direction: column;">
+                <div class="turn-info">Choix du thème pour : <span id="p2-cat-team-name" style="color: white;"></span></div>
+                <div class="grid-2" id="p2-cat-grid" style="gap: 12px; overflow-y: auto; max-height: 40vh; padding-bottom: 10px;"></div>
+            </div>
+
+            <!-- Phase 3 : Bouton Maintenir -->
+            <div id="ctrl-p3" style="display: none;">
+                <div class="skip-note" style="margin-bottom: 15px;">Le texte se dévoile tant que vous appuyez.</div>
+                <button class="btn btn-hold" id="btn-p3-anim">🪄 MAINTENIR POUR DÉVOILER</button>
             </div>
         </div>
     </div>
 
-    <div id="buzz-overlay">
-        <div class="glass-panel buzz-card">
-            <h2 id="buzz-team-title">Équipe a buzzé !</h2>
-            <div class="grid-2">
-                <button class="btn-action btn-true" onclick="sendCmd('resolve',true)">✅ VRAI</button>
-                <button class="btn-action btn-false" onclick="sendCmd('resolve',false)">❌ FAUX</button>
+    <!-- OVERLAY DE BUZZ PLEIN ÉCRAN -->
+    <div id="buzz-overlay" class="overlay">
+        <div class="overlay-card">
+            <div class="label" style="color: white; margin-bottom: 15px;">A BUZZÉ</div>
+            <div class="overlay-title font-title" id="buzz-team-title">Équipe !</div>
+            <div class="grid-2" style="margin-top: 40px;">
+                <button class="btn btn-true" onclick="sendCmd('resolve', true)" style="padding: 30px 10px;">✅ VRAI</button>
+                <button class="btn btn-false" onclick="sendCmd('resolve', false)" style="padding: 30px 10px;">❌ FAUX</button>
             </div>
         </div>
     </div>
+
     <script>
         let peer=null, conn=null, canSkip=false, p3PointerDown=false, transitionAction=null;
 
@@ -288,160 +227,131 @@
             const code=document.getElementById('code-input').value.trim();
             if(!code) return;
             const status=document.getElementById('status-msg');
-            status.innerText="Connexion...";
-            peer=new Peer();
-            peer.on('error',()=>status.innerText="Impossible de se connecter.");
-            peer.on('open',()=>{
-                conn=peer.connect('astro-'+code);
-                conn.on('open',()=>conn.send({type:'join_master'}));
-                conn.on('data',(data)=>{
+            status.innerText="Connexion en cours...";
+            
+            peer = new Peer();
+            peer.on('error', () => status.innerText = "Impossible de se connecter.");
+            peer.on('open', () => {
+                conn = peer.connect('astro-'+code);
+                conn.on('open', () => conn.send({type:'join_master'}));
+                
+                conn.on('data', (data) => {
                     if(data.type==='master_joined'){
                         document.getElementById('login-screen').style.display='none';
                         document.getElementById('master-screen').style.display='flex';
                     }else if(data.type==='sync') updateMasterUI(data);
                 });
-                conn.on('close',()=>{
-                    const el=document.querySelector('.connection-status');
-                    el.innerText='● Déconnecté'; el.style.color='#ff7675';
-                });
-                conn.on('error',()=>status.innerText="Erreur de connexion.");
+                
+                conn.on('close', () => { document.querySelector('.status-dot').innerHTML = '<span style="color:var(--danger)">● Déconnecté</span>'; });
+                conn.on('error', () => status.innerText = "Erreur réseau.");
             });
         }
 
-        function sendCmd(action,isCorrect=null){
-            if(conn&&conn.open) conn.send({type:'master_cmd',action,isCorrect});
+        function sendCmd(action, isCorrect=null){
+            if(conn && conn.open) {
+                // Vibration haptique sur mobile si supportée pour confirmer l'action
+                if(navigator.vibrate) navigator.vibrate(50);
+                conn.send({type:'master_cmd', action, isCorrect});
+            }
         }
 
         function requestSkip(){
             if(!canSkip) return;
-            canSkip=false;
-            updateSkipButton();
-            sendCmd('skip');
+            canSkip=false; updateSkipButton(); sendCmd('skip');
         }
 
         function updateSkipButton(){
             const btn=document.getElementById('btn-skip'), note=document.getElementById('skip-note');
-            if(!btn||!note) return;
             btn.disabled=!canSkip;
-            note.innerText=canSkip?"Réponse validée.":"Révélez d'abord la réponse.";
+            note.innerText = canSkip ? "Passez à la question suivante." : "Révélez d'abord la réponse.";
         }
 
         function requestTransition(){
             if(!transitionAction) return;
-            const action=transitionAction;
-            transitionAction=null;
+            const action=transitionAction; transitionAction=null;
             document.getElementById('btn-phase-transition').disabled=true;
             sendCmd(action);
         }
 
         function updateMasterUI(data){
-            const names={p1:'Qualifications',p2_q:'À la carte',p3_q:'Jeu décisif',p2_cat:'Choix du thème', pre_podium:'Fin de partie', podium:'Classement Final'};             document.getElementById('ui-phase').innerText=names[data.phase]||'Accueil';
+            const names={p1:'Qualifications', p2_q:'À la carte', p3_q:'Jeu décisif', p2_cat:'Choix du thème', pre_podium:'Fin de partie', podium:'Classement Final'};
+            document.getElementById('ui-phase').innerText=names[data.phase]||'Accueil';
             document.getElementById('ui-question').innerHTML=data.question||'En attente...';
             document.getElementById('ui-answer').innerHTML=data.answer||'••••••••';
 
-            const desc=document.getElementById('ui-answer-description');
+            const descBox=document.getElementById('ui-answer-description');
             const descText=document.getElementById('ui-answer-description-text');
-            if(desc && descText){
-                if(data.answerDescription){
-                    descText.innerHTML=data.answerDescription;
-                    desc.style.display='block';
-                }else{
-                    desc.style.display='none';
-                    descText.innerHTML='';
-                }
+            if(data.answerDescription){
+                descText.innerHTML=data.answerDescription; descBox.style.display='block';
+            } else {
+                descBox.style.display='none'; descText.innerHTML='';
             }
 
-            const answerRevealed=data.answerRevealed===true || data.canSkip===true;
-            canSkip=answerRevealed && ['p1','p2_q','p3_q'].includes(data.phase);
-            document.getElementById('answer-status').style.display=answerRevealed?'inline-flex':'none';
+            const answerRevealed = data.answerRevealed===true || data.canSkip===true;
+            canSkip = answerRevealed && ['p1','p2_q','p3_q'].includes(data.phase);
 
-            const p2=document.getElementById('ctrl-p2'), p3=document.getElementById('ctrl-p3');
-            const standard=document.getElementById('ctrl-standard'), overlay=document.getElementById('buzz-overlay');
-            const reveal=document.getElementById('btn-reveal'), transition=document.getElementById('phase-transition');
-            
-            // NOUVEAU : On cible la zone de la grille des thèmes
-            const p2cat=document.getElementById('ctrl-p2-cat'); 
+            // Hide all controls first
+            ['ctrl-standard', 'phase-transition', 'ctrl-p2', 'ctrl-p2-cat', 'ctrl-p3', 'buzz-overlay'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('btn-reveal').style.display = answerRevealed ? 'none' : 'flex';
 
-            // On cache tout par défaut
-            p2.style.display='none'; p3.style.display='none'; standard.style.display='flex'; overlay.style.display='none';
-            if(p2cat) p2cat.style.display='none'; 
-            reveal.style.display=answerRevealed?'none':'block';
+            transitionAction = data.transitionAction || null;
 
-            transitionAction=data.transitionAction||null;
-            if(transitionAction){
-                transition.style.display='block'; standard.style.display='none';
+            // Display logic based on state priority
+            if (data.buzzedTeam) {
+                document.getElementById('buzz-overlay').style.display='flex';
+                document.getElementById('buzz-team-title').innerText = data.buzzedTeam;
+            } 
+            else if (transitionAction) {
+                document.getElementById('phase-transition').style.display='block';
                 document.getElementById('phase-transition-title').innerText=data.transitionTitle||'Transition';
-                const tb=document.getElementById('btn-phase-transition');
-                tb.innerText=data.transitionLabel||'CONTINUER ➜';
-                tb.disabled=false;
-            }else{
-                transition.style.display='none';
+                const tb = document.getElementById('btn-phase-transition');
+                tb.innerText=data.transitionLabel||'CONTINUER ➜'; tb.disabled=false;
             }
-
-            // Gestion des priorités d'affichage
-            if(data.buzzedTeam){
-                overlay.style.display='flex'; standard.style.display='none';
-                p2.style.display='none'; p3.style.display='none'; transition.style.display='none';
-                if(p2cat) p2cat.style.display='none';
-                document.getElementById('buzz-team-title').innerText='🚨 '+data.buzzedTeam+' A BUZZÉ !';
-            }
-            // NOUVEAU : Affichage de la grille pour le choix du thème
-            else if(data.phase==='p2_cat' && !data.transitionAction && data.p2Cats){
-                standard.style.display='none'; 
-                if(p2cat) p2cat.style.display='flex';
-                
-                const teamNameDisplay = document.getElementById('p2-cat-team-name');
-                if(teamNameDisplay) teamNameDisplay.innerText = data.choosingTeamName || '';
-                
+            else if (data.phase==='p2_cat' && data.p2Cats) {
+                document.getElementById('ctrl-p2-cat').style.display='flex';
+                document.getElementById('p2-cat-team-name').innerText = data.choosingTeamName || '';
                 const grid = document.getElementById('p2-cat-grid');
-                if(grid) {
-                    grid.innerHTML = ''; // On vide la grille avant de la recréer
-                    data.p2Cats.forEach(cat => {
-                        const btn = document.createElement('button');
-                        // Change le style si le thème a déjà été joué
-                        btn.className = 'btn-action ' + (cat.disabled ? 'btn-reveal' : 'btn-skip'); 
-                        btn.style.fontSize = '1.1rem'; 
-                        btn.style.minHeight = '70px'; 
-                        btn.style.padding = '10px';
-                        btn.innerText = cat.name;
-                        
-                        if (cat.disabled) {
-                            btn.disabled = true;
-                        } else {
-                            btn.onclick = () => {
-                                if(conn && conn.open) {
-                                    conn.send({ type: 'master_cmd', action: 'selectCategory', category: cat.name, teamIndex: data.currentChoosingTeam });
-                                }
-                            };
-                        }
-                        grid.appendChild(btn);
-                    });
-                }
+                grid.innerHTML = '';
+                data.p2Cats.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn ' + (cat.disabled ? 'btn-reveal' : 'btn-skip');
+                    btn.innerText = cat.name; btn.style.padding = "15px"; fontStyle = "1.1rem";
+                    if (cat.disabled) btn.disabled = true;
+                    else btn.onclick = () => sendCmd('selectCategory', null, {category: cat.name, teamIndex: data.currentChoosingTeam}); // Fixed nested arg logic below
+                    // Hack to fix arguments for selectCategory
+                    if (!cat.disabled) btn.onclick = () => { if(conn && conn.open) conn.send({ type: 'master_cmd', action: 'selectCategory', category: cat.name, teamIndex: data.currentChoosingTeam }); };
+                    grid.appendChild(btn);
+                });
             }
-            else if(data.phase==='p2_q' && data.p2AwaitingAnswer){
-                standard.style.display='none'; p2.style.display='flex';
-            }else if(data.phase==='p3_q' && !data.transitionAction){
-                p3.style.display='flex'; standard.style.display='flex';
+            else if (data.phase==='p2_q' && data.p2AwaitingAnswer) {
+                document.getElementById('ctrl-p2').style.display='block';
+                document.getElementById('p2-team-name').innerText=data.activeTeamName||'';
+            }
+            else if (data.phase==='p3_q') {
+                document.getElementById('ctrl-p3').style.display='block';
+                document.getElementById('ctrl-standard').style.display='block';
+            }
+            else {
+                document.getElementById('ctrl-standard').style.display='block';
             }
 
-            document.getElementById('p2-team-name').innerText=data.activeTeamName||'';
             updateSkipButton();
         }
 
-        const btnP3=document.getElementById('btn-p3-anim');
-        btnP3.addEventListener('pointerdown',(e)=>{
-            e.preventDefault(); if(p3PointerDown)return;
-            p3PointerDown=true; btnP3.setPointerCapture?.(e.pointerId); sendCmd('p3_down');
+        // Phase 3 Hold button logic
+        const btnP3 = document.getElementById('btn-p3-anim');
+        btnP3.addEventListener('pointerdown', (e) => {
+            e.preventDefault(); if(p3PointerDown) return;
+            p3PointerDown=true; if(btnP3.setPointerCapture) btnP3.setPointerCapture(e.pointerId); sendCmd('p3_down');
         });
-        const stopP3=(e)=>{
-            if(!p3PointerDown)return;
-            e.preventDefault(); p3PointerDown=false; sendCmd('p3_up');
+        const stopP3 = (e) => {
+            if(!p3PointerDown) return; e.preventDefault(); p3PointerDown=false; sendCmd('p3_up');
         };
-        btnP3.addEventListener('pointerup',stopP3);
-        btnP3.addEventListener('pointercancel',stopP3);
-        btnP3.addEventListener('lostpointercapture',()=>{
-            if(p3PointerDown){p3PointerDown=false;sendCmd('p3_up');}
-        });
+        btnP3.addEventListener('pointerup', stopP3);
+        btnP3.addEventListener('pointercancel', stopP3);
+        btnP3.addEventListener('lostpointercapture', () => { if(p3PointerDown){ p3PointerDown=false; sendCmd('p3_up'); } });
     </script>
 </body>
 </html>
