@@ -1,7 +1,7 @@
 let QUESTIONS;
 
 window.onload = function() {
-    if (!window.QUESTIONS) {
+    if (!window.QUESTION_BANK) {
         document.getElementById('main-content').innerHTML = `
             <h1 style="color: var(--danger-color); text-shadow: none; font-size: 4rem;">Erreur de chargement</h1>
             <div class="glass-panel" style="padding: 40px; border-radius: 20px; text-align: center; max-width: 800px;">
@@ -17,7 +17,7 @@ window.onload = function() {
         return;
     }
     
-    QUESTIONS = window.QUESTIONS;
+    // On affiche l'accueil directement (QUESTIONS sera généré au clic sur "Lancer")
     showHome();
 };
 
