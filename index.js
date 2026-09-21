@@ -316,6 +316,10 @@ function renderGeneralPhase(phaseTitle, questionArray, nextPhaseName) {
             <h1>Manche suivante<br><span style="color:var(--accent-color); font-size:4.5rem;">${phaseTitle}</span></h1>
             <button class="btn-accent" style="margin-top:40px; font-size:1.5rem; padding: 20px 50px;" onclick="${nextPhaseName}()">Passer à la suite ➔</button>
         `);
+        
+        // ➔ CORRECTION : Verrouiller les buzzers pendant la transition
+        isQuestionActive = false;
+        lockAllBuzzers();
         return;
     }
 
@@ -336,7 +340,6 @@ function renderGeneralPhase(phaseTitle, questionArray, nextPhaseName) {
         </div>`;
         
     renderView(html);
-    // On débloque les buzzers pour la Phase 1
     isQuestionActive = true;
     resetBuzzerBlocks();
     openBuzzers();
@@ -375,11 +378,21 @@ function startPhase2Categories() {
             <p style="font-size:1.8rem; color:#dcdcdc;">Chaque équipe a joué son thème.</p>
             <button class="btn-accent" style="margin-top: 50px; font-size:1.5rem; padding: 20px 50px;" onclick="startPhase3()">Passer au Jeu Décisif ➔</button>
         `);
+        
+        // ➔ CORRECTION : Verrouiller à la fin de la phase 2
+        isQuestionActive = false;
+        lockAllBuzzers();
         return;
     }
 
     const currentTeamIndex = phase2Order[phase2Turn];
     const currentTeam = teams[currentTeamIndex];
+
+    // ➔ CORRECTION : Verrouiller pendant que l'équipe réfléchit à son thème
+    isQuestionActive = false;
+    Object.values(connections).forEach(c => {
+        c.send({ type: 'lock', winner: 'Choix du thème...' });
+    });
 
     renderView(`
         <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height: 70vh;">
@@ -388,7 +401,6 @@ function startPhase2Categories() {
         </div>
     `);
 
-    // Après la petite animation du nom de l'équipe, on affiche les catégories
     setTimeout(() => {
         let html = `
             <h1>À la carte</h1>
@@ -406,8 +418,7 @@ function startPhase2Categories() {
 
         html += `</div>`;
         renderView(html);
-        
-        syncMaster(); // ➔ LA CORRECTION EST ICI AUSSI : On force la télécommande à s'afficher !
+        syncMaster(); 
     }, 1200); 
 }
 
@@ -428,10 +439,15 @@ function renderPhase2Question() {
         categoriesDone.push(activeCategory);
         phase2Turn++; 
         pendingTransition = { action: 'startPhase2Categories', title: 'Thème terminé', label: 'CHOIX DU THÈME SUIVANT' };
-        renderView(`<h1>Thème terminé !</h1>`); // (garde ton renderView actuel ici)
+        renderView(`<h1>Thème terminé !</h1>`);
+        
+        // ➔ CORRECTION : Verrouiller entre deux thèmes
+        isQuestionActive = false;
+        lockAllBuzzers();
         return;
     }
 
+    // ... (Le reste de la fonction reste identique)
     const q = questionArray[currentQuestionIndex];
     const activeTeamName = teams[activeTeamIndex].name;
     const descHtml = q.d ? `<div class="answer-desc">${q.d}</div>` : '';
@@ -449,8 +465,6 @@ function renderPhase2Question() {
         <div id="btn-reveal" class="btn-reveal-container">
             <button class="btn-accent" onclick="revealAnswer()">Révéler la réponse</button>
         </div>
-
-        <!-- NOUVEAU : Contrôle direct pour l'équipe qui joue son thème -->
         <div id="active-team-controls" style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
             <button class="btn-success glass-panel" style="font-size: 1.2rem; padding: 15px 30px;" onclick="handleActiveTeamAnswer(true)">✅ Bonne réponse</button>
             <button class="btn-danger glass-panel" style="font-size: 1.2rem; padding: 15px 30px;" onclick="handleActiveTeamAnswer(false)">❌ Mauvaise réponse (Ouvrir le vol)</button>
@@ -458,14 +472,11 @@ function renderPhase2Question() {
     `;
     renderView(html);
 
-    // On verrouille TOUT LE MONDE. L'équipe en cours répond à l'oral.
-    isQuestionActive = false; // Empêche les buzz parasites
+    isQuestionActive = false; 
     resetBuzzerBlocks();
     
     Object.keys(connections).forEach(teamName => {
         if (teamName === activeTeamName) {
-            // CORRECTION : On envoie le NOM de l'équipe (au lieu d'une phrase) 
-            // pour que le téléphone le reconnaisse et affiche l'écran jaune "🎤 PARLEZ"
             connections[teamName].send({ type: 'lock', winner: activeTeamName });
         } else {
             connections[teamName].send({ type: 'lock', winner: 'Écoutez bien...' });
@@ -516,13 +527,17 @@ function startPhase3() {
     currentPhase = 'p3_q';
     currentQuestionIndex = 0;
     isAnswerRevealed = false;
-    pendingTransition = { action: 'renderPhase3Question', title: 'Le Jeu Décisif', label: 'COMMENCER L\'ÉPREUVE' }; // Transition vers la 1ere question
+    pendingTransition = { action: 'renderPhase3Question', title: 'Le Jeu Décisif', label: 'COMMENCER L\'ÉPREUVE' }; 
     
     renderView(`
         <h1 style="font-size: 5rem; text-shadow: 0 0 30px rgba(247, 183, 49, 0.7); color: var(--accent-color);">Le Jeu Décisif</h1>
         <p style="font-size: 1.8rem; margin-bottom: 40px; opacity: 0.8;">C'est l'heure de l'ultime épreuve...</p>
         <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 60px;" onclick="renderPhase3Question()">Commencer ➔</button>
     `);
+    
+    // ➔ CORRECTION : Verrouiller avant le lancement de la 1ère question
+    isQuestionActive = false;
+    lockAllBuzzers();
 }
 
 function renderPhase3Question() {
