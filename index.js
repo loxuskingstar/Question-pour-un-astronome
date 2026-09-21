@@ -894,7 +894,10 @@ function syncMaster() {
             activeTeamName: (currentPhase === 'p2_q' && activeTeamIndex !== -1) ? teams[activeTeamIndex].name : null,
             isQuestionActive: isQuestionActive, p2AwaitingAnswer: p2Awaiting,
             transitionAction: pendingTransition ? pendingTransition.action : null, transitionTitle: pendingTransition ? pendingTransition.title : null, transitionLabel: pendingTransition ? pendingTransition.label : null,
-            p2Cats: p2Cats, currentChoosingTeam: currentChoosingTeam, choosingTeamName: choosingTeamName // NOUVEAUX CHAMPS
+            p2Cats: p2Cats, currentChoosingTeam: currentChoosingTeam, choosingTeamName: choosingTeamName,
+            
+            // ➔ LA LIGNE MANQUANTE ÉTAIT CELLE-CI :
+            teamsList: teams 
         });
     }
 }
