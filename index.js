@@ -332,15 +332,14 @@ function selectQuestions(bankArray, totalNeeded) {
     return shuffle(selected);
 }
 
-// Fonction qui génère la variable globale QUESTIONS pour la partie en cours
 function buildGameQuestions() {
     // Récupération des paramètres (ou valeurs par défaut si bug)
-    const p1Count = parseInt(document.getElementById('cfg-p1').value) || 15;
-    const p2Count = parseInt(document.getElementById('cfg-p2').value) || 5;
-    const p3Count = parseInt(document.getElementById('cfg-p3').value) || 5;
+    const p1Count = document.getElementById('cfg-p1') ? parseInt(document.getElementById('cfg-p1').value) : 15;
+    const p2Count = document.getElementById('cfg-p2') ? parseInt(document.getElementById('cfg-p2').value) : 5;
+    const p3Count = document.getElementById('cfg-p3') ? parseInt(document.getElementById('cfg-p3').value) : 5;
 
-    // Création de l'objet contenant les questions de CETTE partie
-    window.QUESTIONS = {
+    // ➔ CORRECTION ICI : On utilise bien QUESTIONS (sans window.)
+    QUESTIONS = {
         phase1: selectQuestions(window.QUESTION_BANK.phase1, p1Count),
         phase2: {},
         phase3: selectQuestions(window.QUESTION_BANK.phase3, p3Count)
@@ -348,22 +347,28 @@ function buildGameQuestions() {
 
     // Boucle sur les catégories de la Phase 2
     Object.keys(window.QUESTION_BANK.phase2).forEach(cat => {
-        window.QUESTIONS.phase2[cat] = selectQuestions(window.QUESTION_BANK.phase2[cat], p2Count);
+        QUESTIONS.phase2[cat] = selectQuestions(window.QUESTION_BANK.phase2[cat], p2Count);
     });
     
-    console.log("Questions générées pour la partie :", window.QUESTIONS);
+    console.log("Questions générées pour la partie :", QUESTIONS);
 }
 
 function startPhase1() {
     buildGameQuestions(); 
     
-    document.getElementById('btn-settings-toggle').style.display = 'none';
-    document.getElementById('settings-popup').style.display = 'none';
+    // ➔ CORRECTION ICI : On vérifie que les éléments existent avant de les cacher pour éviter les plantages
+    const btnSettings = document.getElementById('btn-settings-toggle');
+    if (btnSettings) btnSettings.style.display = 'none';
+    
+    const popupSettings = document.getElementById('settings-popup');
+    if (popupSettings) popupSettings.style.display = 'none';
     
     currentPhase = 'p1';
     currentQuestionIndex = 0;
     isAnswerRevealed = false;
     pendingTransition = null; 
+    
+    // Lancement effectif de la phase
     renderGeneralPhase("Qualifications", QUESTIONS.phase1, 'startPhase2Categories');
 }
 
