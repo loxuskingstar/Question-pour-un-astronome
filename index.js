@@ -290,13 +290,17 @@ function renderTeamList() {
 }
 
 function revealAnswer() {
-    isAnswerRevealed = true; // Débloque le bouton "Passer" sur la télécommande
+    isAnswerRevealed = true; 
+    isQuestionActive = false; 
+    
     document.getElementById('answer').classList.add('visible');
     const btnReveal = document.getElementById('btn-reveal');
     if (btnReveal) btnReveal.style.display = 'none';
     const btnSkip = document.getElementById('btn-skip-question');
     if (btnSkip) btnSkip.style.display = 'block';
-    syncMaster(); // Met à jour la télécommande
+    
+    lockAllBuzzers(); // ➔ NOUVEAU : On verrouille immédiatement tous les téléphones
+    syncMaster(); 
 }
 
 function startPhase1() {
