@@ -91,6 +91,15 @@ function updateMasterUI(data){
         });
     }
 
+    if(data.settings) {
+        const ep1 = document.getElementById('master-cfg-p1');
+        const ep2 = document.getElementById('master-cfg-p2');
+        const ep3 = document.getElementById('master-cfg-p3');
+        if (document.activeElement !== ep1) ep1.value = data.settings.p1;
+        if (document.activeElement !== ep2) ep2.value = data.settings.p2;
+        if (document.activeElement !== ep3) ep3.value = data.settings.p3;
+    }
+
     const answerRevealed = data.answerRevealed===true || data.canSkip===true;
     canSkip = answerRevealed && ['p1','p2_q','p3_q'].includes(data.phase);
 
@@ -134,6 +143,15 @@ function updateMasterUI(data){
     else { document.getElementById('ctrl-standard').style.display='block'; }
 
     updateSkipButton();
+}
+
+function sendSettings() {
+    const p1 = document.getElementById('master-cfg-p1').value;
+    const p2 = document.getElementById('master-cfg-p2').value;
+    const p3 = document.getElementById('master-cfg-p3').value;
+    if (conn && conn.open) {
+        conn.send({type: 'master_cmd', action: 'updateSettings', p1: p1, p2: p2, p3: p3});
+    }
 }
 
 const btnP3 = document.getElementById('btn-p3-anim');

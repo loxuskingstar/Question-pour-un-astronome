@@ -255,35 +255,21 @@ function showTeamSetup() {
     initNetwork(); 
     pendingTransition = { action: 'startPhase1', title: 'Équipes', label: 'LANCER LA PARTIE' };
     
+    // On affiche le bouton de configuration
+    document.getElementById('btn-settings-toggle').style.display = 'block';
+    
     renderView(`
         <h1>Inscrire les équipes</h1>
-        <div class="glass-panel" style="padding: 20px 40px; border-radius: 20px; margin-bottom: 20px; text-align: center; border: 2px solid var(--accent-color);">
+        <div class="glass-panel" style="padding: 20px 40px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 2px solid var(--accent-color);">
             <p style="font-size: 1.5rem; margin-bottom: 10px; color: #dcdcdc;">Code du salon :</p>
             <h2 id="room-code-display" style="font-size: 5rem; color: var(--accent-color); margin: 0; font-family: 'Chau Philomene One', sans-serif; letter-spacing: 5px;">...</h2>
         </div>
         
-        <div style="margin-bottom: 20px; display:flex; align-items:center;">
+        <div style="margin-bottom: 30px; display:flex; align-items:center;">
             <input type="text" id="teamName-input" placeholder="Ajout manuel (si besoin)" onkeypress="if(event.key==='Enter') { addTeam(this.value); this.value=''; }">
             <button class="btn-accent" onclick="addTeam(document.getElementById('teamName-input').value); document.getElementById('teamName-input').value='';">Ajouter</button>
         </div>
-        <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 20px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
-        
-        <!-- NOUVEAU : Paramètres de la partie -->
-        <div class="glass-panel" style="padding: 20px 30px; border-radius: 20px; margin-bottom: 30px; max-width: 500px; width: 100%; display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.3);">
-            <h3 style="margin: 0; text-align: center; color: var(--accent-color); font-size: 1.8rem;">⚙️ Paramètres (Nombre de questions)</h3>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem;">
-                <span>Phase 1 (Total) :</span>
-                <input type="number" id="cfg-p1" value="15" min="3" style="width: 80px; margin: 0; padding: 10px; text-align: center;">
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem;">
-                <span>Phase 2 (Par thème) :</span>
-                <input type="number" id="cfg-p2" value="5" min="3" style="width: 80px; margin: 0; padding: 10px; text-align: center;">
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.4rem;">
-                <span>Phase 3 (Total) :</span>
-                <input type="number" id="cfg-p3" value="5" min="3" style="width: 80px; margin: 0; padding: 10px; text-align: center;">
-            </div>
-        </div>
+        <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
         
         <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie ➔</button>
     `);
@@ -370,6 +356,9 @@ function buildGameQuestions() {
 
 function startPhase1() {
     buildGameQuestions(); 
+    
+    document.getElementById('btn-settings-toggle').style.display = 'none';
+    document.getElementById('settings-popup').style.display = 'none';
     
     currentPhase = 'p1';
     currentQuestionIndex = 0;
@@ -917,7 +906,12 @@ function handleMasterCommand(data) {
     else if (data.action === 'showPodium') showPodium(); 
     else if (data.action === 'exportResults') exportResults();
     else if (data.action === 'updateScore') addPoints(data.teamName, data.delta); // ➔ AJOUTER ICI
-    
+    else if (data.action === 'updateScore') addPoints(data.teamName, data.delta);
+    else if (data.action === 'updateSettings') {
+        if(document.getElementById('cfg-p1')) document.getElementById('cfg-p1').value = data.p1;
+        if(document.getElementById('cfg-p2')) document.getElementById('cfg-p2').value = data.p2;
+        if(document.getElementById('cfg-p3')) document.getElementById('cfg-p3').value = data.p3;
+    }
     syncMaster();
 }
 
@@ -982,10 +976,19 @@ function syncMaster() {
             transitionAction: pendingTransition ? pendingTransition.action : null, transitionTitle: pendingTransition ? pendingTransition.title : null, transitionLabel: pendingTransition ? pendingTransition.label : null,
             p2Cats: p2Cats, currentChoosingTeam: currentChoosingTeam, choosingTeamName: choosingTeamName,
             
-            // ➔ LA LIGNE MANQUANTE ÉTAIT CELLE-CI :
-            teamsList: teams 
+            teamsList: teams,
+            settings: {
+                p1: document.getElementById('cfg-p1') ? document.getElementById('cfg-p1').value : 15,
+                p2: document.getElementById('cfg-p2') ? document.getElementById('cfg-p2').value : 5,
+                p3: document.getElementById('cfg-p3') ? document.getElementById('cfg-p3').value : 5
+            }
         });
     }
+}
+
+function toggleSettings() {
+    const popup = document.getElementById('settings-popup');
+    popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'flex' : 'none';
 }
 
 // 4. On force la synchronisation à chaque changement d'écran

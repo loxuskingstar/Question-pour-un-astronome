@@ -28,6 +28,7 @@
             <span class="phase-badge font-title" id="ui-phase">En attente...</span>
             <div class="status-area">
                 <span id="conn-status" style="color: var(--success); font-size: 0.85rem;">●</span>
+                <button class="btn-scores" style="font-size: 1.2rem; padding: 5px 10px; border-color: transparent;" onclick="document.getElementById('settings-overlay').style.display='flex'">⚙️</button>
                 <button class="btn-scores" onclick="document.getElementById('score-overlay').style.display='flex'">SCORES</button>
             </div>
         </div>
@@ -98,6 +99,18 @@
             <div class="label" style="color: white; margin-bottom: 15px;">Ajustement manuel</div>
             <div id="score-list" style="overflow-y: auto; flex-grow: 1; display:flex; flex-direction:column; margin-bottom: 20px;"></div>
             <button class="btn btn-skip" onclick="document.getElementById('score-overlay').style.display='none'">Fermer</button>
+        </div>
+    </div>
+
+    <div id="settings-overlay" class="overlay">
+        <div class="overlay-card">
+            <div class="label" style="color: white; margin-bottom: 25px;">Paramètres de partie</div>
+            <div style="display:flex; flex-direction:column; gap:20px; margin-bottom:30px;">
+                <label style="display:flex; justify-content:space-between; align-items:center; color:white; font-size:1.2rem;">Phase 1 : <input type="number" id="master-cfg-p1" value="15" style="width:90px; margin:0; padding:10px;" onchange="sendSettings()"></label>
+                <label style="display:flex; justify-content:space-between; align-items:center; color:white; font-size:1.2rem;">Phase 2 : <input type="number" id="master-cfg-p2" value="5" style="width:90px; margin:0; padding:10px;" onchange="sendSettings()"></label>
+                <label style="display:flex; justify-content:space-between; align-items:center; color:white; font-size:1.2rem;">Phase 3 : <input type="number" id="master-cfg-p3" value="5" style="width:90px; margin:0; padding:10px;" onchange="sendSettings()"></label>
+            </div>
+            <button class="btn btn-skip" onclick="document.getElementById('settings-overlay').style.display='none'">Fermer</button>
         </div>
     </div>
 

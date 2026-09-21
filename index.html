@@ -35,7 +35,14 @@
     <button id="btn-skip-question" class="btn-accent" onclick="skipQuestion()" style="display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 50; font-size: 1.5rem; padding: 15px 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">Passer à la question suivante ➔</button>
     
     <!-- ORDRE DES SCRIPTS TRÈS IMPORTANT -->
-    
+    <button id="btn-settings-toggle" onclick="toggleSettings()" style="display: none; position: fixed; bottom: 25px; left: 25px; z-index: 90; padding: 12px 20px; border-radius: 15px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer; font-size: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">⚙️ Paramètres</button>
+
+    <div id="settings-popup" class="glass-panel" style="display: none; position: fixed; bottom: 85px; left: 25px; z-index: 90; padding: 25px; border-radius: 20px; flex-direction: column; gap: 15px; background: rgba(11, 9, 20, 0.95); border: 2px solid var(--accent-color);">
+        <h3 style="margin: 0 0 10px 0; color: var(--accent-color); font-size: 1.4rem;">Nombre de questions</h3>
+        <label style="display: flex; justify-content: space-between; align-items: center; width: 220px; font-size: 1.2rem;">Phase 1: <input type="number" id="cfg-p1" value="15" min="3" style="width: 70px; padding: 8px; margin: 0;"></label>
+        <label style="display: flex; justify-content: space-between; align-items: center; width: 220px; font-size: 1.2rem;">Phase 2: <input type="number" id="cfg-p2" value="5" min="3" style="width: 70px; padding: 8px; margin: 0;"></label>
+        <label style="display: flex; justify-content: space-between; align-items: center; width: 220px; font-size: 1.2rem;">Phase 3: <input type="number" id="cfg-p3" value="5" min="3" style="width: 70px; padding: 8px; margin: 0;"></label>
+    </div>
     <!-- 1. Librairies externes -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
