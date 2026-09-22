@@ -3,9 +3,10 @@ let peer=null, conn=null, canSkip=false, p3PointerDown=false, transitionAction=n
 const ICE_CONFIG = {
     iceServers: [
         { urls: "stun:stun.relay.metered.ca:80" },
-        { urls: "turn:global.relay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
-        { urls: "turn:global.relay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" },
-        { urls: "turn:global.relay.metered.ca:443?transport=tcp", username: "openrelayproject", credential: "openrelayproject" }
+        { urls: "turn:global.relay.metered.ca:80", username: "0907d928b54ca2829536d9ed", credential: "wDpB1hBTmZb58rhk" },
+        { urls: "turn:global.relay.metered.ca:80?transport=tcp", username: "0907d928b54ca2829536d9ed", credential: "wDpB1hBTmZb58rhk" },
+        { urls: "turn:global.relay.metered.ca:443", username: "0907d928b54ca2829536d9ed", credential: "wDpB1hBTmZb58rhk" },
+        { urls: "turns:global.relay.metered.ca:443?transport=tcp", username: "0907d928b54ca2829536d9ed", credential: "wDpB1hBTmZb58rhk" }
     ]
 };
 
