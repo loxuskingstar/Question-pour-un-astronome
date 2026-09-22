@@ -208,58 +208,62 @@ function exportResults() {
 function showRules() {
     pendingTransition = { action: 'startPhase1', title: 'Règles du jeu', label: 'LANCER LA PARTIE' };
     
-    // Retrieve the exact number of generated questions
+    // Récupération du nombre de questions
     const p1Count = QUESTIONS.phase1 ? QUESTIONS.phase1.length : 0;
     const p2Keys = QUESTIONS.phase2 ? Object.keys(QUESTIONS.phase2) : [];
     const p2Count = p2Keys.length > 0 ? QUESTIONS.phase2[p2Keys[0]].length : 0;
     const p3Count = QUESTIONS.phase3 ? QUESTIONS.phase3.length : 0;
 
+    // Utilisation intensive de clamp(Minimum, Taille idéale dynamique en VH, Maximum)
     renderView(`
-        <h1 style="margin-bottom: 20px; text-align: center;">RÈGLES DU JEU</h1>
-        
-        <!-- Difficulty and points explanation -->
-        <div class="glass-panel" style="max-width: 1000px; width: 95%; padding: 20px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); margin-left: auto; margin-right: auto;">
-            <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--accent-color); font-size: 1.6rem;">Barème et Difficulté</h3>
-            <p style="font-size: 1.3rem; margin: 0; line-height: 1.4; color: #dcdcdc; font-weight: 300;">
-                Chaque manche contient un mélange équilibré de questions <strong>faciles (1 pt)</strong>, <strong>moyennes (2 pts)</strong> et <strong>difficiles (3 pts)</strong><br><br>
-                <strong style="color: var(--accent-color);">Attention : une seule tentative par équipe par question !</strong>
-            </p>
-        </div>
+        <div style="display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box;">
+            
+            <h1 style="margin-top: 0; margin-bottom: clamp(10px, 3vh, 30px); text-align: center; font-size: clamp(2.5rem, 6vh, 4rem);">RÈGLES DU JEU</h1>
+            
+            <!-- Explication des difficultés -->
+            <div class="glass-panel" style="max-width: 1000px; width: 90%; padding: clamp(12px, 2.5vh, 25px); border-radius: 20px; margin-bottom: clamp(15px, 4vh, 40px); text-align: center; border: 1px solid rgba(255,255,255,0.1); margin-left: auto; margin-right: auto; box-sizing: border-box;">
+                <h3 style="margin-top: 0; margin-bottom: clamp(5px, 1.5vh, 15px); color: var(--accent-color); font-size: clamp(1.2rem, 3vh, 1.6rem);">Barème et Difficulté</h3>
+                <p style="font-size: clamp(1.1rem, 2.2vh, 1.3rem); margin: 0; line-height: 1.4; color: #dcdcdc; font-weight: 300;">
+                    Chaque manche contient un mélange équilibré de questions <strong>faciles (1 pt)</strong>, <strong>moyennes (2 pts)</strong> et <strong>difficiles (3 pts)</strong>.<br>
+                    <strong style="color: var(--accent-color);">Attention : une seule tentative par équipe par question !</strong>
+                </p>
+            </div>
 
-        <!-- The rules grid container with flex-wrap for responsiveness -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; width: 95%; margin: 0 auto;">
-            
-            <div class="rule-card glass-panel" style="flex: 1 1 300px; min-width: 250px; padding: 20px;">
-                <h3 style="text-align: center;">Qualifications</h3>
-                <ul>
-                    <li><strong>${p1Count} questions</strong> diverses pour tout le monde.</li>
-                    <li>Soyez le premier à buzzer pour répondre !</li>
-                    <li>Le classement final déterminera l'ordre de passage pour la prochaine épreuve.</li>
-                </ul>
+            <!-- Conteneur de la grille avec espacement dynamique (gap) -->
+            <div class="rules-grid" style="gap: clamp(15px, 3vh, 30px);">
+                
+                <div class="rule-card glass-panel" style="padding: clamp(15px, 3vh, 30px);">
+                    <h3 style="text-align: center; margin-top: 0; margin-bottom: clamp(10px, 2vh, 20px); font-size: clamp(1.3rem, 2.8vh, 1.6rem);">Qualifications</h3>
+                    <ul style="font-size: clamp(1rem, 2.2vh, 1.2rem); line-height: 1.4; margin-bottom: 0;">
+                        <li><strong>${p1Count} questions</strong> diverses pour tout le monde.</li>
+                        <li>Soyez le premier à buzzer pour répondre !</li>
+                        <li>Le classement final déterminera l'ordre de passage pour la prochaine épreuve.</li>
+                    </ul>
+                </div>
+                
+                <div class="rule-card glass-panel" style="padding: clamp(15px, 3vh, 30px);">
+                    <h3 style="text-align: center; margin-top: 0; margin-bottom: clamp(10px, 2vh, 20px); font-size: clamp(1.3rem, 2.8vh, 1.6rem);">A la carte</h3>
+                    <ul style="font-size: clamp(1rem, 2.2vh, 1.2rem); line-height: 1.4; margin-bottom: 0;">
+                        <li>12 thèmes au choix. Le choix des thèmes se fait dans l'ordre du classement.</li>
+                        <li><strong>${p2Count} questions</strong> par thème lues uniquement pour l'équipe active.</li>
+                        <li><strong style="color: var(--accent-color);">Le Vol :</strong> Si l'équipe active se trompe, la main passe ! Une autre équipe peut buzzer pour voler les points, mais attention vous n'avez qu'une seule chance.</li>
+                    </ul>
+                </div>
+                
+                <div class="rule-card glass-panel" style="padding: clamp(15px, 3vh, 30px);">
+                    <h3 style="text-align: center; margin-top: 0; margin-bottom: clamp(10px, 2vh, 20px); font-size: clamp(1.3rem, 2.8vh, 1.6rem);">Le jeu décisif</h3>
+                    <ul style="font-size: clamp(1rem, 2.2vh, 1.2rem); line-height: 1.4; margin-bottom: 0;">
+                        <li><strong>${p3Count} questions longues</strong> sous la forme "Que/qui suis-je".</li>
+                        <li>La question s'affiche progressivement. Vous pouvez répondre avant la fin de la question.</li>
+                    </ul>
+                </div>
+                
             </div>
             
-            <div class="rule-card glass-panel" style="flex: 1 1 300px; min-width: 250px; padding: 20px;">
-                <h3 style="text-align: center;">A la carte</h3>
-                <ul>
-                    <li>12 thèmes au choix. Le choix des thèmes se fait dans l'ordre du classement.</li>
-                    <li><strong>${p2Count} questions</strong> par thème lues uniquement pour l'équipe active.</li>
-                    <li><strong style="color: var(--accent-color);">Le Vol :</strong> Si l'équipe active se trompe, la main passe ! Une autre équipe peut buzzer pour voler les points, mais attention vous n'avez qu'une seule chance</li>
-                </ul>
+            <div style="text-align: center; width: 100%; margin-top: clamp(20px, 5vh, 50px);">
+                <button class="btn-accent" style="font-size: clamp(1.2rem, 3vh, 1.5rem); padding: clamp(12px, 2.5vh, 20px) clamp(30px, 5vw, 50px);" onclick="startPhase1()">Lancer la partie</button>
             </div>
             
-            <div class="rule-card glass-panel" style="flex: 1 1 300px; min-width: 250px; padding: 20px;">
-                <h3 style="text-align: center;">Le jeu décisif</h3>
-                <ul>
-                    <li><strong>${p3Count} questions longues</strong> sous la forme "Que/qui suis-je".</li>
-                    <li>La question s'affiche progressivement. Vous pouvez répondre avant la fin de la question.</li>
-                </ul>
-            </div>
-            
-        </div>
-        
-        <!-- The button to start Phase 1 -->
-        <div style="text-align: center; width: 100%; margin-top: 40px;">
-            <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie</button>
         </div>
     `);
 }
