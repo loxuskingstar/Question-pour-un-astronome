@@ -215,57 +215,52 @@ function showRules() {
     const p3Count = QUESTIONS.phase3 ? QUESTIONS.phase3.length : 0;
 
     renderView(`
-        <h1 style="margin-bottom: 20px;">RÈGLES DU JEU</h1>
+        <h1 style="margin-bottom: 20px; text-align: center;">RÈGLES DU JEU</h1>
         
-        <!-- NEW: Difficulty and points explanation -->
-        <div class="glass-panel" style="max-width: 1000px; width: 95%; padding: 20px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+        <!-- Difficulty and points explanation -->
+        <div class="glass-panel" style="max-width: 1000px; width: 95%; padding: 20px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); margin-left: auto; margin-right: auto;">
             <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--accent-color); font-size: 1.6rem;">Barème et Difficulté</h3>
             <p style="font-size: 1.3rem; margin: 0; line-height: 1.4; color: #dcdcdc; font-weight: 300;">
-                Chaque manche contient un mélange équilibré de questions <strong>faciles (1 pt)</strong>, <strong>moyennes (2 pts)</strong> et <strong>difficiles (3 pts)</strong>.
+                Chaque manche contient un mélange équilibré de questions <strong>faciles (1 pt)</strong>, <strong>moyennes (2 pts)</strong> et <strong>difficiles (3 pts)</strong><br><br>
+                <strong style="color: var(--accent-color);">Attention : une seule tentative par équipe par question !</strong>
             </p>
         </div>
 
-        <div class="rules-grid">
-            <div class="rule-card glass-panel">
-                <h3>Qualifications</h3>
+        <!-- The rules grid container with flex-wrap for responsiveness -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; width: 95%; margin: 0 auto;">
+            
+            <div class="rule-card glass-panel" style="flex: 1 1 300px; min-width: 250px; padding: 20px;">
+                <h3 style="text-align: center;">Qualifications</h3>
                 <ul>
                     <li><strong>${p1Count} questions</strong> diverses pour tout le monde.</li>
                     <li>Soyez le premier à buzzer pour répondre !</li>
                     <li>Le classement final déterminera l'ordre de passage pour la prochaine épreuve.</li>
                 </ul>
             </div>
-            <div class="rule-card glass-panel">
-                <h3>A la carte</h3>
+            
+            <div class="rule-card glass-panel" style="flex: 1 1 300px; min-width: 250px; padding: 20px;">
+                <h3 style="text-align: center;">A la carte</h3>
                 <ul>
-                    <li>8 thèmes au choix. L'équipe dernière au classement choisit son thème en premier.</li>
+                    <li>12 thèmes au choix. Le choix des thèmes se fait dans l'ordre du classement.</li>
                     <li><strong>${p2Count} questions</strong> par thème lues uniquement pour l'équipe active.</li>
-                    <li><strong style="color: var(--accent-color);">Le Vol :</strong> Si l'équipe active se trompe, la main passe ! Les autres équipes peuvent buzzer pour voler les points.</li>
+                    <li><strong style="color: var(--accent-color);">Le Vol :</strong> Si l'équipe active se trompe, la main passe ! Une autre équipe peut buzzer pour voler les points, mais attention vous n'avez qu'une seule chance</li>
                 </ul>
             </div>
-            <div class="rule-card glass-panel">
-                <h3>Le jeu décisif</h3>
+            
+            <div class="rule-card glass-panel" style="flex: 1 1 300px; min-width: 250px; padding: 20px;">
+                <h3 style="text-align: center;">Le jeu décisif</h3>
                 <ul>
-                    <li><strong>${p3Count} questions</strong> sous la forme "Que/qui suis-je".</li>
-                    <li>L'indice s'affiche progressivement. Vous pouvez répondre avant la fin de la question.</li>
-                    <li>Attention : une seule tentative par équipe par question !</li>
+                    <li><strong>${p3Count} questions longues</strong> sous la forme "Que/qui suis-je".</li>
+                    <li>La question s'affiche progressivement. Vous pouvez répondre avant la fin de la question.</li>
                 </ul>
             </div>
+            
         </div>
         
         <!-- The button to start Phase 1 -->
-        <button class="btn-accent" style="margin-top: 40px; font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie</button>
-    `);
-}
-
-function showBuzzer() {
-    renderView(`
-        <h1>Comment jouer ?</h1>
-        <div class="rule-card glass-panel" style="text-align: center; max-width: 600px; padding: 50px;">
-            <h2 style="margin-bottom: 20px;">Préparez vos smartphones !</h2>
-            <p style="font-size: 1.8rem; margin: 10px 0;">Allez sur <strong>buzzin.live</strong></p>
-            <p style="font-size: 1.8rem; margin: 10px 0;">Code : <strong style="color: var(--accent-color); font-size: 3.5rem; display:block; margin-top:20px; font-family: 'Chau Philomene One', sans-serif;">557316</strong></p>
+        <div style="text-align: center; width: 100%; margin-top: 40px;">
+            <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie</button>
         </div>
-        <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes</button>
     `);
 }
 
@@ -951,6 +946,7 @@ function handleMasterCommand(data) {
     else if (data.action === 'selectCategory') selectCategory(data.category, data.teamIndex);
     else if (data.action === 'startGame') startGame();
     else if (data.action === 'showTeamSetup') showTeamSetup();
+    else if (data.action === 'goToRules') goToRules();
     else if (data.action === 'startPhase1') startPhase1();
     else if (data.action === 'startPhase2Categories') startPhase2Categories();
     else if (data.action === 'startPhase3') startPhase3();
