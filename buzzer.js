@@ -21,7 +21,17 @@ function joinGame() {
     btn.innerText = "Connexion...";
     btn.style.opacity = "0.7";
 
-    peer = new Peer(); 
+    peer = new Peer({
+        host: '0.peerjs.com',
+        port: 443,
+        path: '/',
+        config: {
+            'iceServers': [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
+    });
     peer.on('open', () => {
         conn = peer.connect('astro-' + code);
         

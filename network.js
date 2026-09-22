@@ -7,7 +7,17 @@ let currentBuzzerWinner = null;
 
 function initNetwork() {
     roomCode = Math.floor(10000 + Math.random() * 90000).toString();
-    peer = new Peer('astro-' + roomCode);
+    peer = new Peer('astro-' + roomCode, {
+        host: '0.peerjs.com',
+        port: 443,
+        path: '/',
+        config: {
+            'iceServers': [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
+    });
 
     peer.on('open', (id) => {
         console.log('Salon créé. Code :', roomCode);
