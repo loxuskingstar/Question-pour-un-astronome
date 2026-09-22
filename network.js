@@ -5,10 +5,20 @@ let roomCode = "";
 let isBuzzerActive = false;
 let currentBuzzerWinner = null;
 
+const ICE_CONFIG = {
+    iceServers: [
+        { urls: "stun:stun.relay.metered.ca:80" },
+        { urls: "turn:global.relay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
+        { urls: "turn:global.relay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" },
+        { urls: "turn:global.relay.metered.ca:443?transport=tcp", username: "openrelayproject", credential: "openrelayproject" }
+    ]
+};
+
 function initNetwork() {
     roomCode = Math.floor(10000 + Math.random() * 90000).toString();
     peer = new Peer('astro-' + roomCode, {
-        secure: true
+        secure: true,
+        config: ICE_CONFIG
     });
 
     peer.on('open', (id) => {

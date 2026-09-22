@@ -2,6 +2,15 @@ let peer = null;
 let conn = null;
 let myTeamName = "";
 
+const ICE_CONFIG = {
+    iceServers: [
+        { urls: "stun:stun.relay.metered.ca:80" },
+        { urls: "turn:global.relay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
+        { urls: "turn:global.relay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" },
+        { urls: "turn:global.relay.metered.ca:443?transport=tcp", username: "openrelayproject", credential: "openrelayproject" }
+    ]
+};
+
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const codeParam = urlParams.get('code');
@@ -22,7 +31,8 @@ function joinGame() {
     btn.style.opacity = "0.7";
 
     peer = new Peer({
-        secure: true
+        secure: true,
+        config: ICE_CONFIG
     });
 
     peer.on('open', () => {
