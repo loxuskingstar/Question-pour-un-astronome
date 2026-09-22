@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <button id="btn-skip-question" class="btn-accent" onclick="skipQuestion()" style="display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 50; font-size: 1.5rem; padding: 15px 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">Passer à la question suivante ➔</button>
+    <button id="btn-skip-question" class="btn-accent" onclick="skipQuestion()" style="display: none; position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 50; font-size: 1.5rem; padding: 15px 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">Passer à la question suivante</button>
     
     <!-- ORDRE DES SCRIPTS TRÈS IMPORTANT -->
     <button id="btn-settings-toggle" onclick="toggleSettings()" style="display: none; position: fixed; bottom: 25px; left: 25px; z-index: 90; padding: 12px 20px; border-radius: 15px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer; font-size: 1.2rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">⚙️ Paramètres</button>
@@ -45,8 +45,8 @@
     </div>
     <!-- 1. Librairies externes -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    
     <!-- 2. Données et Réseau -->
     <script src="questions.js"></script>
     <script src="teams.js"></script>

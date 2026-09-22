@@ -234,8 +234,8 @@ function showRules() {
                 </ul>
             </div>
         </div>
-        <!-- <button class="btn-accent" style="margin-top: 50px;" onclick="showBuzzer()">Suite ➔</button> -->
-        <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes ➔</button>
+        <!-- <button class="btn-accent" style="margin-top: 50px;" onclick="showBuzzer()">Suite</button> -->
+        <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes</button>
     `);
 }
 
@@ -247,7 +247,7 @@ function showBuzzer() {
             <p style="font-size: 1.8rem; margin: 10px 0;">Allez sur <strong>buzzin.live</strong></p>
             <p style="font-size: 1.8rem; margin: 10px 0;">Code : <strong style="color: var(--accent-color); font-size: 3.5rem; display:block; margin-top:20px; font-family: 'Chau Philomene One', sans-serif;">557316</strong></p>
         </div>
-        <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes ➔</button>
+        <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes</button>
     `);
 }
 
@@ -255,25 +255,58 @@ function showTeamSetup() {
     initNetwork(); 
     pendingTransition = { action: 'startPhase1', title: 'Équipes', label: 'LANCER LA PARTIE' };
     
-    // On affiche le bouton de configuration
-    document.getElementById('btn-settings-toggle').style.display = 'block';
+    const btnSettings = document.getElementById('btn-settings-toggle');
+    if (btnSettings) btnSettings.style.display = 'block';
     
     renderView(`
-        <h1>Inscrire les équipes</h1>
-        <div class="glass-panel" style="padding: 20px 40px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 2px solid var(--accent-color);">
-            <p style="font-size: 1.5rem; margin-bottom: 10px; color: #dcdcdc;">Code du salon :</p>
-            <h2 id="room-code-display" style="font-size: 5rem; color: var(--accent-color); margin: 0; font-family: 'Chau Philomene One', sans-serif; letter-spacing: 5px;">...</h2>
+        <h1 style="margin-bottom: 40px;">INSCRIRE LES ÉQUIPES</h1>
+        
+        <div class="glass-panel" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 50px; padding: 40px 60px; border-radius: 30px; margin-bottom: 40px; border: 2px solid var(--accent-color); max-width: 900px;">
+            
+            <div id="qrcode-container" style="background: white; padding: 10px; border-radius: 15px; display: flex; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 230px; height: 230px; justify-content: center; align-items: center;">
+                <!-- Le script injectera le QR code ici -->
+            </div>
+            
+            <div style="text-align: center;">
+                <p style="font-size: 1.8rem; margin: 0 0 10px 0; color: #dcdcdc; font-weight: 300;">Scannez pour jouer ou entrez le code :</p>
+                <h2 id="room-code-display" style="font-size: 8rem; color: var(--accent-color); margin: 0; font-family: 'Chau Philomene One', sans-serif; letter-spacing: 10px; line-height: 1; text-shadow: 0 0 25px rgba(247, 183, 49, 0.4);">...</h2>
+            </div>
+            
         </div>
         
         <div style="margin-bottom: 30px; display:flex; align-items:center;">
             <input type="text" id="teamName-input" placeholder="Ajout manuel (si besoin)" onkeypress="if(event.key==='Enter') { addTeam(this.value); this.value=''; }">
             <button class="btn-accent" onclick="addTeam(document.getElementById('teamName-input').value); document.getElementById('teamName-input').value='';">Ajouter</button>
         </div>
-        <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center;"></div>
         
-        <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie ➔</button>
+        <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center; min-height: 60px;"></div>
+        
+        <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie</button>
     `);
     renderTeamList();
+
+    // GÉNÉRATION DYNAMIQUE DU QR CODE
+    setTimeout(() => {
+        const qrContainer = document.getElementById("qrcode-container");
+        if (qrContainer && roomCode) {
+            qrContainer.innerHTML = ""; 
+            
+            let currentUrl = window.location.href.split('?')[0];
+            if (currentUrl.endsWith('index.html')) currentUrl = currentUrl.replace('index.html', '');
+            if (!currentUrl.endsWith('/')) currentUrl += '/';
+            
+            const buzzerUrl = currentUrl + "buzzer.html?code=" + roomCode;
+            
+            new QRCode(qrContainer, {
+                text: buzzerUrl,
+                width: 220, // ➔ CORRECTION : Agrandit le QR Code de 20px
+                height: 220, // ➔ CORRECTION : Agrandit le QR Code de 20px
+                colorDark : "#0b0914",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.L
+            });
+        }
+    }, 150);
 }
     
 function renderTeamList() {
@@ -379,7 +412,7 @@ function renderGeneralPhase(phaseTitle, questionArray, nextPhaseName) {
         pendingTransition = { action: nextPhaseName, title: 'Manche terminée', label: 'PASSER À LA SUITE' };
         renderView(`
             <h1>Manche suivante<br><span style="color:var(--accent-color); font-size:4.5rem;">${phaseTitle}</span></h1>
-            <button class="btn-accent" style="margin-top:40px; font-size:1.5rem; padding: 20px 50px;" onclick="${nextPhaseName}()">Passer à la suite ➔</button>
+            <button class="btn-accent" style="margin-top:40px; font-size:1.5rem; padding: 20px 50px;" onclick="${nextPhaseName}()">Passer à la suite</button>
         `);
         
         // ➔ CORRECTION : Verrouiller les buzzers pendant la transition
@@ -441,7 +474,7 @@ function startPhase2Categories() {
         renderView(`
             <h1>À la carte <span style="color:var(--accent-color)">terminé !</span></h1>
             <p style="font-size:1.8rem; color:#dcdcdc;">Chaque équipe a joué son thème.</p>
-            <button class="btn-accent" style="margin-top: 50px; font-size:1.5rem; padding: 20px 50px;" onclick="startPhase3()">Passer au Jeu Décisif ➔</button>
+            <button class="btn-accent" style="margin-top: 50px; font-size:1.5rem; padding: 20px 50px;" onclick="startPhase3()">Passer au Jeu Décisif</button>
         `);
         
         // ➔ CORRECTION : Verrouiller à la fin de la phase 2
@@ -597,7 +630,7 @@ function startPhase3() {
     renderView(`
         <h1 style="font-size: 5rem; text-shadow: 0 0 30px rgba(247, 183, 49, 0.7); color: var(--accent-color);">Le Jeu Décisif</h1>
         <p style="font-size: 1.8rem; margin-bottom: 40px; opacity: 0.8;">C'est l'heure de l'ultime épreuve...</p>
-        <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 60px;" onclick="renderPhase3Question()">Commencer ➔</button>
+        <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 60px;" onclick="renderPhase3Question()">Commencer</button>
     `);
     
     // ➔ CORRECTION : Verrouiller avant le lancement de la 1ère question

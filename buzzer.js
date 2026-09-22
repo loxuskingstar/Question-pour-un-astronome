@@ -2,6 +2,16 @@ let peer = null;
 let conn = null;
 let myTeamName = "";
 
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeParam = urlParams.get('code');
+    if (codeParam) {
+        document.getElementById('code-input').value = codeParam;
+        // On met directement le focus (le curseur) sur le nom d'équipe pour gagner du temps !
+        document.getElementById('team-input').focus();
+    }
+};
+
 function joinGame() {
     const code = document.getElementById('code-input').value.trim();
     myTeamName = document.getElementById('team-input').value.trim();

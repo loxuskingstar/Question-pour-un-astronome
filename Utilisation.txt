@@ -1,0 +1,5 @@
+Comment utiliser le jeu : 
+- Affichage public : index.html
+- Affichage smartphone pour les joueurs : buzzer.html
+- Télécommande pour le maître du jeu : master.html (pa
+
