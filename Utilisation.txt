@@ -1,5 +1,20 @@
 Comment utiliser le jeu : 
 - Affichage public : index.html
 - Affichage smartphone pour les joueurs : buzzer.html
-- Télécommande pour le maître du jeu : master.html (pa
+- Télécommande pour le maître du jeu : master.html (pas obligatoire car on peut controler le jeu depuis l'écran public également, 
+  mais recommandé pour plus de simplicité)
+
+Déroulé de la partie : 
+- Explication des règles
+- Création des équipes (affichage d'un QR Code automatique avec le code de la session)
+- Phase 1 : Questions de qualifications
+- Phase 2 : Thèmes choisi par les équipes en fonction du classement (même nombre de question par thème)
+- Phase 3 : Questions longues qui se dévoilent au fur et à mesure (Je suis...)
+
+Fonctionnement du jeu : 
+- On peut choisir le nombre de questions par phase (par thème pour la phase 2)
+- Les questions sont choisies aléatoirement de manière à avoir idéalement 1/3 de faciles, 1/3 de moyennes et 1/3 de difficiles
+  Si ce n'est pas possible le jeu pioches d'autres questions aléatoirement pour combler. 
+- Les questions simples rapportent 1pts, les moyennes 2pts et les difficiles 3pts
+- Pour ajouter ou modifier des questions il faut modifier le fichier questions.js (ajouter des questions impacte directement le jeu)
 

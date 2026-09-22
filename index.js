@@ -147,7 +147,7 @@ function showHome() {
 
 function startGame() {
     header.classList.remove('header-hidden');
-    showRules();
+    showTeamSetup(); 
 }
 
 function exportResults() {
@@ -206,36 +206,54 @@ function exportResults() {
 }
 
 function showRules() {
-    pendingTransition = { action: 'showTeamSetup', title: 'Règles du jeu', label: 'CRÉER LES ÉQUIPES' };
+    pendingTransition = { action: 'startPhase1', title: 'Règles du jeu', label: 'LANCER LA PARTIE' };
+    
+    // Retrieve the exact number of generated questions
+    const p1Count = QUESTIONS.phase1 ? QUESTIONS.phase1.length : 0;
+    const p2Keys = QUESTIONS.phase2 ? Object.keys(QUESTIONS.phase2) : [];
+    const p2Count = p2Keys.length > 0 ? QUESTIONS.phase2[p2Keys[0]].length : 0;
+    const p3Count = QUESTIONS.phase3 ? QUESTIONS.phase3.length : 0;
+
     renderView(`
-        <h1>Règles du jeu</h1>
+        <h1 style="margin-bottom: 20px;">RÈGLES DU JEU</h1>
+        
+        <!-- NEW: Difficulty and points explanation -->
+        <div class="glass-panel" style="max-width: 1000px; width: 95%; padding: 20px; border-radius: 20px; margin-bottom: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--accent-color); font-size: 1.6rem;">Barème et Difficulté</h3>
+            <p style="font-size: 1.3rem; margin: 0; line-height: 1.4; color: #dcdcdc; font-weight: 300;">
+                Chaque manche contient un mélange équilibré de questions <strong>faciles (1 pt)</strong>, <strong>moyennes (2 pts)</strong> et <strong>difficiles (3 pts)</strong>.
+            </p>
+        </div>
+
         <div class="rules-grid">
             <div class="rule-card glass-panel">
                 <h3>Qualifications</h3>
                 <ul>
-                    <li>Une quinzaine de questions diverses</li>
-                    <li>Le classement déterminera l'ordre de passage pour la prochaine épreuve</li>
+                    <li><strong>${p1Count} questions</strong> diverses pour tout le monde.</li>
+                    <li>Soyez le premier à buzzer pour répondre !</li>
+                    <li>Le classement final déterminera l'ordre de passage pour la prochaine épreuve.</li>
                 </ul>
             </div>
             <div class="rule-card glass-panel">
                 <h3>A la carte</h3>
                 <ul>
-                    <li>8 thèmes au choix</li>
-                    <li>5 questions par thème</li>
-                    <li>Le choix des thèmes se fait selon le classement (du 1er au dernier)</li>
+                    <li>8 thèmes au choix. L'équipe dernière au classement choisit son thème en premier.</li>
+                    <li><strong>${p2Count} questions</strong> par thème lues uniquement pour l'équipe active.</li>
+                    <li><strong style="color: var(--accent-color);">Le Vol :</strong> Si l'équipe active se trompe, la main passe ! Les autres équipes peuvent buzzer pour voler les points.</li>
                 </ul>
             </div>
             <div class="rule-card glass-panel">
                 <h3>Le jeu décisif</h3>
                 <ul>
-                    <li>5 Questions sous la forme "Que/qui suis-je"</li>
-                    <li>Vous pouvez répondre avant la fin de la question</li>
-                    <li>Une seule tentative par équipe avant la fin de la question</li>
+                    <li><strong>${p3Count} questions</strong> sous la forme "Que/qui suis-je".</li>
+                    <li>L'indice s'affiche progressivement. Vous pouvez répondre avant la fin de la question.</li>
+                    <li>Attention : une seule tentative par équipe par question !</li>
                 </ul>
             </div>
         </div>
-        <!-- <button class="btn-accent" style="margin-top: 50px;" onclick="showBuzzer()">Suite</button> -->
-        <button class="btn-accent" style="margin-top: 50px;" onclick="showTeamSetup()">Créer les équipes</button>
+        
+        <!-- The button to start Phase 1 -->
+        <button class="btn-accent" style="margin-top: 40px; font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie</button>
     `);
 }
 
@@ -253,7 +271,8 @@ function showBuzzer() {
 
 function showTeamSetup() {
     initNetwork(); 
-    pendingTransition = { action: 'startPhase1', title: 'Équipes', label: 'LANCER LA PARTIE' };
+    // The pending transition is now to go to the rules
+    pendingTransition = { action: 'goToRules', title: 'Équipes', label: 'VOIR LES RÈGLES' };
     
     const btnSettings = document.getElementById('btn-settings-toggle');
     if (btnSettings) btnSettings.style.display = 'block';
@@ -281,7 +300,8 @@ function showTeamSetup() {
         
         <div id="team-list" style="font-size: 1.4rem; font-weight:300; margin-bottom: 40px; display:flex; gap:15px; flex-wrap:wrap; max-width: 900px; justify-content: center; min-height: 60px;"></div>
         
-        <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="startPhase1()">Lancer la partie</button>
+        <!-- CORRECTION: This button now leads to the rules -->
+        <button class="btn-accent" style="font-size: 1.5rem; padding: 20px 50px;" onclick="goToRules()">Voir les règles</button>
     `);
     renderTeamList();
 
@@ -299,8 +319,8 @@ function showTeamSetup() {
             
             new QRCode(qrContainer, {
                 text: buzzerUrl,
-                width: 220, // ➔ CORRECTION : Agrandit le QR Code de 20px
-                height: 220, // ➔ CORRECTION : Agrandit le QR Code de 20px
+                width: 220, 
+                height: 220, 
                 colorDark : "#0b0914",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.L
@@ -387,14 +407,7 @@ function buildGameQuestions() {
 }
 
 function startPhase1() {
-    buildGameQuestions(); 
-    
-    // ➔ CORRECTION ICI : On vérifie que les éléments existent avant de les cacher pour éviter les plantages
-    const btnSettings = document.getElementById('btn-settings-toggle');
-    if (btnSettings) btnSettings.style.display = 'none';
-    
-    const popupSettings = document.getElementById('settings-popup');
-    if (popupSettings) popupSettings.style.display = 'none';
+    // buildGameQuestions() and hiding settings are now handled in goToRules()
     
     currentPhase = 'p1';
     currentQuestionIndex = 0;
@@ -1039,4 +1052,14 @@ renderView = function(html) {
 function skipQuestion() {
     document.getElementById('btn-skip-question').style.display = 'none'; // Cache le bouton
     goToNextQuestion(); // Passe à la question suivante
+}
+
+function goToRules() {
+    buildGameQuestions(); 
+    const btnSettings = document.getElementById('btn-settings-toggle');
+    if (btnSettings) btnSettings.style.display = 'none';
+    const popupSettings = document.getElementById('settings-popup');
+    if (popupSettings) popupSettings.style.display = 'none';
+
+    showRules();
 }
