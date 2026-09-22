@@ -7,14 +7,23 @@ let currentBuzzerWinner = null;
 
 function initNetwork() {
     roomCode = Math.floor(10000 + Math.random() * 90000).toString();
-    peer = new Peer('astro-' + roomCode, {
+    peer = new Peer('astro-' + roomCode, { // NOTE : Enlever 'astro-' + roomCode dans buzzer.js et master.js
         host: '0.peerjs.com',
         port: 443,
         path: '/',
         config: {
             'iceServers': [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                {
+                    urls: 'turn:openrelay.metered.ca:80',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:openrelay.metered.ca:443',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                }
             ]
         }
     });

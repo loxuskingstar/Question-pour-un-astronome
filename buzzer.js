@@ -21,14 +21,23 @@ function joinGame() {
     btn.innerText = "Connexion...";
     btn.style.opacity = "0.7";
 
-    peer = new Peer({
+    peer = new Peer( { // NOTE : Enlever 'astro-' + roomCode dans buzzer.js et master.js
         host: '0.peerjs.com',
         port: 443,
         path: '/',
         config: {
             'iceServers': [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                {
+                    urls: 'turn:openrelay.metered.ca:80',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                },
+                {
+                    urls: 'turn:openrelay.metered.ca:443',
+                    username: 'openrelayproject',
+                    credential: 'openrelayproject'
+                }
             ]
         }
     });
