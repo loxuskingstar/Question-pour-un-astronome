@@ -121,8 +121,8 @@ main {
     height: 70vh;
 }
 .home-logo {
-    max-width: 80vw;
-    max-height: 350px;
+    max-width: 90vw;
+    max-height: 500px;
     margin-bottom: 60px;
     animation: floatLogo 4s ease-in-out infinite;
 }
